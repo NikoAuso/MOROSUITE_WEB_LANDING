@@ -12,9 +12,11 @@ interface Props {
   description: string;
   canonical?: string;
   ogImage?: string;
+  preloadHeroImage?: string;
+  bodyClass?: string;
 }
 
-const { title, description, canonical, ogImage } = Astro.props;
+const { title, description, canonical, ogImage, preloadHeroImage, bodyClass } = Astro.props;
 
 const facility = await api.facility();
 const seo = await api.seoStructuredData();
@@ -28,27 +30,73 @@ const structuredData = resolveStructuredData(seo);
 <html lang={config.defaultLocale}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/svg+xml" href={config.brand.faviconUrl} />
 
+    {/* Open Graph + Twitter */}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content={title} />
+    <meta property="og:locale" content="it_IT" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* Favicon family */}
+    <link rel="icon" href="/images/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" href="/images/favicon/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/images/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/images/favicon/site.webmanifest" />
+
+    {/* Optional hero preload */}
+    {preloadHeroImage && (
+      <link rel="preload" as="image" href={preloadHeroImage} type="image/webp" />
+    )}
+
+    {/* Fonts: Instrument Sans via Bunny Fonts (GDPR-friendly Google Fonts mirror) */}
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+
+    {/* Font Awesome 6 (free) — async to avoid render-blocking */}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
     <script type="application/ld+json" set:html={structuredData} />
 
+    {/* GA4 consent mode v2 — default denied; the cookie banner upgrades to granted */}
     {config.analytics.ga4MeasurementId && (
       <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${config.analytics.ga4MeasurementId}`} />
-        <script is:inline define:vars={{ measurementId: config.analytics.ga4MeasurementId, consentDefault: config.analytics.consentDefault }}>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${config.analytics.ga4MeasurementId}`}
+        />
+        <script
+          is:inline
+          define:vars={{
+            measurementId: config.analytics.ga4MeasurementId,
+            consentDefault: config.analytics.consentDefault,
+          }}
+        >
           window.dataLayer = window.dataLayer || [];
-          function gtag() { dataLayer.push(arguments); }
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          window.gtag = gtag;
           gtag('consent', 'default', {
             ad_storage: consentDefault,
             analytics_storage: consentDefault,
@@ -62,9 +110,10 @@ const structuredData = resolveStructuredData(seo);
       </>
     )}
   </head>
-  <body class="min-h-screen flex flex-col">
+
+  <body class:list={['bg-slate-50 text-slate-900', bodyClass]}>
     <Header facility={facility} />
-    <main class="flex-1">
+    <main>
       <slot />
     </main>
     <Footer facility={facility} />

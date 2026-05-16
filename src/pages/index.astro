@@ -2,9 +2,12 @@
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import { api } from '@/lib/api';
 import Hero from '@/components/Hero.astro';
+import PoolFeatures from '@/components/PoolFeatures.astro';
 import OpeningHours from '@/components/OpeningHours.astro';
 import PricingTables from '@/components/PricingTables.astro';
-import ServicesGrid from '@/components/ServicesGrid.astro';
+import Servizi from '@/components/Servizi.astro';
+import Regolamento from '@/components/Regolamento.astro';
+import Bar from '@/components/Bar.astro';
 
 const [facility, hours, pricing] = await Promise.all([
   api.facility(),
@@ -12,21 +15,22 @@ const [facility, hours, pricing] = await Promise.all([
   api.pricing(),
 ]);
 
-const title = `${facility.name ?? 'Piscina'} | ${facility.tagline ?? 'Prenota online'}`;
+const title = `${facility.name ?? 'Piscina Morobello'} | Prenota ingresso e ombrellone`;
 const description =
-  facility.tagline ?? `Prenota online in ${facility.address.locality ?? 'piscina'}.`;
+  facility.tagline ??
+  `Rilassati nelle piscine di ${facility.short_name ?? 'Morobello'}, per un'esperienza di benessere unica e rigenerante.`;
 ---
 
-<PublicLayout title={title} description={description}>
+<PublicLayout
+  title={title}
+  description={description}
+  preloadHeroImage="/images/customers/solarium-giardino.webp"
+>
   <Hero facility={facility} />
-  <OpeningHours hours={hours} />
+  <PoolFeatures />
+  <OpeningHours hours={hours} facility={facility} />
   <PricingTables pricing={pricing} />
-  <ServicesGrid />
-
-  <section id="regolamento" class="mx-auto max-w-4xl px-4 py-16">
-    <h2 class="text-2xl font-bold">Regolamento</h2>
-    <p class="mt-2 text-slate-700">
-      Consulta il <a href="/regolamento" class="underline">regolamento della piscina</a>.
-    </p>
-  </section>
+  <Servizi />
+  <Regolamento facility={facility} />
+  <Bar />
 </PublicLayout>

@@ -12,11 +12,11 @@ export const siteConfig = {
   supportedLocales: ['it', 'en'] as const,
 
   brand: {
-    primaryColor: '#0e7490',
-    accentColor: '#fbbf24',
-    logoUrl: '/images/logo.svg',
-    faviconUrl: '/images/favicon.svg',
-    ogImageUrl: '/images/og.webp',
+    primaryColor: '#0c4a6e',
+    accentColor: '#facc15',
+    logoUrl: '/images/logo-morobello.webp',
+    faviconUrl: '/images/favicon/favicon.svg',
+    ogImageUrl: '/images/customers/solarium-giardino.webp',
   },
 
   analytics: {

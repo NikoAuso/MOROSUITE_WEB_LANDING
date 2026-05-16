@@ -1,89 +1,109 @@
 ---
-
 ---
 
+<!-- Cookie banner -->
 <div
   id="cookie-banner"
-  class="fixed bottom-4 left-4 right-4 hidden rounded-lg bg-white p-4 shadow-xl ring-1 ring-slate-200 md:left-auto md:right-4 md:max-w-md"
-  data-storage-key="cookie-consent-v1"
-  data-ttl-days="180"
+  class="fixed inset-x-0 bottom-0 z-50 hidden translate-y-6 opacity-0 transition-all duration-300 ease-out"
 >
-  <p class="text-sm text-slate-700">
-    Questo sito utilizza cookie tecnici e, previo consenso, cookie analitici di Google Analytics 4.
-    Leggi la <a href="/cookie" class="underline">Cookie Policy</a>.
-  </p>
-  <div class="mt-3 flex flex-wrap gap-2">
-    <button
-      id="cookie-accept"
-      class="rounded bg-brand-primary px-3 py-2 text-sm font-semibold text-white"
-    >
-      Accetta
-    </button>
-    <button
-      id="cookie-decline"
-      class="rounded border border-slate-300 px-3 py-2 text-sm font-semibold"
-    >
-      Rifiuta
-    </button>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-6">
+    <div class="rounded-3xl bg-white/95 backdrop-blur border border-slate-200 shadow-xl p-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="text-sm text-slate-700">
+          <div class="font-semibold text-slate-900">Usiamo i cookie</div>
+          <p class="mt-1">
+            Utilizziamo cookie tecnici e, previo consenso, cookie analytics (GA4) per migliorare il servizio.
+            <a href="/cookie" class="underline hover:text-slate-900">Cookie Policy</a>.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <button
+            id="cookie-reject"
+            class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          >
+            Rifiuta
+          </button>
+          <button
+            id="cookie-accept"
+            class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition"
+          >
+            Accetta
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
   const banner = document.getElementById('cookie-banner');
-  if (banner) {
-    const key = banner.dataset.storageKey ?? 'cookie-consent-v1';
-    const ttlDays = Number(banner.dataset.ttlDays ?? '180');
+  const acceptBtn = document.getElementById('cookie-accept');
+  const rejectBtn = document.getElementById('cookie-reject');
+  const storageKey = 'cookie_consent';
+  // GA4 consent TTL (Garante 10/06/2021): 6 months.
+  const CONSENT_TTL_MS = 180 * 24 * 60 * 60 * 1000;
 
-    const stored = (() => {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw) as { value: 'granted' | 'denied'; expires: number };
-        if (parsed.expires < Date.now()) return null;
+  type Gtag = (
+    cmd: 'consent',
+    action: 'update',
+    payload: Record<string, 'granted' | 'denied'>,
+  ) => void;
+
+  const applyConsent = (value: 'accepted' | 'rejected'): void => {
+    const gtag = (window as unknown as { gtag?: Gtag }).gtag;
+    if (typeof gtag !== 'function') return;
+    const granted = value === 'accepted' ? 'granted' : 'denied';
+    gtag('consent', 'update', {
+      ad_storage: granted,
+      analytics_storage: granted,
+      ad_user_data: granted,
+      ad_personalization: granted,
+    });
+  };
+
+  const readConsent = (): 'accepted' | 'rejected' | null => {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as { value: 'accepted' | 'rejected'; timestamp: number };
+      const age = Date.now() - parsed.timestamp;
+      if (age >= 0 && CONSENT_TTL_MS >= age && (parsed.value === 'accepted' || parsed.value === 'rejected')) {
         return parsed.value;
-      } catch {
-        return null;
       }
-    })();
-
-    if (!stored) {
-      banner.classList.remove('hidden');
-    } else {
-      applyConsent(stored);
+    } catch {
+      /* legacy / corrupted entry → drop */
     }
+    localStorage.removeItem(storageKey);
+    return null;
+  };
 
-    document.getElementById('cookie-accept')?.addEventListener('click', () => {
-      persist('granted');
-      applyConsent('granted');
-      banner.classList.add('hidden');
-    });
+  const writeConsent = (value: 'accepted' | 'rejected'): void => {
+    localStorage.setItem(storageKey, JSON.stringify({ value, timestamp: Date.now() }));
+  };
 
-    document.getElementById('cookie-decline')?.addEventListener('click', () => {
-      persist('denied');
-      applyConsent('denied');
-      banner.classList.add('hidden');
-    });
-
-    function persist(value: 'granted' | 'denied'): void {
-      const expires = Date.now() + ttlDays * 24 * 60 * 60 * 1000;
-      localStorage.setItem(key, JSON.stringify({ value, expires }));
-    }
-
-    function applyConsent(value: 'granted' | 'denied'): void {
-      type Gtag = (
-        cmd: 'consent',
-        action: 'update',
-        payload: Record<string, 'granted' | 'denied'>,
-      ) => void;
-      const gtag = (window as unknown as { gtag?: Gtag }).gtag;
-      if (typeof gtag === 'function') {
-        gtag('consent', 'update', {
-          ad_storage: value,
-          analytics_storage: value,
-          ad_user_data: value,
-          ad_personalization: value,
-        });
-      }
-    }
+  const saved = readConsent();
+  if (!saved) {
+    banner?.classList.remove('hidden');
+    requestAnimationFrame(() => banner?.classList.remove('translate-y-6', 'opacity-0'));
+  } else {
+    applyConsent(saved);
   }
+
+  const setConsent = (value: 'accepted' | 'rejected'): void => {
+    writeConsent(value);
+    banner?.classList.add('translate-y-6', 'opacity-0');
+    setTimeout(() => banner?.classList.add('hidden'), 300);
+    applyConsent(value);
+  };
+
+  acceptBtn?.addEventListener('click', () => setConsent('accepted'));
+  rejectBtn?.addEventListener('click', () => setConsent('rejected'));
+
+  document.querySelectorAll<HTMLElement>('[data-action="reset-cookie-consent"]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      localStorage.removeItem(storageKey);
+      banner?.classList.remove('hidden');
+      requestAnimationFrame(() => banner?.classList.remove('translate-y-6', 'opacity-0'));
+    }),
+  );
 </script>

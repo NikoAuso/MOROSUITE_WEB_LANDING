@@ -7,32 +7,109 @@ interface Props {
 }
 
 const { facility } = Astro.props;
+const bookingUrl = `${config.coreAppUrl}/prenota`;
+const heroImage = '/images/customers/solarium-giardino.webp';
 ---
 
-<section id="piscina" class="bg-brand-primary text-white">
-  <div class="mx-auto max-w-6xl px-4 py-24 text-center">
-    <h1 class="text-4xl font-extrabold sm:text-5xl">{facility.name}</h1>
-    {facility.tagline && <p class="mt-4 text-xl">{facility.tagline}</p>}
-    {
-      facility.online_bookings_enabled && (
-        <a
-          href={`${config.coreAppUrl}/prenota`}
-          class="mt-8 inline-block rounded bg-brand-accent px-6 py-3 font-semibold text-slate-900"
-        >
-          Prenota ora
-        </a>
-      )
-    }
-    {
-      facility.season_dates && facility.season_dates.length > 0 && (
-        <ul class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm">
-          {facility.season_dates.map((entry) => (
-            <li>
-              <strong>{entry.label}:</strong> {entry.value}
-            </li>
-          ))}
-        </ul>
-      )
-    }
+<!-- Hero -->
+<section class="relative overflow-hidden min-h-[calc(100vh-64px)]">
+  <div class="absolute inset-0">
+    <div class="h-full w-full bg-linear-to-b from-sky-950 via-sky-900 to-slate-50"></div>
+    <div
+      class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(62,188,255,0.55),transparent_55%),radial-gradient(circle_at_80%_15%,rgba(255,186,45,0.45),transparent_50%)]"
+    >
+    </div>
+    <picture>
+      <source srcset={heroImage} type="image/webp" />
+      <img
+        src={heroImage}
+        alt="Vista panoramica dell'area piscine"
+        class="absolute inset-0 h-full w-full object-cover opacity-40"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full">
+    <div class="grid min-h-[calc(100vh-64px)] place-items-center gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+          Prenota la tua postazione in piscina
+          <span class="block text-sky-200 text-shadow-lg">in pochi semplici step</span>
+        </h1>
+        <p class="mt-4 max-w-2xl text-base text-white sm:text-lg">
+          Scegli la data, indica i componenti e seleziona gli ombrelloni dalla mappa.
+          Al termine ricevi il QR Code per l'accesso.
+        </p>
+
+        <div class="mt-7 flex flex-wrap items-center gap-3">
+          <a
+            href={bookingUrl}
+            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+          >
+            Prenota ora
+          </a>
+          <a
+            href="#piscina"
+            class="inline-flex items-center justify-center rounded-2xl bg-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/40 transition"
+          >
+            Scopri la piscina
+          </a>
+        </div>
+      </div>
+
+      <!-- Right card -->
+      <div class="lg:col-span-4 py-14">
+        <div class="rounded-3xl bg-yellow-50/95 p-6 shadow-xl border-2 border-amber-200">
+          <div class="flex items-center justify-center gap-4">
+            <div>
+              <h2 class="text-lg font-bold">Come funziona</h2>
+              <p class="mt-1 text-sm text-slate-600">In 3 semplici passaggi.</p>
+            </div>
+          </div>
+
+          <div class="mt-6 grid gap-3">
+            <div class="flex gap-4 rounded-2xl border border-amber-200 bg-white p-4">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-400 font-bold text-gray-900">
+                1
+              </div>
+              <div>
+                <div class="font-semibold">Scegli data e componenti</div>
+                <div class="text-sm text-slate-600">Adulti, bambini e neonati.</div>
+              </div>
+            </div>
+
+            <div class="flex justify-center text-yellow-500">
+              <i class="fa-solid fa-angle-down animate-bounce"></i>
+            </div>
+
+            <div class="flex gap-4 rounded-2xl border border-amber-200 bg-white p-4">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-400 font-bold text-gray-900">
+                2
+              </div>
+              <div>
+                <div class="font-semibold">Seleziona gli ombrelloni</div>
+                <div class="text-sm text-slate-600">Dalla mappa interattiva.</div>
+              </div>
+            </div>
+
+            <div class="flex justify-center text-yellow-500">
+              <i class="fa-solid fa-angle-down animate-bounce"></i>
+            </div>
+
+            <div class="flex gap-4 rounded-2xl border border-amber-200 bg-white p-4">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-400 font-bold text-gray-900">
+                3
+              </div>
+              <div>
+                <div class="font-semibold">Conferma e ricevi il QR</div>
+                <div class="text-sm text-slate-600">Accesso rapido in struttura.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

@@ -1,4 +1,5 @@
 ---
+import { config } from '@/lib/config';
 import type { PricingPayload } from '@/lib/types';
 
 interface Props {
@@ -6,90 +7,202 @@ interface Props {
 }
 
 const { pricing } = Astro.props;
+const bookingUrl = `${config.coreAppUrl}/prenota`;
 
-const formatValue = (v: number | null, isFree: boolean): string => {
+const formatPrice = (value: number | null, isFree: boolean): string => {
+  if (value === null) return '—';
   if (isFree) return 'Gratis';
-  if (v === null) return '—';
-  return v.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+  return `€ ${value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 ---
 
-<section id="prezzi" class="mx-auto max-w-4xl px-4 py-16">
-  <h2 class="text-2xl font-bold">Prezzi</h2>
+<section id="prezzi" class="bg-slate-50">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-start">
+      <div class="lg:col-span-6 lg:sticky lg:top-24 self-start">
+        <div class="text-xs font-semibold tracking-widest text-sky-700">PREZZI ATTIVI</div>
+        <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
+          Tariffe aggiornate in tempo reale
+        </h2>
+        <p class="mt-4 text-slate-600">
+          I prezzi variano in base a data, fascia oraria e tipologia di ingresso.
+          Trovi sempre il listino attivo durante la prenotazione.
+        </p>
+        <p class="mt-3 text-md font-semibold text-slate-600">
+          Tutti i prezzi si intendono a persona.
+        </p>
+        <p class="mt-3 rounded-2xl bg-sky-50 px-4 py-3 text-sm text-slate-700 ring-1 ring-sky-100">
+          Le persone con disabilità in possesso di certificazione INPS valida hanno diritto alla
+          riduzione del 50% sul biglietto di ingresso individuale. L'agevolazione è riconosciuta
+          al titolare previa presentazione della certificazione e di un documento di identità in
+          cassa. Gli accompagnatori pagano il biglietto intero. La riduzione è non cumulabile con
+          altre promozioni e non si applica ad abbonamenti o servizi aggiuntivi.
+        </p>
+        <div class="my-6 flex flex-wrap items-center gap-3">
+          <a
+            href={bookingUrl}
+            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+          >
+            Prenota un ingresso
+          </a>
+          <a
+            href="https://wa.me/393884889251"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          >
+            Chiedi info
+          </a>
+        </div>
+      </div>
 
-  {
-    !pricing.has_prices ? (
-      <p class="mt-6 text-slate-600">Listino non ancora pubblicato.</p>
-    ) : (
-      <>
-        {pricing.entrance_sections.length > 0 && (
-          <div class="mt-8">
-            <h3 class="text-lg font-semibold">Ingressi</h3>
-            {pricing.entrance_sections.map((section) => (
-              <div class="mt-4 overflow-x-auto">
-                <h4 class="text-sm font-semibold text-slate-700">{section.label}</h4>
-                <table class="mt-2 w-full border-collapse text-sm">
-                  <thead>
-                    <tr class="bg-slate-50 text-left">
-                      <th class="border-b border-slate-200 px-3 py-2">Fascia</th>
-                      <th class="border-b border-slate-200 px-3 py-2">Settimana</th>
-                      <th class="border-b border-slate-200 px-3 py-2">Weekend</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {section.rows.map((row) => (
-                      <tr>
-                        <td class="border-b border-slate-100 px-3 py-2">
-                          {row.label}
-                          {row.range ? ` · ${row.range}` : ''}
-                        </td>
-                        <td class="border-b border-slate-100 px-3 py-2">
-                          {formatValue(row.weekday_value, row.weekday_is_free)}
-                        </td>
-                        <td class="border-b border-slate-100 px-3 py-2">
-                          {formatValue(row.weekend_value, row.weekend_is_free)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+      <div class="lg:col-span-6">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          {pricing.has_prices ? (
+            <>
+              <div class="flex items-center gap-3">
+                <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                  <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div>
+                  <div class="text-lg font-extrabold text-slate-900">{pricing.active_price_list_name}</div>
+                  <div class="text-sm text-slate-600">Sempre allineato alle disponibilità.</div>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {pricing.pass_sections.length > 0 && (
-          <div class="mt-12">
-            <h3 class="text-lg font-semibold">Abbonamenti</h3>
-            {pricing.pass_sections.map((section) => (
-              <div class="mt-4 overflow-x-auto">
-                <h4 class="text-sm font-semibold text-slate-700">{section.label}</h4>
-                <table class="mt-2 w-full border-collapse text-sm">
-                  <thead>
-                    <tr class="bg-slate-50 text-left">
-                      <th class="border-b border-slate-200 px-3 py-2">Fascia</th>
-                      <th class="border-b border-slate-200 px-3 py-2">Prezzo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {section.rows.map((row) => (
-                      <tr>
-                        <td class="border-b border-slate-100 px-3 py-2">
-                          {row.label}
-                          {row.range ? ` · ${row.range}` : ''}
-                        </td>
-                        <td class="border-b border-slate-100 px-3 py-2">
-                          {formatValue(row.value, row.is_free)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-2">
+                <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
+                  <button
+                    type="button"
+                    class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
+                    data-tab-target="entrance"
+                  >
+                    Ingressi ({pricing.entrance_count})
+                  </button>
+                  <button
+                    type="button"
+                    class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
+                    data-tab-target="pass"
+                  >
+                    Abbonamenti ({pricing.pass_count})
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-      </>
-    )
-  }
+
+              <div class="mt-4">
+                <div class="price-tab-panel grid gap-4 text-sm text-slate-700" data-tab="entrance">
+                  {pricing.entrance_sections.length > 0 ? pricing.entrance_sections.map((section) => (
+                    <div class="space-y-3">
+                      <div class="text-xs font-semibold uppercase tracking-widest text-slate-500">{section.label}</div>
+                      <div class="rounded-2xl bg-white ring-1 ring-slate-200">
+                        <div class="grid grid-cols-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                          <div class="px-4 py-2">Fascia età</div>
+                          <div class="px-4 py-2 text-right">Feriali</div>
+                          <div class="px-4 py-2 text-right">Festivi</div>
+                        </div>
+                        {section.rows.map((row) => (
+                          <div class="grid grid-cols-3 border-t border-slate-100 text-sm">
+                            <div class="px-4 py-3 font-semibold text-slate-900">
+                              <div>{row.label}</div>
+                              {row.range && <div class="text-xs font-normal text-slate-500">{row.range}</div>}
+                            </div>
+                            <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
+                              {row.weekday_value === null ? (
+                                <span class="text-slate-400">—</span>
+                              ) : (
+                                formatPrice(row.weekday_value, row.weekday_is_free)
+                              )}
+                            </div>
+                            <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
+                              {row.weekend_value === null ? (
+                                <span class="text-slate-400">—</span>
+                              ) : (
+                                formatPrice(row.weekend_value, row.weekend_is_free)
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )) : (
+                    <div class="rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
+                      Nessun ingresso disponibile al momento.
+                    </div>
+                  )}
+                </div>
+
+                <div class="price-tab-panel hidden gap-4 text-sm text-slate-700" data-tab="pass">
+                  {pricing.pass_sections.length > 0 ? pricing.pass_sections.map((section) => (
+                    <div class="space-y-3">
+                      <div class="text-xs font-semibold uppercase tracking-widest text-slate-500">{section.label}</div>
+                      <div class="rounded-2xl bg-white ring-1 ring-slate-200">
+                        <div class="grid grid-cols-2 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                          <div class="px-4 py-2">Fascia età</div>
+                          <div class="px-4 py-2 text-right">Prezzo</div>
+                        </div>
+                        {section.rows.map((row) => (
+                          <div class="grid grid-cols-2 border-t border-slate-100 text-sm">
+                            <div class="px-4 py-3 font-semibold text-slate-900">
+                              <div>{row.label}</div>
+                              {row.range && <div class="text-xs font-normal text-slate-500">{row.range}</div>}
+                              {!section.allows_umbrella_booking && (
+                                <span class="text-slate-500 font-normal">(ombrellone non prenotabile)</span>
+                              )}
+                            </div>
+                            <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
+                              {row.value === null ? (
+                                <span class="text-slate-400">—</span>
+                              ) : (
+                                formatPrice(row.value, row.is_free)
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )) : (
+                    <div class="rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
+                      Nessun abbonamento disponibile al momento.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div class="mt-5 grid gap-3 text-sm text-slate-700">
+              <div class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
+                <span class="h-2 w-2 rounded-full bg-green-600"></span>
+                Listino prezzi ancora non disponibile
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.price-tab');
+  const panels = document.querySelectorAll<HTMLElement>('.price-tab-panel');
+
+  const activate = (target: string): void => {
+    tabs.forEach((tab) => {
+      const active = tab.dataset.tabTarget === target;
+      tab.classList.toggle('bg-sky-100', active);
+      tab.classList.toggle('text-sky-900', active);
+      tab.classList.toggle('text-slate-700', !active);
+    });
+    panels.forEach((panel) => {
+      const active = panel.dataset.tab === target;
+      panel.classList.toggle('hidden', !active);
+      panel.classList.toggle('grid', active);
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => activate(tab.dataset.tabTarget ?? 'entrance'));
+  });
+
+  activate('entrance');
+</script>

@@ -1,0 +1,80 @@
+---
+import { config } from '@/lib/config';
+
+const bookingUrl = `${config.coreAppUrl}/prenota`;
+
+const sections = [
+  { title: 'Caffetteria', text: 'Caffè, cappuccini, cornetti, succhi, gelati.' },
+  { title: 'Snack e pranzi', text: 'Panini, insalate, piatti del giorno e opzioni per bambini.' },
+  { title: 'Drink e aperitivi', text: 'Cocktail, analcolici, birre e aperitivi al tramonto.' },
+];
+---
+
+<section id="bar" class="bg-sky-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-center">
+      <div class="lg:col-span-6">
+        <h2 class="text-3xl font-extrabold tracking-tight">Bar in piscina</h2>
+        <p class="mt-4 text-white/80">
+          Caffetteria, snack, pranzi leggeri e aperitivi: perfetto per una pausa durante la giornata.
+        </p>
+
+        <div class="mt-6 grid gap-3">
+          {sections.map((s) => (
+            <div class="group rounded-2xl bg-white/10 p-4">
+              <div class="font-semibold flex items-center justify-between">{s.title}</div>
+              <p class="mt-2 text-sm text-white/80">{s.text}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href={bookingUrl}
+            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+          >
+            Prenota ora
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="overflow-hidden rounded-3xl bg-white/10">
+            <img
+              class="h-56 w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              src="/images/customers/happy-hour.webp"
+              width="600"
+              height="224"
+              alt="Drink al bar"
+            />
+          </div>
+          <div class="overflow-hidden rounded-3xl bg-white/10">
+            <img
+              class="h-56 w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              src="/images/customers/menu-estivo.webp"
+              width="600"
+              height="224"
+              alt="Snack"
+            />
+          </div>
+          <div class="sm:col-span-2 overflow-hidden rounded-3xl bg-white/10">
+            <img
+              class="h-56 w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              src="/images/customers/solarium-terrazza.webp"
+              width="900"
+              height="224"
+              alt="Solarium terrazza"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

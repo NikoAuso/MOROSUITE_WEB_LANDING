@@ -1,13 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand-primary: #0e7490;
-  --color-brand-accent: #fbbf24;
-  --color-brand-ink: #0f172a;
-  --color-brand-paper: #f8fafc;
-
-  --font-display: 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display:
+    'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body:
+    'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 :root {
@@ -15,7 +12,10 @@
 }
 
 html {
+  scroll-behavior: smooth;
   font-family: var(--font-body);
-  color: var(--color-brand-ink);
-  background: var(--color-brand-paper);
+}
+
+body {
+  font-family: var(--font-body);
 }

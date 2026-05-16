@@ -8,39 +8,122 @@ interface Props {
 }
 
 const { facility } = Astro.props;
+const hotelUrl = facility.external_links?.hotel ?? facility.contacts?.website ?? '#';
+const bookingUrl = `${config.coreAppUrl}/prenota`;
 ---
 
-<header class="bg-white shadow-sm sticky top-0 z-30">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-    <a href="/" class="flex items-center gap-3">
-      <img src={config.brand.logoUrl} alt={facility.name ?? 'Logo'} class="h-10 w-auto" />
-      <span class="font-semibold">{facility.name}</span>
-    </a>
+<!-- Sticky top bar -->
+<header class="sticky top-0 z-50 bg-sky-900/90 backdrop-blur border-b border-white/10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-4">
+        <a href="/" class="flex items-center gap-3 text-white">
+          <div class="flex size-11 items-center justify-center rounded-lg overflow-hidden">
+            <img
+              src={config.brand.logoUrl}
+              alt={facility.name ?? 'Logo'}
+              class="h-full w-full object-contain"
+            />
+          </div>
+          <span class="hidden text-lg font-extrabold sm:inline">{facility.short_name ?? facility.name}</span>
+        </a>
+      </div>
 
-    <nav class="hidden gap-6 md:flex">
-      {
-        PRIMARY_NAV.map((entry) => (
-          <a href={entry.href} class="text-sm font-medium hover:text-brand-primary">
-            {entry.label}
-          </a>
-        ))
-      }
-    </nav>
+      <!-- Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
+        {PRIMARY_NAV.map((link) => (
+          <a href={link.href} class="hover:text-white transition">{link.label}</a>
+        ))}
+      </nav>
 
-    <div class="flex items-center gap-3">
-      <a href={`${config.coreAppUrl}/login`} class="text-sm font-medium hover:text-brand-primary">
-        Accedi
-      </a>
-      {
-        facility.online_bookings_enabled && (
+      <!-- CTA -->
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-mobile-menu-toggle
+          class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden"
+          aria-label="Apri menu di navigazione"
+          aria-expanded="false"
+        >
+          <i data-mobile-menu-open-icon class="fa-solid fa-bars text-base"></i>
+          <i data-mobile-menu-close-icon class="fa-solid fa-xmark text-base" hidden></i>
+        </button>
+
+        {hotelUrl && hotelUrl !== '#' && (
           <a
-            href={`${config.coreAppUrl}/prenota`}
-            class="rounded bg-brand-primary px-4 py-2 text-sm font-semibold text-white"
+            href={hotelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden sm:inline-flex items-center justify-center rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
           >
-            Prenota ora
+            Sito hotel
           </a>
-        )
-      }
+        )}
+
+        <a
+          href={bookingUrl}
+          class="inline-flex items-center justify-center rounded-xl bg-green-700 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+        >
+          Prenota ora
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    data-mobile-menu
+    class="absolute inset-x-0 top-full border-t border-white/10 bg-sky-900/95 shadow-2xl backdrop-blur md:hidden"
+    hidden
+  >
+    <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <nav class="grid gap-2 text-sm font-semibold text-white">
+        {PRIMARY_NAV.map((link) => (
+          <a href={link.href} data-mobile-menu-link class="rounded-xl px-4 py-3 transition hover:bg-white/10">
+            {link.label}
+          </a>
+        ))}
+        {hotelUrl && hotelUrl !== '#' && (
+          <a
+            href={hotelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-mobile-menu-link
+            class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+          >
+            Sito hotel
+          </a>
+        )}
+      </nav>
     </div>
   </div>
 </header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  const openIcon = document.querySelector<HTMLElement>('[data-mobile-menu-open-icon]');
+  const closeIcon = document.querySelector<HTMLElement>('[data-mobile-menu-close-icon]');
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-mobile-menu-link]');
+
+  function setMenuOpen(open: boolean): void {
+    if (!toggle || !menu || !openIcon || !closeIcon) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) {
+      menu.removeAttribute('hidden');
+      openIcon.setAttribute('hidden', '');
+      closeIcon.removeAttribute('hidden');
+    } else {
+      menu.setAttribute('hidden', '');
+      closeIcon.setAttribute('hidden', '');
+      openIcon.removeAttribute('hidden');
+    }
+  }
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setMenuOpen(!isOpen);
+  });
+
+  links.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+</script>

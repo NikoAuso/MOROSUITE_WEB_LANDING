@@ -1,5 +1,6 @@
 ---
-import { FOOTER_NAV } from '@/lib/navigation';
+import { config } from '@/lib/config';
+import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import type { FacilityPayload } from '@/lib/types';
 
 interface Props {
@@ -7,76 +8,153 @@ interface Props {
 }
 
 const { facility } = Astro.props;
+
+const mapsQuery = [facility.address.locality, facility.address.region]
+  .filter(Boolean)
+  .join(' ');
+const mapsUrl = mapsQuery
+  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
+  : facility.address.google_maps_url ?? null;
+
+const phone = facility.contacts?.phone;
+const phoneTel = phone ? `tel:${phone.replace(/\s+/g, '')}` : null;
+const email = facility.contacts?.email;
+const emailHref = email ? `mailto:${email}` : null;
+
+const instagram = facility.social?.instagram;
+const facebook = facility.social?.facebook;
+const tiktok = facility.social?.tiktok;
 ---
 
-<footer class="bg-slate-900 text-slate-200">
-  <div class="mx-auto max-w-6xl px-4 py-12 grid gap-8 md:grid-cols-3">
-    <div>
-      <h3 class="text-lg font-semibold text-white">{facility.name}</h3>
-      {facility.tagline && <p class="mt-2 text-sm">{facility.tagline}</p>}
-      {
-        facility.address.street && (
-          <address class="mt-4 not-italic text-sm">
-            {facility.address.street}
-            <br />
-            {facility.address.postal_code} {facility.address.locality} ({facility.address.region})
-          </address>
-        )
-      }
-    </div>
+<footer class="bg-slate-900 border-t border-white/10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+      <!-- Brand + social -->
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="flex size-15 items-center justify-center rounded-lg overflow-hidden">
+            <img
+              src={config.brand.logoUrl}
+              alt={facility.name ?? 'Logo'}
+              class="h-full w-full object-contain"
+            />
+          </div>
+          <div class="text-lg font-extrabold text-white">{facility.short_name ?? facility.name}</div>
+        </div>
+        <p class="mt-4 text-sm text-white/70">
+          La destinazione perfetta per il tuo relax estivo. Tuffati in un mondo di freschezza e divertimento.
+        </p>
 
-    <div>
-      <h3 class="text-lg font-semibold text-white">Contatti</h3>
-      <ul class="mt-2 space-y-1 text-sm">
-        {
-          facility.contacts.email && (
+        <div class="mt-6 flex gap-3">
+          {instagram && (
+            <a
+              href={instagram}
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-pink-500 transition hover:bg-pink-500 hover:text-white"
+            >
+              <i class="fa-brands fa-instagram text-lg"></i>
+            </a>
+          )}
+          {facebook && (
+            <a
+              href={facebook}
+              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-blue-600 transition hover:bg-blue-600 hover:text-white"
+            >
+              <i class="fa-brands fa-facebook-f text-lg"></i>
+            </a>
+          )}
+          {tiktok && (
+            <a
+              href={tiktok}
+              aria-label="TikTok"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-black"
+            >
+              <i class="fa-brands fa-tiktok text-lg"></i>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <!-- Link Rapidi -->
+      <div>
+        <div class="text-sm font-extrabold text-white">Link Rapidi</div>
+        <ul class="mt-4 space-y-2 text-sm text-white/70">
+          {PRIMARY_NAV.map((link) => (
+            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Risorse utili -->
+      <div>
+        <div class="text-sm font-extrabold text-white">Risorse utili</div>
+        <ul class="mt-4 space-y-2 text-sm text-white/70">
+          {FOOTER_NAV.map((link) => (
+            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
+          ))}
+          <li>
+            <button
+              type="button"
+              data-action="reset-cookie-consent"
+              class="cursor-pointer text-left hover:text-white"
+            >
+              Modifica preferenze cookie
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contatti -->
+      <div>
+        <div class="text-sm font-extrabold text-white">Contatti</div>
+        <ul class="mt-4 space-y-2 text-sm text-white/70">
+          {mapsUrl && facility.address.street && (
             <li>
-              <a href={`mailto:${facility.contacts.email}`}>{facility.contacts.email}</a>
-            </li>
-          )
-        }
-        {
-          facility.contacts.phone && (
-            <li>
-              <a href={`tel:${facility.contacts.phone.replace(/\s+/g, '')}`}>
-                {facility.contacts.phone}
+              <a href={mapsUrl} class="hover:text-white" target="_blank" rel="noopener noreferrer">
+                {facility.address.street} – {facility.address.postal_code} {facility.address.locality} ({facility.address.region})
               </a>
             </li>
-          )
-        }
-        {
-          facility.contacts.whatsapp && (
-            <li>
-              <a
-                href={`https://wa.me/${facility.contacts.whatsapp.replace(/[^0-9]/g, '')}`}
-                rel="noopener"
-              >
-                WhatsApp
-              </a>
-            </li>
-          )
-        }
-      </ul>
+          )}
+          {phoneTel && (
+            <li><a href={phoneTel} class="hover:text-white">{phone}</a></li>
+          )}
+          {emailHref && (
+            <li><a href={emailHref} class="hover:text-white">{email}</a></li>
+          )}
+        </ul>
+      </div>
+
+      <!-- Azienda -->
+      <div>
+        <div class="text-sm font-extrabold text-white">Azienda</div>
+        <ul class="mt-4 space-y-2 text-sm text-white/70">
+          {facility.gdpr.titolare && <li><span class="font-semibold text-white/90">{facility.gdpr.titolare}</span></li>}
+          {facility.address.street && (
+            <li>Sede legale: {facility.address.street}, {facility.address.postal_code} {facility.address.locality} ({facility.address.region})</li>
+          )}
+        </ul>
+      </div>
     </div>
 
-    <div>
-      <h3 class="text-lg font-semibold text-white">Documenti</h3>
-      <ul class="mt-2 space-y-1 text-sm">
-        {
-          FOOTER_NAV.map((entry) => (
-            <li>
-              <a href={entry.href}>{entry.label}</a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </div>
-
-  <div class="border-t border-slate-700">
-    <div class="mx-auto max-w-6xl px-4 py-4 text-xs text-slate-400">
-      © {new Date().getFullYear()}
-      {facility.gdpr.titolare ?? facility.name}. Powered by MOROSUITE.
+    <div
+      class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/60 lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div class="text-center lg:text-left">
+        © {new Date().getFullYear()} {facility.gdpr.titolare ?? facility.name} · Tutti i diritti riservati.
+      </div>
+      <a
+        href={`${config.coreAppUrl}/login`}
+        class="inline-flex w-full items-center justify-center rounded-full border border-sky-300/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-200/60 hover:bg-sky-500/20 sm:w-auto lg:justify-self-end"
+      >
+        Accesso gestori
+      </a>
     </div>
   </div>
 </footer>
