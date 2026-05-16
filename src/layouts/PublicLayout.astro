@@ -78,12 +78,13 @@ const structuredData = resolveStructuredData(seo);
       referrerpolicy="no-referrer"
     />
 
-    <script type="application/ld+json" set:html={structuredData} />
+    <script is:inline type="application/ld+json" set:html={structuredData} />
 
     {/* GA4 consent mode v2 — default denied; the cookie banner upgrades to granted */}
     {config.analytics.ga4MeasurementId && (
       <>
         <script
+          is:inline
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${config.analytics.ga4MeasurementId}`}
         />

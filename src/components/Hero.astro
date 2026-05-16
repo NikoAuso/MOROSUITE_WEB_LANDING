@@ -1,12 +1,6 @@
 ---
 import { config } from '@/lib/config';
-import type { FacilityPayload } from '@/lib/types';
 
-interface Props {
-  facility: FacilityPayload;
-}
-
-const { facility } = Astro.props;
 const bookingUrl = `${config.coreAppUrl}/prenota`;
 const heroImage = '/images/customers/solarium-giardino.webp';
 ---
