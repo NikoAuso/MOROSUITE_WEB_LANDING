@@ -67,8 +67,8 @@ const services = [
         <div class="space-y-5">
           {services.map((s) => (
             <div class="flex gap-4">
-              <div class="mt-1 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                <i class={`fa-solid ${s.icon} text-xl w-full`}></i>
+              <div class="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                <i class={`fa-solid ${s.icon} text-xl leading-none`} aria-hidden="true"></i>
               </div>
               <div>
                 <div class="font-extrabold text-slate-900">{s.title}</div>
