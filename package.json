@@ -4,8 +4,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=22.12.0",
-    "pnpm": ">=10.0.0"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -21,25 +20,27 @@
     "test:lh": "lhci autorun"
   },
   "dependencies": {
-    "@astrojs/mdx": "latest",
-    "@astrojs/sitemap": "latest",
-    "@tailwindcss/vite": "latest",
+    "@astrojs/mdx": "^5.0.6",
+    "@astrojs/sitemap": "^3.7.2",
+    "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.3.3",
-    "astro-robots-txt": "latest",
-    "marked": "^15.0.0",
-    "tailwindcss": "latest"
+    "astro-robots-txt": "^1.0.0",
+    "marked": "^18.0.3",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "@lhci/cli": "^0.14.0",
-    "@playwright/test": "^1.49.0",
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^9.0.0",
-    "eslint-plugin-astro": "^1.3.0",
-    "prettier": "^3.4.0",
-    "prettier-plugin-astro": "^0.14.0",
-    "typescript": "^5.7.0"
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "^10.4.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "vite": "^7.3.3"
   }
 }
