@@ -14,9 +14,10 @@ interface Props {
   ogImage?: string;
   preloadHeroImage?: string;
   bodyClass?: string;
+  showNav?: boolean;
 }
 
-const { title, description, canonical, ogImage, preloadHeroImage, bodyClass } = Astro.props;
+const { title, description, canonical, ogImage, preloadHeroImage, bodyClass, showNav = true } = Astro.props;
 
 const facility = await api.facility();
 const seo = await api.seoStructuredData();
@@ -112,7 +113,7 @@ const structuredData = resolveStructuredData(seo);
   </head>
 
   <body class:list={['bg-slate-50 text-slate-900', bodyClass]}>
-    <Header facility={facility} />
+    <Header facility={facility} showNav={showNav} />
     <main>
       <slot />
     </main>

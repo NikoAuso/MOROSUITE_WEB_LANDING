@@ -1,11 +1,8 @@
 ---
+import PublicLayout from '@/layouts/PublicLayout.astro';
 import { config } from '@/lib/config';
-import { api } from '@/lib/api';
 import { renderLegalMarkdown } from '@/lib/markdown';
-import CookieBanner from '@/components/CookieBanner.astro';
-import CookiePreferencesToggle from '@/components/CookiePreferencesToggle.astro';
 import type { LegalPayload } from '@/lib/types';
-import '@/styles/tokens.css';
 
 interface Props {
   document: LegalPayload;
@@ -14,11 +11,8 @@ interface Props {
 const { document } = Astro.props;
 const htmlBody = renderLegalMarkdown(document.body);
 
-const facility = await api.facility();
-
-const canonicalUrl = `${config.siteUrl}${Astro.url.pathname}`;
 const pdfUrl = `${config.coreApiBase}/legal/${document.doc}.pdf`;
-const title = `${document.title} | ${facility.short_name ?? facility.name ?? 'Piscina'}`;
+const title = `${document.title}`;
 const description = `${document.title} — versione ${document.version}.`;
 
 const formattedEffective = document.effective_date
@@ -30,93 +24,13 @@ const formattedEffective = document.effective_date
   : null;
 ---
 
-<!doctype html>
-<html lang={config.defaultLocale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
-
-    <link rel="icon" href="/images/favicon/favicon.ico" sizes="any" />
-    <link rel="icon" href="/images/favicon/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/images/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/images/favicon/site.webmanifest" />
-
-    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
-    <link
-      href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap"
-      rel="stylesheet"
-    />
-
-    <style>
-      /* Tipografia Markdown */
-      .prose h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #1f2937; }
-      .prose h2 { font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; color: #374151; }
-      .prose h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: .75rem; color: #4b5563; }
-      .prose h4 { font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: .75rem; color: #4b5563; }
-      .prose p { margin-bottom: 1rem; line-height: 1.7; }
-      .prose a { color: #0369a1; text-decoration: underline; }
-      .prose a:hover { color: #075985; }
-      .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-      .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
-      .prose li { margin-bottom: .5rem; }
-      .prose blockquote {
-        border-left: 4px solid #e5e7eb;
-        padding-left: 1rem;
-        color: #6b7280;
-        font-style: italic;
-        margin: 1rem 0;
-      }
-      .prose code {
-        background-color: #f3f4f6;
-        padding: .2rem .4rem;
-        border-radius: .25rem;
-        font-size: .875rem;
-      }
-      .prose pre {
-        background-color: #111827;
-        color: #f9fafb;
-        padding: 1rem;
-        border-radius: .5rem;
-        overflow-x: auto;
-      }
-      .prose table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1.5rem 0;
-      }
-      .prose th, .prose td {
-        border: 1px solid #d1d5db;
-        padding: .5rem .75rem;
-        text-align: left;
-      }
-      .prose th {
-        background-color: #f9fafb;
-        font-weight: 600;
-      }
-    </style>
-  </head>
-
-  <body class="bg-gray-50 text-gray-900">
-    <header class="bg-white/80 backdrop-blur sticky top-0 z-40">
-      <div class="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-        <a href="/" class="flex shrink-0 items-center space-x-2">
-          <img src={config.brand.logoUrl} alt={`Logo ${facility.name}`} class="h-10 w-auto" />
-          <span class="font-semibold text-slate-900 text-lg">{facility.name}</span>
-        </a>
-        <a href="/" class="text-sm hover:opacity-80">← Torna al sito</a>
-      </div>
-    </header>
-
-    <main class="mx-auto max-w-5xl px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <article class="lg:col-span-12">
+<PublicLayout title={title} description={description} showNav={false}>
+  <section class="bg-slate-50">
+    <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <article>
         <div class="bg-white rounded-2xl shadow p-6 sm:p-8">
           <div class="mb-6 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-            <span
-              class="inline-flex items-center rounded-full bg-sky-100 px-3 py-1 font-semibold text-sky-700"
-            >
+            <span class="inline-flex items-center rounded-full bg-sky-100 px-3 py-1 font-semibold text-sky-700">
               Versione {document.version}
             </span>
             {formattedEffective && (
@@ -145,13 +59,54 @@ const formattedEffective = document.effective_date
           <div class="prose prose-neutral max-w-none" set:html={htmlBody} />
         </div>
       </article>
-    </main>
+    </div>
+  </section>
+</PublicLayout>
 
-    <footer class="mx-auto max-w-5xl px-4 py-10 text-xs text-gray-500 flex flex-col items-center">
-      {facility.short_name ?? facility.name} © {new Date().getFullYear()} — Tutti i diritti riservati.
-    </footer>
-
-    <CookieBanner />
-    <CookiePreferencesToggle />
-  </body>
-</html>
+<style is:global>
+  /* Tipografia Markdown — clonata da MOROSUITE markdown.blade.php */
+  .prose h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #1f2937; }
+  .prose h2 { font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; color: #374151; }
+  .prose h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: .75rem; color: #4b5563; }
+  .prose h4 { font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: .75rem; color: #4b5563; }
+  .prose p { margin-bottom: 1rem; line-height: 1.7; }
+  .prose a { color: #0369a1; text-decoration: underline; }
+  .prose a:hover { color: #075985; }
+  .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+  .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+  .prose li { margin-bottom: .5rem; }
+  .prose blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1rem;
+    color: #6b7280;
+    font-style: italic;
+    margin: 1rem 0;
+  }
+  .prose code {
+    background-color: #f3f4f6;
+    padding: .2rem .4rem;
+    border-radius: .25rem;
+    font-size: .875rem;
+  }
+  .prose pre {
+    background-color: #111827;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: .5rem;
+    overflow-x: auto;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+  .prose th, .prose td {
+    border: 1px solid #d1d5db;
+    padding: .5rem .75rem;
+    text-align: left;
+  }
+  .prose th {
+    background-color: #f9fafb;
+    font-weight: 600;
+  }
+</style>
