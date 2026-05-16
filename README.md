@@ -12,10 +12,10 @@ Consumes the core's read-only API at `${coreApiBase}/api/public/v1/*`.
 
 ## Local dev
 
-1. Clone, then `pnpm install` (requires Node 22+ and pnpm 11).
+1. Clone, then `npm install` (requires Node 22+).
 2. Copy `.env.example` to `.env` and point `PUBLIC_CORE_API_BASE` at a running MOROSUITE instance
    (`http://localhost:8765/api/public/v1` if you `php artisan serve --port=8765` on the core).
-3. `pnpm dev` — opens on `http://localhost:4321`.
+3. `npm run dev` — opens on `http://localhost:4321`.
 
 ## White-label a deploy
 
@@ -36,26 +36,16 @@ in `src/pages/trasparenza.astro`.
 
 ## Scripts
 
-| Command          | Use                                       |
-| ---------------- | ----------------------------------------- |
-| `pnpm dev`       | Dev server with HMR                       |
-| `pnpm build`     | Produce `dist/` static bundle             |
-| `pnpm preview`   | Serve `dist/` locally                     |
-| `pnpm check`     | Astro type-check + `tsc --noEmit`         |
-| `pnpm lint`      | ESLint                                    |
-| `pnpm format`    | Prettier write                            |
-| `pnpm test:e2e`  | Playwright E2E (auto-starts preview)      |
-| `pnpm test:lh`   | Lighthouse CI                             |
-
-## Required GitHub secrets
-
-For CI + Cloudflare Pages preview deploy:
-
-- `CLOUDFLARE_API_TOKEN` — token with `Pages:Edit` permission on the account that hosts the project.
-- `CLOUDFLARE_ACCOUNT_ID` — found in the Cloudflare dashboard top-right.
-- `STAGING_CORE_API_BASE` — e.g. `https://app-staging.morobello.it/api/public/v1`.
-- `STAGING_CORE_APP_URL` — e.g. `https://app-staging.morobello.it`.
-- `PREVIEW_GA4_ID` — GA4 measurement id for preview deploys (or empty to disable analytics).
+| Command             | Use                                  |
+| ------------------- | ------------------------------------ |
+| `npm run dev`       | Dev server with HMR                  |
+| `npm run build`     | Produce `dist/` static bundle        |
+| `npm run preview`   | Serve `dist/` locally                |
+| `npm run check`     | Astro type-check + `tsc --noEmit`    |
+| `npm run lint`      | ESLint                               |
+| `npm run format`    | Prettier write                       |
+| `npm run test:e2e`  | Playwright E2E (auto-starts preview) |
+| `npm run test:lh`   | Lighthouse CI                        |
 
 ## Related
 
