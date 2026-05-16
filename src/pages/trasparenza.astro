@@ -2,118 +2,223 @@
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import { api } from '@/lib/api';
 
-const transparency = await api.transparency();
+const [facility, transparency] = await Promise.all([api.facility(), api.transparency()]);
 
-// Hardcoded — the categories of personal data we process are a product-level
-// constant of the MOROSUITE pool booking flow, not a per-client setting.
+const title = `Trasparenza | ${facility.short_name ?? facility.name ?? 'Piscina'}`;
+const description = 'Pagina di trasparenza: titolare del trattamento, recapiti privacy/security/info, categorie di dati, hosting, diritti.';
+
+// Hardcoded data categories — product-level constant of the MOROSUITE pool booking flow.
 const dataCategories = [
-  { label: 'Anagrafica cliente', description: 'Nome, cognome, data di nascita, contatti.' },
-  { label: 'Dati di prenotazione', description: 'Date, ombrellone, abbonamenti, presenze.' },
-  {
-    label: 'Cookie tecnici e analitici (consenso)',
-    description: 'GA4 consent mode, durata 6 mesi.',
-  },
+  { title: 'Account', text: 'Nome, cognome, email, password (hashata e non leggibile).' },
+  { title: 'Profilo (facoltativo)', text: 'Cellulare, codice fiscale, data di nascita.' },
+  { title: 'Prenotazioni', text: 'Date, numero ospiti, ombrelloni selezionati.' },
+  { title: 'Login con Google', text: 'Identificativo Google, email, nome, URL avatar pubblico.' },
+  { title: 'Navigazione', text: 'IP (anonimizzato), browser, log di sicurezza.' },
+  { title: 'Analytics (solo previo consenso)', text: 'Google Analytics 4, dati statistici aggregati.' },
+  { title: "Verifica documento d'identità", text: 'Solo verifica visiva al banco per gli abbonamenti, nessuna copia conservata.' },
+  { title: 'Log email transazionali', text: 'Conservazione 365 giorni, cancellazione automatica.' },
+];
+
+const privacyEmail = transparency.contacts?.privacy ?? facility.gdpr.email_privacy;
+const securityEmail = transparency.contacts?.security ?? facility.gdpr.email_security;
+const generalEmail = transparency.contacts?.info ?? facility.contacts?.email;
+
+const legalDocs = [
+  { href: '/terms', label: 'Termini e Condizioni', tag: 'LEGALE' },
+  { href: '/policy', label: 'Privacy Policy', tag: 'PRIVACY' },
+  { href: '/cookie', label: 'Cookie Policy', tag: 'COOKIE' },
+  { href: '/regolamento', label: 'Regolamento piscina', tag: 'STRUTTURA' },
 ];
 ---
 
-<PublicLayout
-  title="Trasparenza"
-  description="Pagina di trasparenza: titolare del trattamento, recapiti privacy/security/info, categorie di dati, hosting, diritti."
->
-  <article class="mx-auto max-w-3xl px-4 py-12">
-    <h1 class="text-3xl font-bold">Trasparenza</h1>
+<PublicLayout title={title} description={description}>
+  {/* Hero */}
+  <section class="bg-gradient-to-b from-sky-900 to-sky-700 text-white">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+      <div class="text-xs font-semibold tracking-widest text-sky-200">TRASPARENZA</div>
+      <h1 class="mt-3 text-4xl lg:text-5xl font-extrabold tracking-tight">
+        Tutto in chiaro su privacy, dati e sicurezza
+      </h1>
+      <p class="mt-5 max-w-3xl text-lg text-sky-50/90">
+        Una sola pagina per sapere chi siamo, quali dati trattiamo, dove li conserviamo e come puoi
+        esercitare i tuoi diritti. Per il dettaglio normativo restano le pagine Termini, Privacy e Cookie.
+      </p>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">Titolare del trattamento</h2>
-      <p class="mt-2">{transparency.titolare}</p>
-    </section>
+  {/* Chi siamo */}
+  <section class="bg-white">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold text-slate-900">Chi siamo</h2>
+      <p class="mt-3 text-slate-600">
+        Il Titolare del trattamento dei dati personali raccolti tramite il Sito è:
+      </p>
+      <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+        <div class="text-lg font-bold text-slate-900">{transparency.titolare ?? facility.gdpr.titolare}</div>
+        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-700 sm:grid-cols-2">
+          {facility.address.street && (
+            <div>
+              <dt class="font-semibold text-slate-500">Sede legale</dt>
+              <dd>
+                {facility.address.street} — {facility.address.postal_code} {facility.address.locality} ({facility.address.region}), {facility.address.country === 'IT' ? 'Italia' : facility.address.country}
+              </dd>
+            </div>
+          )}
+          {generalEmail && (
+            <div>
+              <dt class="font-semibold text-slate-500">Email generale</dt>
+              <dd>
+                <a href={`mailto:${generalEmail}`} class="text-sky-700 hover:underline">{generalEmail}</a>
+              </dd>
+            </div>
+          )}
+        </dl>
+      </div>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">Recapiti</h2>
-      <ul class="mt-2 space-y-1 text-sm">
-        {
-          transparency.contacts.info && (
-            <li>
-              Info:{' '}
-              <a href={`mailto:${transparency.contacts.info}`}>{transparency.contacts.info}</a>
-            </li>
-          )
-        }
-        {
-          transparency.contacts.privacy && (
-            <li>
-              Privacy:{' '}
-              <a href={`mailto:${transparency.contacts.privacy}`}>
-                {transparency.contacts.privacy}
-              </a>
-            </li>
-          )
-        }
-        {
-          transparency.contacts.security && (
-            <li>
-              Security:{' '}
-              <a href={`mailto:${transparency.contacts.security}`}>
-                {transparency.contacts.security}
-              </a>
-            </li>
-          )
-        }
+  {/* Cosa raccogliamo */}
+  <section class="bg-slate-50">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold text-slate-900">Cosa raccogliamo</h2>
+      <p class="mt-3 text-slate-600">
+        In sintesi le categorie di dati che il Sito tratta. Per la spiegazione completa di ciascuna
+        finalità e base giuridica, consulta la Privacy Policy.
+      </p>
+      <ul class="mt-6 grid grid-cols-1 gap-3 text-sm text-slate-700 md:grid-cols-2">
+        {dataCategories.map((c) => (
+          <li class="rounded-xl bg-white p-4 ring-1 ring-slate-200">
+            <div class="font-semibold text-slate-900">{c.title}</div>
+            <div class="mt-1 text-slate-600">{c.text}</div>
+          </li>
+        ))}
       </ul>
-    </section>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">Categorie di dati trattati</h2>
-      <ul class="mt-2 list-disc space-y-2 pl-6">
-        {
-          dataCategories.map((c) => (
-            <li>
-              <strong>{c.label}:</strong> {c.description}
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+  {/* Endpoint dedicati */}
+  <section class="bg-white">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold text-slate-900">A chi rivolgersi</h2>
+      <p class="mt-3 text-slate-600">
+        Tre canali dedicati, separati per finalità. La risposta arriva senza ingiustificato ritardo,
+        comunque entro 30 giorni (estendibili a 90 nei casi previsti dall'art. 12 par. 3 GDPR).
+      </p>
+      <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {privacyEmail && (
+          <article class="rounded-2xl border border-sky-200 bg-sky-50 p-5">
+            <div class="text-xs font-semibold tracking-widest text-sky-700">PRIVACY</div>
+            <a href={`mailto:${privacyEmail}`} class="mt-2 block break-words text-lg font-bold text-slate-900 hover:underline">
+              {privacyEmail}
+            </a>
+            <p class="mt-2 text-sm text-slate-600">
+              Esercizio dei diritti GDPR (artt. 15–22), domande sul trattamento dei dati personali, segnalazioni privacy.
+            </p>
+          </article>
+        )}
+        {securityEmail && (
+          <article class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <div class="text-xs font-semibold tracking-widest text-emerald-700">SICUREZZA</div>
+            <a href={`mailto:${securityEmail}`} class="mt-2 block break-words text-lg font-bold text-slate-900 hover:underline">
+              {securityEmail}
+            </a>
+            <p class="mt-2 text-sm text-slate-600">
+              Coordinated disclosure di vulnerabilità. Acknowledgment entro 3 giorni lavorativi, valutazione entro 10.
+            </p>
+          </article>
+        )}
+        {generalEmail && (
+          <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div class="text-xs font-semibold tracking-widest text-slate-700">GENERALE</div>
+            <a href={`mailto:${generalEmail}`} class="mt-2 block break-words text-lg font-bold text-slate-900 hover:underline">
+              {generalEmail}
+            </a>
+            <p class="mt-2 text-sm text-slate-600">
+              Informazioni sul servizio, prenotazioni, abbonamenti, contatti commerciali.
+            </p>
+          </article>
+        )}
+      </div>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">Hosting</h2>
-      <ul class="mt-2 space-y-2">
-        {
-          Object.entries(transparency.hosting).map(([role, info]) => (
-            <li>
-              <strong class="capitalize">{role.replace('_', ' ')}:</strong>
-              <span class="ml-1">
-                {Object.entries(info)
-                  .map(([k, v]) => `${k}: ${v}`)
-                  .join(' · ')}
-              </span>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+  {/* Dove trattiamo i dati */}
+  <section class="bg-slate-50">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold text-slate-900">Dove trattiamo i dati</h2>
+      <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="rounded-2xl bg-white p-6 ring-1 ring-slate-200">
+          <div class="text-sm font-semibold tracking-widest text-sky-700">HOSTING</div>
+          <h3 class="mt-2 text-lg font-bold text-slate-900">VPS in Unione Europea</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            L'applicazione gira su un server VPS gestito tramite Laravel Forge, in un data center in
+            Italia/UE, all'interno dell'Unione Europea.
+          </p>
+        </div>
+        <div class="rounded-2xl bg-white p-6 ring-1 ring-slate-200">
+          <div class="text-sm font-semibold tracking-widest text-sky-700">TRASFERIMENTI EXTRA-UE</div>
+          <h3 class="mt-2 text-lg font-bold text-slate-900">Coperti da DPF e SCC</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            Eventuali trasferimenti verso gli Stati Uniti (analytics Google e gestione del server da
+            parte di Laravel Forge) sono coperti da EU-US Data Privacy Framework (UE 2023/1795) e
+            Standard Contractual Clauses (UE 2021/914).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">I tuoi diritti</h2>
-      <ul class="mt-2 list-disc space-y-1 pl-6">
-        {transparency.rights.map((r) => <li class="capitalize">{r}</li>)}
+  {/* I tuoi diritti */}
+  <section class="bg-white">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold text-slate-900">I tuoi diritti in un minuto</h2>
+      <p class="mt-3 text-slate-600">
+        Puoi esercitare in qualsiasi momento i diritti previsti dagli artt. 15–22 GDPR scrivendo a
+        {privacyEmail ? <a href={`mailto:${privacyEmail}`} class="text-sky-700 hover:underline">{privacyEmail}</a> : ' privacy'}.
+      </p>
+      <ul class="mt-6 grid grid-cols-2 gap-3 text-sm font-semibold text-slate-700 md:grid-cols-3">
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Accesso ai tuoi dati</li>
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Rettifica</li>
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Cancellazione (oblio)</li>
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Limitazione del trattamento</li>
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Portabilità</li>
+        <li class="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200">Opposizione</li>
       </ul>
-    </section>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        {privacyEmail && (
+          <a
+            href={`mailto:${privacyEmail}`}
+            class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700"
+          >
+            Scrivi a {privacyEmail}
+          </a>
+        )}
+        <a
+          href="/policy"
+          class="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Leggi la Privacy Policy completa
+        </a>
+      </div>
+    </div>
+  </section>
 
-    <section class="mt-8">
-      <h2 class="text-xl font-semibold">Documenti</h2>
-      <ul class="mt-2 space-y-1">
-        {
-          transparency.legal_documents.map((doc) => (
-            <li>
-              <a href={doc.url} class="underline">
-                {doc.doc}
-              </a>
-              <span class="text-sm text-slate-500"> v{doc.version}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
-  </article>
+  {/* Documenti completi */}
+  <section class="bg-slate-900 text-white">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-extrabold">Documenti completi</h2>
+      <p class="mt-3 text-slate-300">
+        Per i dettagli normativi consulta i documenti integrali. Ogni documento è versionato e può
+        essere scaricato in PDF.
+      </p>
+      <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {legalDocs.map((d) => (
+          <a href={d.href} class="rounded-xl bg-white/5 p-4 ring-1 ring-white/10 transition hover:bg-white/10">
+            <div class="text-xs font-semibold tracking-widest text-sky-300">{d.tag}</div>
+            <div class="mt-1 font-bold">{d.label}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 </PublicLayout>
