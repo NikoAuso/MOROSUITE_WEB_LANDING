@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-primary: #0e7490;
+  --color-brand-accent: #fbbf24;
+  --color-brand-ink: #0f172a;
+  --color-brand-paper: #f8fafc;
+
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  font-family: var(--font-body);
+  color: var(--color-brand-ink);
+  background: var(--color-brand-paper);
+}

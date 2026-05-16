@@ -1,0 +1,46 @@
+---
+import { config } from '@/lib/config';
+import { PRIMARY_NAV } from '@/lib/navigation';
+import type { FacilityPayload } from '@/lib/types';
+
+interface Props {
+  facility: FacilityPayload;
+}
+
+const { facility } = Astro.props;
+---
+
+<header class="bg-white shadow-sm sticky top-0 z-30">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <a href="/" class="flex items-center gap-3">
+      <img src={config.brand.logoUrl} alt={facility.name ?? 'Logo'} class="h-10 w-auto" />
+      <span class="font-semibold">{facility.name}</span>
+    </a>
+
+    <nav class="hidden gap-6 md:flex">
+      {
+        PRIMARY_NAV.map((entry) => (
+          <a href={entry.href} class="text-sm font-medium hover:text-brand-primary">
+            {entry.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href={`${config.coreAppUrl}/login`} class="text-sm font-medium hover:text-brand-primary">
+        Accedi
+      </a>
+      {
+        facility.online_bookings_enabled && (
+          <a
+            href={`${config.coreAppUrl}/prenota`}
+            class="rounded bg-brand-primary px-4 py-2 text-sm font-semibold text-white"
+          >
+            Prenota ora
+          </a>
+        )
+      }
+    </div>
+  </div>
+</header>

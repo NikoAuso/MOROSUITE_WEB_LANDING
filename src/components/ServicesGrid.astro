@@ -1,0 +1,26 @@
+---
+const services = [
+  { icon: '🏊', label: 'Piscina' },
+  { icon: '☂️', label: 'Ombrelloni' },
+  { icon: '🥪', label: 'Bar' },
+  { icon: '🚿', label: 'Docce' },
+  { icon: '🛟', label: 'Bagnino' },
+  { icon: '🅿️', label: 'Parcheggio' },
+];
+---
+
+<section id="servizi" class="mx-auto max-w-4xl px-4 py-16">
+  <h2 class="text-2xl font-bold">Servizi</h2>
+  <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+    {
+      services.map((s) => (
+        <li class="flex items-center gap-3 rounded border border-slate-200 p-4">
+          <span class="text-2xl" aria-hidden>
+            {s.icon}
+          </span>
+          <span class="font-medium">{s.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

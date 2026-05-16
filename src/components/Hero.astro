@@ -1,0 +1,38 @@
+---
+import { config } from '@/lib/config';
+import type { FacilityPayload } from '@/lib/types';
+
+interface Props {
+  facility: FacilityPayload;
+}
+
+const { facility } = Astro.props;
+---
+
+<section id="piscina" class="bg-brand-primary text-white">
+  <div class="mx-auto max-w-6xl px-4 py-24 text-center">
+    <h1 class="text-4xl font-extrabold sm:text-5xl">{facility.name}</h1>
+    {facility.tagline && <p class="mt-4 text-xl">{facility.tagline}</p>}
+    {
+      facility.online_bookings_enabled && (
+        <a
+          href={`${config.coreAppUrl}/prenota`}
+          class="mt-8 inline-block rounded bg-brand-accent px-6 py-3 font-semibold text-slate-900"
+        >
+          Prenota ora
+        </a>
+      )
+    }
+    {
+      facility.season_dates && facility.season_dates.length > 0 && (
+        <ul class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm">
+          {facility.season_dates.map((entry) => (
+            <li>
+              <strong>{entry.label}:</strong> {entry.value}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>

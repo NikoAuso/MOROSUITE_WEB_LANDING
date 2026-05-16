@@ -1,0 +1,73 @@
+---
+import { config } from '@/lib/config';
+import { api } from '@/lib/api';
+import { resolveStructuredData } from '@/lib/seo';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CookieBanner from '@/components/CookieBanner.astro';
+import '@/styles/tokens.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+}
+
+const { title, description, canonical, ogImage } = Astro.props;
+
+const facility = await api.facility();
+const seo = await api.seoStructuredData();
+
+const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
+const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
+const structuredData = resolveStructuredData(seo);
+---
+
+<!doctype html>
+<html lang={config.defaultLocale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href={config.brand.faviconUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={structuredData} />
+
+    {config.analytics.ga4MeasurementId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${config.analytics.ga4MeasurementId}`} />
+        <script is:inline define:vars={{ measurementId: config.analytics.ga4MeasurementId, consentDefault: config.analytics.consentDefault }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('consent', 'default', {
+            ad_storage: consentDefault,
+            analytics_storage: consentDefault,
+            ad_user_data: consentDefault,
+            ad_personalization: consentDefault,
+            wait_for_update: 500,
+          });
+          gtag('js', new Date());
+          gtag('config', measurementId, { anonymize_ip: true });
+        </script>
+      </>
+    )}
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Header facility={facility} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer facility={facility} />
+    <CookieBanner />
+  </body>
+</html>

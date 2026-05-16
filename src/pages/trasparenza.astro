@@ -1,0 +1,119 @@
+---
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import { api } from '@/lib/api';
+
+const transparency = await api.transparency();
+
+// Hardcoded — the categories of personal data we process are a product-level
+// constant of the MOROSUITE pool booking flow, not a per-client setting.
+const dataCategories = [
+  { label: 'Anagrafica cliente', description: 'Nome, cognome, data di nascita, contatti.' },
+  { label: 'Dati di prenotazione', description: 'Date, ombrellone, abbonamenti, presenze.' },
+  {
+    label: 'Cookie tecnici e analitici (consenso)',
+    description: 'GA4 consent mode, durata 6 mesi.',
+  },
+];
+---
+
+<PublicLayout
+  title="Trasparenza"
+  description="Pagina di trasparenza: titolare del trattamento, recapiti privacy/security/info, categorie di dati, hosting, diritti."
+>
+  <article class="mx-auto max-w-3xl px-4 py-12">
+    <h1 class="text-3xl font-bold">Trasparenza</h1>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Titolare del trattamento</h2>
+      <p class="mt-2">{transparency.titolare}</p>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Recapiti</h2>
+      <ul class="mt-2 space-y-1 text-sm">
+        {
+          transparency.contacts.info && (
+            <li>
+              Info:{' '}
+              <a href={`mailto:${transparency.contacts.info}`}>{transparency.contacts.info}</a>
+            </li>
+          )
+        }
+        {
+          transparency.contacts.privacy && (
+            <li>
+              Privacy:{' '}
+              <a href={`mailto:${transparency.contacts.privacy}`}>
+                {transparency.contacts.privacy}
+              </a>
+            </li>
+          )
+        }
+        {
+          transparency.contacts.security && (
+            <li>
+              Security:{' '}
+              <a href={`mailto:${transparency.contacts.security}`}>
+                {transparency.contacts.security}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Categorie di dati trattati</h2>
+      <ul class="mt-2 list-disc space-y-2 pl-6">
+        {
+          dataCategories.map((c) => (
+            <li>
+              <strong>{c.label}:</strong> {c.description}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Hosting</h2>
+      <ul class="mt-2 space-y-2">
+        {
+          Object.entries(transparency.hosting).map(([role, info]) => (
+            <li>
+              <strong class="capitalize">{role.replace('_', ' ')}:</strong>
+              <span class="ml-1">
+                {Object.entries(info)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join(' · ')}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">I tuoi diritti</h2>
+      <ul class="mt-2 list-disc space-y-1 pl-6">
+        {transparency.rights.map((r) => <li class="capitalize">{r}</li>)}
+      </ul>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Documenti</h2>
+      <ul class="mt-2 space-y-1">
+        {
+          transparency.legal_documents.map((doc) => (
+            <li>
+              <a href={doc.url} class="underline">
+                {doc.doc}
+              </a>
+              <span class="text-sm text-slate-500"> v{doc.version}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</PublicLayout>

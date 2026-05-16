@@ -1,0 +1,10 @@
+---
+import LegalDocument from '@/layouts/LegalDocument.astro';
+import { api } from '@/lib/api';
+import { renderLegalMarkdown } from '@/lib/markdown';
+
+const document = await api.legal('cookie');
+const htmlBody = renderLegalMarkdown(document.body);
+---
+
+<LegalDocument document={document} htmlBody={htmlBody} />

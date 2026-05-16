@@ -1,0 +1,39 @@
+---
+import PublicLayout from './PublicLayout.astro';
+import { config } from '@/lib/config';
+import type { LegalPayload } from '@/lib/types';
+
+interface Props {
+  document: LegalPayload;
+  htmlBody: string;
+}
+
+const { document, htmlBody } = Astro.props;
+
+const title = `${document.title} | Piscina`;
+const description = `${document.title} — versione ${document.version}.`;
+---
+
+<PublicLayout title={title} description={description}>
+  <article class="prose mx-auto max-w-3xl px-4 py-12">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold">{document.title}</h1>
+      <p class="text-sm text-slate-500">
+        Versione {document.version}
+        {document.effective_date && <> — in vigore dal {document.effective_date}</>}
+      </p>
+      {
+        config.features.pdfDownload && (
+          <a
+            href={`${config.coreApiBase}/legal/${document.doc}.pdf`}
+            class="mt-4 inline-block rounded bg-brand-primary px-4 py-2 text-white"
+            rel="noopener"
+          >
+            Scarica PDF
+          </a>
+        )
+      }
+    </header>
+    <div class="legal-body" set:html={htmlBody} />
+  </article>
+</PublicLayout>

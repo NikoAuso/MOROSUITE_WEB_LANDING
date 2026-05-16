@@ -1,0 +1,32 @@
+---
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import { api } from '@/lib/api';
+import Hero from '@/components/Hero.astro';
+import OpeningHours from '@/components/OpeningHours.astro';
+import PricingTables from '@/components/PricingTables.astro';
+import ServicesGrid from '@/components/ServicesGrid.astro';
+
+const [facility, hours, pricing] = await Promise.all([
+  api.facility(),
+  api.openingHours(),
+  api.pricing(),
+]);
+
+const title = `${facility.name ?? 'Piscina'} | ${facility.tagline ?? 'Prenota online'}`;
+const description =
+  facility.tagline ?? `Prenota online in ${facility.address.locality ?? 'piscina'}.`;
+---
+
+<PublicLayout title={title} description={description}>
+  <Hero facility={facility} />
+  <OpeningHours hours={hours} />
+  <PricingTables pricing={pricing} />
+  <ServicesGrid />
+
+  <section id="regolamento" class="mx-auto max-w-4xl px-4 py-16">
+    <h2 class="text-2xl font-bold">Regolamento</h2>
+    <p class="mt-2 text-slate-700">
+      Consulta il <a href="/regolamento" class="underline">regolamento della piscina</a>.
+    </p>
+  </section>
+</PublicLayout>
