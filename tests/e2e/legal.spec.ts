@@ -5,7 +5,7 @@ for (const doc of ['terms', 'policy', 'cookie', 'regolamento'] as const) {
     await page.goto(`/${doc}`);
 
     await expect(page.locator('article h1').first()).toBeVisible();
-    await expect(page.locator('article .legal-body')).not.toBeEmpty();
+    await expect(page.locator('article .prose')).not.toBeEmpty();
 
     const pdfLink = page.locator(`a[href$="/legal/${doc}.pdf"]`);
     await expect(pdfLink).toBeVisible();
