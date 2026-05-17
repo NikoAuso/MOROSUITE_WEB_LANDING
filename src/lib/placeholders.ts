@@ -11,6 +11,7 @@
  * the contract.
  */
 
+import { config } from './config';
 import type {
   SitePayload,
   OpeningHoursPayload,
@@ -66,10 +67,10 @@ export const PLACEHOLDER_SITE: SitePayload = {
     { label: 'Eventi serali', value: 'Venerdì e sabato' },
   ],
   links: {
-    booking: { label: 'Prenota ora', url: 'http://localhost:8765/prenota' },
-    login: { label: 'Accedi', url: 'http://localhost:8765/login' },
-    register: { label: 'Registrati', url: 'http://localhost:8765/register' },
-    hotel: { label: 'Sito hotel', url: 'https://www.example.com' },
+    booking: { label: 'Prenota ora', url: `${config.appBaseUrl}/prenota` },
+    login: { label: 'Accedi', url: `${config.appBaseUrl}/login` },
+    register: { label: 'Registrati', url: `${config.appBaseUrl}/register` },
+    hotel: { label: 'Altro sito', url: 'https://www.example.com' },
   },
 };
 

@@ -8,11 +8,13 @@ import { siteConfig as base } from '@config';
 const env = import.meta.env;
 
 const DEMO_API_BASE_URL = 'http://localhost:8765/api/public/v1';
+const DEMO_APP_BASE_URL = 'http://localhost:8765';
 const DEMO_SITE_URL = 'http://localhost:4321';
 
 export const config = {
   ...base,
   apiBaseUrl: env.API_BASE_URL || DEMO_API_BASE_URL,
+  appBaseUrl: env.APP_BASE_URL || DEMO_APP_BASE_URL,
   siteUrl: env.PUBLIC_SITE_URL || DEMO_SITE_URL,
   analytics: {
     ...base.analytics,

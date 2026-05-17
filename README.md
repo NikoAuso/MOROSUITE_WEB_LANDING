@@ -57,6 +57,7 @@ L'output in `dist/` è completamente statico ed è pensato per essere pubblicato
    | Variabile                   | Fallback (in dev)                         | Descrizione                                                                                  |
    | --------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
    | `API_BASE_URL`              | `http://localhost:8765/api/public/v1`     | URL **assoluto** del backend che implementa il contratto (vedi `src/lib/dto.ts`).            |
+   | `APP_BASE_URL`              | `http://localhost:8765`                   | URL **assoluto** dell'app di booking. Usato solo per costruire gli URL demo dei `links.*` in `src/lib/placeholders.ts`; in produzione i link arrivano dal backend via `SitePayload.links`. |
    | `PUBLIC_SITE_URL`           | `http://localhost:4321`                   | URL canonico del sito (usato per canonical, sitemap, OG).                                    |
    | `PUBLIC_GA4_MEASUREMENT_ID` | _vuoto_                                   | ID misurazione Google Analytics 4 (consent-mode v2). Vuoto = nessuno script gtag iniettato.  |
    | `REVALIDATE_SECRET`         | —                                         | Secret per eventuali revalidate hook.                                                        |
