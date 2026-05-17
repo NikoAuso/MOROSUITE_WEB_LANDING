@@ -101,8 +101,9 @@ for the UI mode.
 
 ## White-labeling a new deploy
 
-(Per README) edit `site.config.ts` (`siteSlug`, `brand.*`), set the env vars `APP_BASE_URL` / `API_BASE_URL` /
-`PUBLIC_SITE_URL` in the deploy environment (the `DEMO_*` fallbacks in `src/lib/config.ts` only cover local dev),
-replace `public/images/favicon/*` with the real favicons, set the matching GitHub secrets, then push to `main` for
-Cloudflare Pages to publish. `siteSlug` must match what `GET /site` returns (`SitePayload.slug`) from the targeted
-backend.
+(Per README) edit `site.config.ts` (`siteSlug`, `brand.*` — `logoUrl`/`faviconUrl`/`ogImageUrl` are absolute URLs to
+hosted assets, NOT files under `public/`; `public/` only contains `_headers` for Cloudflare). Set the env vars
+`API_BASE_URL` and `PUBLIC_SITE_URL` in the deploy environment (the `DEMO_*` fallbacks in `src/lib/config.ts` only cover
+local dev; `APP_BASE_URL` is consumed only by `src/lib/placeholders.ts` for offline CTA demo URLs, so production deploys
+can leave it empty). Set the matching GitHub secrets, then push to `main` for Cloudflare Pages to publish. `siteSlug`
+must match what `GET /site` returns (`SitePayload.slug`) from the targeted backend.

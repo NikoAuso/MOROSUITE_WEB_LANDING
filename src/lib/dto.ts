@@ -72,7 +72,7 @@ export type SitePayload = {
     website?: string | null;
   };
 
-  /** Postal address. Used by footer, transparency page and schema.org markup. */
+  /** Postal address. Used by the footer and the schema.org markup. */
   address: {
     street?: string | null;
     locality?: string | null;
@@ -84,7 +84,7 @@ export type SitePayload = {
     google_maps_url?: string | null;
   };
 
-  /** GDPR-relevant identity, surfaced verbatim on legal and transparency pages. */
+  /** GDPR-relevant identity, surfaced verbatim in the footer and on the legal pages. */
   gdpr: {
     /** Legal name of the data controller ("Titolare del trattamento"). */
     titolare: string | null;

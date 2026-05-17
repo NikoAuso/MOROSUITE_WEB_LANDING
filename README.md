@@ -1,7 +1,7 @@
 # Public Site Template
 
 Template **white-label** in Astro 6 per il sito pubblico di marketing di una struttura ricettiva (un deploy per sito). I
-dati dinamici (identità del sito, orari, tariffe, contenuti legali, dati di trasparenza) vengono recuperati **a
+dati dinamici (identità del sito, orari, tariffe, link CTA, contenuti legali, structured data) vengono recuperati **a
 build-time** da un backend HTTP che implementa il contratto descritto in [`src/lib/dto.ts`](src/lib/dto.ts) sotto un
 unico base URL configurabile.
 
@@ -57,13 +57,13 @@ L'output in `dist/` è completamente statico ed è pensato per essere pubblicato
    | Variabile                   | Fallback (in dev)                         | Descrizione                                                                                  |
    | --------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
    | `API_BASE_URL`              | `http://localhost:8765/api/public/v1`     | URL **assoluto** del backend che implementa il contratto (vedi `src/lib/dto.ts`).            |
-   | `APP_BASE_URL`              | `http://localhost:8765`                   | URL **assoluto** dell'app di booking. Usato solo per costruire gli URL demo dei `links.*` in `src/lib/placeholders.ts`; in produzione i link arrivano dal backend via `SitePayload.links`. |
+   | `APP_BASE_URL`              | `http://localhost:8765`                   | URL **assoluto** dell'app di booking. Usato **solo** per costruire gli URL demo dei `links.*.url` in `src/lib/placeholders.ts` (esperienza offline). A runtime il template legge sempre gli URL CTA da `SitePayload.links`, quindi in produzione questa variabile è ininfluente. |
    | `PUBLIC_SITE_URL`           | `http://localhost:4321`                   | URL canonico del sito (usato per canonical, sitemap, OG).                                    |
    | `PUBLIC_GA4_MEASUREMENT_ID` | _vuoto_                                   | ID misurazione Google Analytics 4 (consent-mode v2). Vuoto = nessuno script gtag iniettato.  |
    | `REVALIDATE_SECRET`         | —                                         | Secret per eventuali revalidate hook.                                                        |
    | `SITEMAP_PING_GOOGLE`       | —                                         | Abilita il ping della sitemap a Google in build di produzione.                               |
 
-   > Tutti i link CTA (prenotazione, login, registrazione, sito hotel) sono forniti dal backend come parte di `SitePayload.links`: non esiste più un `APP_BASE_URL` configurabile lato sito perché ogni URL viaggia con la sua label.
+   > I link CTA (prenotazione, login, registrazione, sito hotel) sono forniti dal backend come coppie `{ label, url }` in `SitePayload.links`. Il template non compone mai un URL CTA da `appBaseUrl + path`: legge label e URL già pronti dal payload, in modo che deploy multilingua possano cambiare le label senza toccare il codice.
 
    > Le variabili in `.env` hanno la **precedenza** sui valori dichiarati in `site.config.ts`: usa sempre
    `@/lib/config` (e non `@config`) dal codice runtime per applicare correttamente gli override.
@@ -146,7 +146,7 @@ Per ogni campo (obbligatorio/opzionale, formato, esempi) consultare il JSDoc nel
 
 Il template **non fallisce** quando il backend è offline o restituisce errore: ogni wrapper di `src/lib/api.ts` cattura l'errore e restituisce un payload **placeholder** definito in [`src/lib/placeholders.ts`](src/lib/placeholders.ts). Per evitare che ogni endpoint si mangi il proprio timeout quando l'host è chiaramente irraggiungibile, il fetcher monta un **circuit breaker per host**: la prima `fetch failed` (ECONNREFUSED / DNS / timeout) marca l'host come down e le richieste successive ritornano subito il placeholder senza riprovare. I default in `site.config.ts` (`retries: 1`, `timeoutMs: 3000`) tengono il worst-case sotto ~3 s anche offline.
 
-- I placeholder contengono **dati fittizi visibili** (nome struttura demo, orari di esempio, listino prezzi dimostrativo, documenti legali con corpo Lorem ipsum, transparency con titolare demo, schema.org base). Modifica `src/lib/placeholders.ts` per personalizzare cosa vede l'utente quando l'API non risponde.
+- I placeholder contengono **dati fittizi visibili** (nome struttura demo, orari di esempio, listino prezzi dimostrativo, documenti legali con corpo Lorem ipsum, schema.org base, link CTA demo derivati da `APP_BASE_URL`). Modifica `src/lib/placeholders.ts` per personalizzare cosa vede l'utente quando l'API non risponde.
 - `api.legal(doc)` restituisce sempre un payload (mai `null`): se il documento reale non è raggiungibile, viene mostrata l'anteprima dimostrativa di `PLACEHOLDER_LEGAL[doc]`.
 - Esiste anche una pagina `src/pages/404.astro` per le route non esistenti (Astro la emette come `dist/404.html`, servita automaticamente da Cloudflare Pages). Il componente `<ErrorState>` in `src/components/ErrorState.astro` è riutilizzabile per altri stati di errore espliciti.
 
@@ -160,8 +160,8 @@ Il template **non fallisce** quando il backend è offline o restituisce errore: 
 2. Modifica `site.config.ts` (solo branding e identità per-deploy):
   - `siteSlug`
   - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl`
-3. Imposta nell'env del deploy `API_BASE_URL` e `PUBLIC_SITE_URL` (URL per-environment, non hardcoded nel config). Tutti i link CTA li fornisce il backend tramite `SitePayload.links`.
-4. Sostituisci `public/images/favicon/*` con i favicon del cliente (le foto demo vivono su CDN esterne tramite gli URL in `site.config.ts`/`PLACEHOLDER_*`).
+3. Imposta nell'env del deploy `API_BASE_URL` e `PUBLIC_SITE_URL` (URL per-environment, non hardcoded nel config). Tutti i link CTA li fornisce il backend tramite `SitePayload.links`; `APP_BASE_URL` serve solo per i placeholder offline e in produzione può rimanere vuoto.
+4. Aggiorna `brand.faviconUrl`/`brand.logoUrl`/`brand.ogImageUrl` in `site.config.ts` con gli URL degli asset reali (logo, favicon e immagine OG sono caricati via URL assoluto, non da `public/`). Le foto demo del corpo pagina vivono su CDN esterne (es. `picsum.photos`).
 5. Imposta i secret GitHub corrispondenti per il deploy su Cloudflare Pages.
 6. Push su `main` → Cloudflare Pages pubblica automaticamente.
 
@@ -170,11 +170,8 @@ Il template **non fallisce** quando il backend è offline o restituisce errore: 
 
 ## Convenzioni e accortezze
 
-- **CTA verso l'app di booking** (booking, login, register): costruisci sempre URL assoluti da `config.appBaseUrl`, ad
-  es. `` `${config.appBaseUrl}/prenota` ``. Esiste un test E2E (`tests/e2e/cta.spec.ts`) che fallisce se un link
-  `login`/`prenota` viene risolto come URL relativo.
-- **Navigazione hardcoded**: le voci di header/footer sono in `src/lib/navigation.ts`. Le categorie mostrate in
-  `trasparenza.astro` sono pure hardcoded. Per personalizzazioni per cliente: fork ed edit.
+- **CTA esterne** (booking, login, register, hotel): i template renderizzano sempre `site.links.<cta>.url` (e `site.links.<cta>.label`) provenienti dal backend, con shape `{ label, url } | null` — `null` nasconde il link. Non comporre mai URL relativi né concatenare `config.appBaseUrl` a runtime. Esiste un test E2E (`tests/e2e/cta.spec.ts`) che fallisce se un link `login`/`prenota` risolve a `http://localhost:4321/...`, cioè se viene usato per errore un href relativo.
+- **Navigazione hardcoded**: le voci di header/footer sono in `src/lib/navigation.ts` (`PRIMARY_NAV` punta agli anchor della homepage, `FOOTER_NAV` ai documenti legali). Il regolamento della struttura, la sezione Bar e i servizi nelle relative `*.astro` sono pure hardcoded. Per personalizzazioni per cliente: fork ed edit.
 - **Markdown legale fidato**: `src/lib/markdown.ts` esegue `marked.parse` e il risultato è iniettato via `set:html` *
   *senza sanitizzazione**. Non modificare senza aggiungere un sanitizer.
 - **Tailwind 4 CSS-first**: aggiungi token in `src/styles/tokens.css` tramite `@theme { --... }`, non in JS.
