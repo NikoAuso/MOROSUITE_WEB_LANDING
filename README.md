@@ -127,16 +127,15 @@ contratto definito in [`src/lib/dto.ts`](src/lib/dto.ts). Tutti i payload sono `
 sotto l'unico base URL configurato in `API_BASE_URL`. Il backend è un servizio esterno: il template non ne ospita
 alcuna parte e l'unico collegamento avviene tramite questa env var.
 
-| Metodo | Path                   | DTO di risposta       | Pagine che lo consumano                           |
-|--------|------------------------|-----------------------|---------------------------------------------------|
-| `GET`  | `/site`                | `SitePayload`         | Layout pubblico (header/footer), home, mappa sito |
-| `GET`  | `/site/opening-hours`  | `OpeningHoursPayload` | Home (sezione orari)                              |
-| `GET`  | `/site/pricing`        | `PricingPayload`      | Home (sezione tariffe)                            |
-| `GET`  | `/legal/{doc}`         | `LegalPayload`        | `/terms`, `/policy`, `/cookie`, `/regolamento`    |
-| `GET`  | `/transparency`        | `TransparencyPayload` | `/trasparenza`                                    |
-| `GET`  | `/seo/structured-data` | `SeoPayload`          | Layout pubblico (JSON-LD nel `<head>`)            |
+| Metodo | Path                   | DTO di risposta       | Pagine che lo consumano                      |
+|--------|------------------------|-----------------------|----------------------------------------------|
+| `GET`  | `/site`                | `SitePayload`         | Layout pubblico (header/footer), home        |
+| `GET`  | `/site/opening-hours`  | `OpeningHoursPayload` | Home (sezione orari)                         |
+| `GET`  | `/site/pricing`        | `PricingPayload`      | Home (sezione tariffe)                       |
+| `GET`  | `/legal/{doc}`         | `LegalPayload`        | `/policy`, `/cookie`                         |
+| `GET`  | `/seo/structured-data` | `SeoPayload`          | Layout pubblico (JSON-LD nel `<head>`)       |
 
-Dove `{doc}` ∈ `terms | policy | cookie | regolamento`.
+Dove `{doc}` ∈ `policy | cookie`. I termini di servizio dell'app di booking e il regolamento operativo della struttura **non** sono compito di questo template (i primi vivono nell'app di booking; il regolamento è renderizzato inline come sezione `#regolamento` nella homepage).
 
 Per ogni campo (obbligatorio/opzionale, formato, esempi) consultare il JSDoc nel file [
 `src/lib/dto.ts`](src/lib/dto.ts). In caso di errore il backend deve rispondere con status HTTP `>= 400` e payload
@@ -144,7 +143,7 @@ Per ogni campo (obbligatorio/opzionale, formato, esempi) consultare il JSDoc nel
 
 ### Resilienza alle interruzioni del backend
 
-Il template **non fallisce** quando il backend è offline o restituisce errore: ogni wrapper di `src/lib/api.ts` cattura l'errore e restituisce un payload **placeholder** definito in [`src/lib/placeholders.ts`](src/lib/placeholders.ts).
+Il template **non fallisce** quando il backend è offline o restituisce errore: ogni wrapper di `src/lib/api.ts` cattura l'errore e restituisce un payload **placeholder** definito in [`src/lib/placeholders.ts`](src/lib/placeholders.ts). Per evitare che ogni endpoint si mangi il proprio timeout quando l'host è chiaramente irraggiungibile, il fetcher monta un **circuit breaker per host**: la prima `fetch failed` (ECONNREFUSED / DNS / timeout) marca l'host come down e le richieste successive ritornano subito il placeholder senza riprovare. I default in `site.config.ts` (`retries: 1`, `timeoutMs: 3000`) tengono il worst-case sotto ~3 s anche offline.
 
 - I placeholder contengono **dati fittizi visibili** (nome struttura demo, orari di esempio, listino prezzi dimostrativo, documenti legali con corpo Lorem ipsum, transparency con titolare demo, schema.org base). Modifica `src/lib/placeholders.ts` per personalizzare cosa vede l'utente quando l'API non risponde.
 - `api.legal(doc)` restituisce sempre un payload (mai `null`): se il documento reale non è raggiungibile, viene mostrata l'anteprima dimostrativa di `PLACEHOLDER_LEGAL[doc]`.
@@ -179,8 +178,6 @@ Il template **non fallisce** quando il backend è offline o restituisce errore: 
   *senza sanitizzazione**. Non modificare senza aggiungere un sanitizer.
 - **Tailwind 4 CSS-first**: aggiungi token in `src/styles/tokens.css` tramite `@theme { --... }`, non in JS.
 - **Path aliases**: usa `@/lib/config` invece di `@config` nel codice runtime per rispettare gli override env.
-- **Cookie consent**: `CookieBanner.astro` persiste la scelta in `localStorage` (`cookie_consent`) con TTL di 6 mesi (
-  Garante 10/06/2021) e invoca `gtag('consent', 'update', ...)`. Qualsiasi elemento con
-  `data-action="reset-cookie-consent"` riapre il banner.
+- **Cookie consent**: `CookieBanner.astro` persiste la scelta in `localStorage` (`cookie_consent`) con TTL di 6 mesi (Garante 10/06/2021) e invoca `gtag('consent', 'update', ...)`. Non viene esposto alcun controllo per modificare la scelta successivamente: il banner riappare solo allo scadere del TTL.
 - **Trailing slash**: `astro.config.mjs` impone `trailingSlash: 'never'`. Mantieni gli href interni senza slash finale
   per evitare churn dei canonical.

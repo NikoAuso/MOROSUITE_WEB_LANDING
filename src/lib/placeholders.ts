@@ -17,7 +17,6 @@ import type {
   PricingPayload,
   LegalPayload,
   LegalDocumentName,
-  TransparencyPayload,
   SeoPayload,
 } from './dto';
 
@@ -220,32 +219,6 @@ export const PLACEHOLDER_PRICING: PricingPayload = {
 };
 
 // ---------------------------------------------------------------------------
-// Transparency page
-// ---------------------------------------------------------------------------
-
-export const PLACEHOLDER_TRANSPARENCY: TransparencyPayload = {
-  titolare: 'Azienda Demo S.r.l.',
-  contacts: {
-    info: 'info@example.com',
-    privacy: 'privacy@example.com',
-    security: 'security@example.com',
-  },
-  hosting: {
-    application: {
-      provider: 'Demo Hosting Provider',
-      region: 'Europa (UE)',
-    },
-  },
-  rights: ['Accesso', 'Rettifica', 'Cancellazione', 'Limitazione', 'Portabilità', 'Opposizione'],
-  legal_documents: [
-    { doc: 'terms', version: 'demo', url: '/terms' },
-    { doc: 'policy', version: 'demo', url: '/policy' },
-    { doc: 'cookie', version: 'demo', url: '/cookie' },
-    { doc: 'regolamento', version: 'demo', url: '/regolamento' },
-  ],
-};
-
-// ---------------------------------------------------------------------------
 // SEO / schema.org structured data
 // ---------------------------------------------------------------------------
 
@@ -290,14 +263,6 @@ Questo è un documento legale di esempio mostrato perché il backend non è ragg
 `;
 
 export const PLACEHOLDER_LEGAL: Record<LegalDocumentName, LegalPayload> = {
-  terms: {
-    doc: 'terms',
-    version: 'demo',
-    effective_date: '2026-01-01',
-    format: 'markdown',
-    title: 'Termini e condizioni (anteprima)',
-    body: DEMO_BODY,
-  },
   policy: {
     doc: 'policy',
     version: 'demo',
@@ -312,14 +277,6 @@ export const PLACEHOLDER_LEGAL: Record<LegalDocumentName, LegalPayload> = {
     effective_date: '2026-01-01',
     format: 'markdown',
     title: 'Cookie policy (anteprima)',
-    body: DEMO_BODY,
-  },
-  regolamento: {
-    doc: 'regolamento',
-    version: 'demo',
-    effective_date: '2026-01-01',
-    format: 'markdown',
-    title: 'Regolamento (anteprima)',
     body: DEMO_BODY,
   },
 };

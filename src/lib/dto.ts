@@ -12,7 +12,6 @@
  *   GET /site/opening-hours    → OpeningHoursPayload
  *   GET /site/pricing          → PricingPayload
  *   GET /legal/{doc}           → LegalPayload   (doc ∈ LegalDocumentName)
- *   GET /transparency          → TransparencyPayload
  *   GET /seo/structured-data   → SeoPayload
  *
  * Responses MUST be `application/json`. On failure the server SHOULD
@@ -231,8 +230,15 @@ export type PricingPayload = {
 // Legal documents (terms, privacy, cookie, internal regulations)
 // ---------------------------------------------------------------------------
 
-/** Closed set of legal documents the template knows how to render. */
-export type LegalDocumentName = 'terms' | 'policy' | 'cookie' | 'regolamento';
+/**
+ * Closed set of legal documents the template renders.
+ *
+ * Limited to documents required for a public marketing site that loads
+ * cookies/analytics (GDPR + Garante 10/06/2021). Terms of service for the
+ * booking flow live on the booking app, not here; the on-site regulations
+ * are rendered inline in the homepage `#regolamento` section.
+ */
+export type LegalDocumentName = 'policy' | 'cookie';
 
 /**
  * A single versioned legal document. Returned by `GET /legal/{doc}`.
@@ -259,46 +265,6 @@ export type LegalPayload = {
 
   /** Document body in the format declared by `format`. Trust boundary, see above. */
   body: string;
-};
-
-// ---------------------------------------------------------------------------
-// Transparency page
-// ---------------------------------------------------------------------------
-
-/**
- * Aggregated payload for the `/trasparenza` page. Returned by `GET /transparency`.
- *
- * Most fields override the corresponding `SitePayload.gdpr` / `SitePayload.contacts`
- * values, so a backend can decouple "who is the data controller for GDPR purposes"
- * from "what does the homepage display" if needed.
- */
-export type TransparencyPayload = {
-  /** Overrides `SitePayload.gdpr.titolare` on the transparency page. */
-  titolare: string | null;
-
-  /** Three contact channels the transparency page surfaces as separate cards. */
-  contacts: {
-    /** General-purpose mailbox (commercial, info). */
-    info?: string | null;
-    /** GDPR requests mailbox — overrides `SitePayload.gdpr.email_privacy`. */
-    privacy?: string | null;
-    /** Coordinated disclosure mailbox — overrides `SitePayload.gdpr.email_security`. */
-    security?: string | null;
-  };
-
-  /**
-   * Nested hosting-providers map. Top-level keys are categories (e.g. `application`,
-   * `analytics`); inner keys are arbitrary field labels (e.g. `provider`, `region`,
-   * `transfer_basis`). Currently not rendered by the default UI but kept for clients
-   * that want a more detailed hosting section.
-   */
-  hosting: Record<string, Record<string, string>>;
-
-  /** Free-form list of GDPR rights the transparency page may surface (currently unused by default UI). */
-  rights: string[];
-
-  /** Pointers to the legal documents (terms/policy/cookie/regolamento) including a public URL for download. */
-  legal_documents: Array<{ doc: LegalDocumentName; version: string; url: string }>;
 };
 
 // ---------------------------------------------------------------------------

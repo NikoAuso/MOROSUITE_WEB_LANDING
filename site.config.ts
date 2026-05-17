@@ -25,11 +25,13 @@ export const siteConfig = {
     pdfDownload: true,
   },
 
-  // Build-time fetcher behaviour.
+  // Build-time fetcher behaviour. Tuned for "fail fast then serve placeholder":
+  // worst case on a fully unreachable host is one ECONNREFUSED (~ms) plus the
+  // circuit breaker in src/lib/api.ts skipping every subsequent endpoint.
   fetch: {
-    retries: 3,
-    retryDelayMs: 500,
-    timeoutMs: 10_000,
+    retries: 1,
+    retryDelayMs: 250,
+    timeoutMs: 3_000,
   },
 } as const;
 

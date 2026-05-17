@@ -98,12 +98,4 @@
 
   acceptBtn?.addEventListener('click', () => setConsent('accepted'));
   rejectBtn?.addEventListener('click', () => setConsent('rejected'));
-
-  document.querySelectorAll<HTMLElement>('[data-action="reset-cookie-consent"]').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      localStorage.removeItem(storageKey);
-      banner?.classList.remove('hidden');
-      requestAnimationFrame(() => banner?.classList.remove('translate-y-6', 'opacity-0'));
-    }),
-  );
 </script>

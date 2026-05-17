@@ -5,7 +5,6 @@ import { resolveStructuredData } from '@/lib/seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CookieBanner from '@/components/CookieBanner.astro';
-import CookiePreferencesToggle from '@/components/CookiePreferencesToggle.astro';
 import '@/styles/tokens.css';
 
 interface Props {
@@ -120,6 +119,5 @@ const structuredData = resolveStructuredData(seo);
     </main>
     <Footer site={site} />
     <CookieBanner />
-    <CookiePreferencesToggle />
   </body>
 </html>

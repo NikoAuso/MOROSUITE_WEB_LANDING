@@ -1,8 +1,0 @@
----
-import LegalDocument from '@/layouts/LegalDocument.astro';
-import { api } from '@/lib/api';
-
-const document = await api.legal('regolamento');
----
-
-<LegalDocument document={document} />

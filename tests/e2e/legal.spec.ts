@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-for (const doc of ['terms', 'policy', 'cookie', 'regolamento'] as const) {
+for (const doc of ['policy', 'cookie'] as const) {
   test(`/${doc} renders title + body + download-PDF link`, async ({ page }) => {
     await page.goto(`/${doc}`);
 
