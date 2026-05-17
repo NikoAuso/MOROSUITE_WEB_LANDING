@@ -1,7 +1,12 @@
 ---
-import { config } from '@/lib/config';
+import type { SitePayload } from '@/lib/dto';
 
-const bookingUrl = `${config.coreAppUrl}/prenota`;
+interface Props {
+  site: SitePayload;
+}
+
+const { site } = Astro.props;
+const booking = site.links?.booking ?? null;
 
 const sections = [
   { title: 'Caffetteria', text: 'Caffè, cappuccini, cornetti, succhi, gelati.' },
@@ -28,14 +33,16 @@ const sections = [
           ))}
         </div>
 
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href={bookingUrl}
-            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
-          >
-            Prenota ora
-          </a>
-        </div>
+        {booking && (
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href={booking.url}
+              class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+            >
+              {booking.label}
+            </a>
+          </div>
+        )}
       </div>
 
       <div class="lg:col-span-6">
@@ -45,9 +52,9 @@ const sections = [
               class="h-56 w-full object-cover"
               loading="lazy"
               decoding="async"
-              src="/images/customers/happy-hour.webp"
+              src="https://picsum.photos/seed/cocktails/600/400"
               width="600"
-              height="224"
+              height="400"
               alt="Drink al bar"
             />
           </div>
@@ -56,9 +63,9 @@ const sections = [
               class="h-56 w-full object-cover"
               loading="lazy"
               decoding="async"
-              src="/images/customers/menu-estivo.webp"
+              src="https://picsum.photos/seed/snack/600/400"
               width="600"
-              height="224"
+              height="400"
               alt="Snack"
             />
           </div>
@@ -67,9 +74,9 @@ const sections = [
               class="h-56 w-full object-cover"
               loading="lazy"
               decoding="async"
-              src="/images/customers/solarium-terrazza.webp"
-              width="900"
-              height="224"
+              src="https://picsum.photos/seed/terrace/1200/400"
+              width="1200"
+              height="400"
               alt="Solarium terrazza"
             />
           </div>

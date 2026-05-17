@@ -1,0 +1,15 @@
+---
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import ErrorState from '@/components/ErrorState.astro';
+
+const title = 'Pagina non trovata';
+const description = "La pagina che stai cercando non esiste o è stata spostata.";
+---
+
+<PublicLayout title={title} description={description}>
+  <ErrorState
+    code="404"
+    title={title}
+    description={description}
+  />
+</PublicLayout>

@@ -1,19 +1,19 @@
 ---
-import type { FacilityPayload, OpeningHoursPayload } from '@/lib/types';
+import type { SitePayload, OpeningHoursPayload } from '@/lib/dto';
 
 interface Props {
   hours: OpeningHoursPayload;
-  facility: FacilityPayload;
+  site: SitePayload;
 }
 
-const { hours, facility } = Astro.props;
+const { hours, site } = Astro.props;
 
 const todayKey = ((): string => {
   const d = new Date().toLocaleDateString('en-US', { weekday: 'long', timeZone: hours.timezone });
   return d.toLowerCase();
 })();
 
-const seasonDates = facility.season_dates ?? [];
+const seasonDates = site.season_dates ?? [];
 const hasContent = (hours.daily_hours && hours.daily_hours.length > 0) || seasonDates.length > 0;
 ---
 

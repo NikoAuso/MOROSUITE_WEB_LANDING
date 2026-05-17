@@ -1,5 +1,5 @@
 import { config } from './config';
-import type { SeoPayload } from './types';
+import type { SeoPayload } from './dto';
 
 /**
  * Replace the {{SITE_URL}} / {{OG_IMAGE_URL}} placeholders that the API

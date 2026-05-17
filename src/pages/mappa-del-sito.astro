@@ -1,12 +1,11 @@
 ---
 import PublicLayout from '@/layouts/PublicLayout.astro';
-import { config } from '@/lib/config';
 import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import { api } from '@/lib/api';
 
-const facility = await api.facility();
+const site = await api.site();
 
-const title = `Mappa del sito | ${facility.short_name ?? facility.name ?? 'Piscina'}`;
+const title = `Mappa del sito | ${site.short_name ?? site.name ?? 'Piscina'}`;
 const description = 'Tutte le pagine pubbliche del sito, raggruppate per categoria.';
 
 const mainSiteLinks = [
@@ -16,12 +15,11 @@ const mainSiteLinks = [
 
 const legalDocumentsLinks = FOOTER_NAV.map((n) => ({ href: n.href, label: n.label }));
 
-const hotelUrl = facility.external_links?.hotel ?? null;
 const restrictedAreaLinks = [
-  { href: `${config.coreAppUrl}/login`, label: 'Accesso clienti' },
-  { href: `${config.coreAppUrl}/register`, label: 'Registrazione' },
-  ...(hotelUrl ? [{ href: hotelUrl, label: 'Sito hotel' }] : []),
-];
+  site.links?.login ? { href: site.links.login.url, label: site.links.login.label } : null,
+  site.links?.register ? { href: site.links.register.url, label: site.links.register.label } : null,
+  site.links?.hotel ? { href: site.links.hotel.url, label: site.links.hotel.label } : null,
+].filter((link): link is { href: string; label: string } => link !== null);
 ---
 
 <PublicLayout title={title} description={description}>

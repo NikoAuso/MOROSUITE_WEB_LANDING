@@ -9,28 +9,29 @@ import Servizi from '@/components/Servizi.astro';
 import Regolamento from '@/components/Regolamento.astro';
 import Bar from '@/components/Bar.astro';
 
-const [facility, hours, pricing] = await Promise.all([
-  api.facility(),
+const [site, hours, pricing] = await Promise.all([
+  api.site(),
   api.openingHours(),
   api.pricing(),
 ]);
 
-const title = `${facility.name ?? 'Piscina Morobello'} | Prenota ingresso e ombrellone`;
+const siteName = site.name ?? site.short_name ?? 'Piscina';
+const title = `${siteName} | Prenota ingresso e ombrellone`;
 const description =
-  facility.tagline ??
-  `Rilassati nelle piscine di ${facility.short_name ?? 'Morobello'}, per un'esperienza di benessere unica e rigenerante.`;
+  site.tagline ??
+  `Scopri ${siteName} e prenota la tua giornata di relax.`;
 ---
 
 <PublicLayout
   title={title}
   description={description}
-  preloadHeroImage="/images/customers/solarium-giardino.webp"
+  preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
 >
-  <Hero />
+  <Hero site={site} />
   <PoolFeatures />
-  <OpeningHours hours={hours} facility={facility} />
-  <PricingTables pricing={pricing} />
+  <OpeningHours hours={hours} site={site} />
+  <PricingTables pricing={pricing} site={site} />
   <Servizi />
-  <Regolamento facility={facility} />
-  <Bar />
+  <Regolamento site={site} />
+  <Bar site={site} />
 </PublicLayout>

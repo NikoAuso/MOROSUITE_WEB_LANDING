@@ -1,0 +1,42 @@
+---
+interface Props {
+  /** Status code or short label shown as the badge ("404", "503", "Errore"). */
+  code?: string;
+  /** Headline displayed below the badge. */
+  title: string;
+  /** Longer explanation rendered below the title. */
+  description?: string;
+  /** Optional CTA: shows a primary button linking to this href when provided. */
+  ctaHref?: string;
+  /** Label of the primary CTA. Defaults to "Torna alla home". */
+  ctaLabel?: string;
+}
+
+const {
+  code = 'Errore',
+  title,
+  description,
+  ctaHref = '/',
+  ctaLabel = 'Torna alla home',
+} = Astro.props;
+---
+
+<section class="bg-slate-50">
+  <div class="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8">
+    <span class="inline-flex items-center rounded-full bg-sky-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-sky-700">
+      {code}
+    </span>
+    <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      {title}
+    </h1>
+    {description && (
+      <p class="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">{description}</p>
+    )}
+    <a
+      href={ctaHref}
+      class="mt-8 inline-flex items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 transition"
+    >
+      {ctaLabel}
+    </a>
+  </div>
+</section>

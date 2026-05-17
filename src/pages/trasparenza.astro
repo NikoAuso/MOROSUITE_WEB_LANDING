@@ -2,12 +2,12 @@
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import { api } from '@/lib/api';
 
-const [facility, transparency] = await Promise.all([api.facility(), api.transparency()]);
+const [site, transparency] = await Promise.all([api.site(), api.transparency()]);
 
-const title = `Trasparenza | ${facility.short_name ?? facility.name ?? 'Piscina'}`;
+const title = `Trasparenza | ${site.short_name ?? site.name ?? 'Piscina'}`;
 const description = 'Pagina di trasparenza: titolare del trattamento, recapiti privacy/security/info, categorie di dati, hosting, diritti.';
 
-// Hardcoded data categories — product-level constant of the MOROSUITE pool booking flow.
+// Hardcoded data categories — product-level constant of the pool booking flow.
 const dataCategories = [
   { title: 'Account', text: 'Nome, cognome, email, password (hashata e non leggibile).' },
   { title: 'Profilo (facoltativo)', text: 'Cellulare, codice fiscale, data di nascita.' },
@@ -19,9 +19,9 @@ const dataCategories = [
   { title: 'Log email transazionali', text: 'Conservazione 365 giorni, cancellazione automatica.' },
 ];
 
-const privacyEmail = transparency.contacts?.privacy ?? facility.gdpr.email_privacy;
-const securityEmail = transparency.contacts?.security ?? facility.gdpr.email_security;
-const generalEmail = transparency.contacts?.info ?? facility.contacts?.email;
+const privacyEmail = transparency.contacts?.privacy ?? site.gdpr.email_privacy;
+const securityEmail = transparency.contacts?.security ?? site.gdpr.email_security;
+const generalEmail = transparency.contacts?.info ?? site.contacts?.email;
 
 const legalDocs = [
   { href: '/terms', label: 'Termini e Condizioni', tag: 'LEGALE' },
@@ -54,13 +54,13 @@ const legalDocs = [
         Il Titolare del trattamento dei dati personali raccolti tramite il Sito è:
       </p>
       <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6">
-        <div class="text-lg font-bold text-slate-900">{transparency.titolare ?? facility.gdpr.titolare}</div>
+        <div class="text-lg font-bold text-slate-900">{transparency.titolare ?? site.gdpr.titolare}</div>
         <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-700 sm:grid-cols-2">
-          {facility.address.street && (
+          {site.address.street && (
             <div>
               <dt class="font-semibold text-slate-500">Sede legale</dt>
               <dd>
-                {facility.address.street} — {facility.address.postal_code} {facility.address.locality} ({facility.address.region}), {facility.address.country === 'IT' ? 'Italia' : facility.address.country}
+                {site.address.street} — {site.address.postal_code} {site.address.locality} ({site.address.region}), {site.address.country === 'IT' ? 'Italia' : site.address.country}
               </dd>
             </div>
           )}

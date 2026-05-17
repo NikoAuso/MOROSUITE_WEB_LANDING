@@ -20,7 +20,7 @@ interface Props {
 
 const { title, description, canonical, ogImage, preloadHeroImage, bodyClass, showNav = true } = Astro.props;
 
-const facility = await api.facility();
+const site = await api.site();
 const seo = await api.seoStructuredData();
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -51,15 +51,14 @@ const structuredData = resolveStructuredData(seo);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    {/* Favicon family */}
-    <link rel="icon" href="/images/favicon/favicon.ico" sizes="any" />
-    <link rel="icon" href="/images/favicon/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/images/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/images/favicon/site.webmanifest" />
+    {/* Favicon — demo placeholder from site.config.ts. Replace with the
+        real favicon family (.ico/.svg/apple-touch/manifest) on a real deploy. */}
+    <link rel="icon" href={config.brand.faviconUrl} />
+    <link rel="apple-touch-icon" href={config.brand.faviconUrl} />
 
     {/* Optional hero preload */}
     {preloadHeroImage && (
-      <link rel="preload" as="image" href={preloadHeroImage} type="image/webp" />
+      <link rel="preload" as="image" href={preloadHeroImage} />
     )}
 
     {/* Fonts: Instrument Sans via Bunny Fonts (GDPR-friendly Google Fonts mirror) */}
@@ -115,11 +114,11 @@ const structuredData = resolveStructuredData(seo);
   </head>
 
   <body class:list={['bg-slate-50 text-slate-900', bodyClass]}>
-    <Header facility={facility} showNav={showNav} />
+    <Header site={site} showNav={showNav} />
     <main>
       <slot />
     </main>
-    <Footer facility={facility} />
+    <Footer site={site} />
     <CookieBanner />
     <CookiePreferencesToggle />
   </body>

@@ -1,13 +1,15 @@
 ---
-import { config } from '@/lib/config';
-import type { PricingPayload } from '@/lib/types';
+import type { PricingPayload, SitePayload } from '@/lib/dto';
 
 interface Props {
   pricing: PricingPayload;
+  site: SitePayload;
 }
 
-const { pricing } = Astro.props;
-const bookingUrl = `${config.coreAppUrl}/prenota`;
+const { pricing, site } = Astro.props;
+const booking = site.links?.booking ?? null;
+const whatsapp = site.contacts?.whatsapp;
+const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;
 
 const formatPrice = (value: number | null, isFree: boolean): string => {
   if (value === null) return '—';
@@ -39,20 +41,24 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
           altre promozioni e non si applica ad abbonamenti o servizi aggiuntivi.
         </p>
         <div class="my-6 flex flex-wrap items-center gap-3">
-          <a
-            href={bookingUrl}
-            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
-          >
-            Prenota un ingresso
-          </a>
-          <a
-            href="https://wa.me/393884889251"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
-          >
-            Chiedi info
-          </a>
+          {booking && (
+            <a
+              href={booking.url}
+              class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+            >
+              {booking.label}
+            </a>
+          )}
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+            >
+              Chiedi info
+            </a>
+          )}
         </div>
       </div>
 

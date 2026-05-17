@@ -1,8 +1,13 @@
 ---
-import { config } from '@/lib/config';
+import type { SitePayload } from '@/lib/dto';
 
-const bookingUrl = `${config.coreAppUrl}/prenota`;
-const heroImage = '/images/customers/solarium-giardino.webp';
+interface Props {
+  site: SitePayload;
+}
+
+const { site } = Astro.props;
+const booking = site.links?.booking ?? null;
+const heroImage = 'https://picsum.photos/seed/poolside/1920/1080';
 ---
 
 <!-- Hero -->
@@ -13,16 +18,13 @@ const heroImage = '/images/customers/solarium-giardino.webp';
       class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(62,188,255,0.55),transparent_55%),radial-gradient(circle_at_80%_15%,rgba(255,186,45,0.45),transparent_50%)]"
     >
     </div>
-    <picture>
-      <source srcset={heroImage} type="image/webp" />
-      <img
-        src={heroImage}
-        alt="Vista panoramica dell'area piscine"
-        class="absolute inset-0 h-full w-full object-cover opacity-40"
-        fetchpriority="high"
-        decoding="async"
-      />
-    </picture>
+    <img
+      src={heroImage}
+      alt="Vista panoramica dell'area piscine"
+      class="absolute inset-0 h-full w-full object-cover opacity-40"
+      fetchpriority="high"
+      decoding="async"
+    />
   </div>
 
   <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full">
@@ -38,12 +40,14 @@ const heroImage = '/images/customers/solarium-giardino.webp';
         </p>
 
         <div class="mt-7 flex flex-wrap items-center gap-3">
-          <a
-            href={bookingUrl}
-            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
-          >
-            Prenota ora
-          </a>
+          {booking && (
+            <a
+              href={booking.url}
+              class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+            >
+              {booking.label}
+            </a>
+          )}
           <a
             href="#piscina"
             class="inline-flex items-center justify-center rounded-2xl bg-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/40 transition"

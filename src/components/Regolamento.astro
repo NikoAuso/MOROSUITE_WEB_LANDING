@@ -1,14 +1,13 @@
 ---
-import { config } from '@/lib/config';
-import type { FacilityPayload } from '@/lib/types';
+import type { SitePayload } from '@/lib/dto';
 
 interface Props {
-  facility: FacilityPayload;
+  site: SitePayload;
 }
 
-const { facility } = Astro.props;
-const bookingUrl = `${config.coreAppUrl}/prenota`;
-const whatsapp = facility.contacts?.whatsapp;
+const { site } = Astro.props;
+const booking = site.links?.booking ?? null;
+const whatsapp = site.contacts?.whatsapp;
 const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;
 
 const obbligatorio = [
@@ -78,12 +77,14 @@ const inoltre = [
               </a>
             )}
 
-            <a
-              href={bookingUrl}
-              class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
-            >
-              Prenota ora
-            </a>
+            {booking && (
+              <a
+                href={booking.url}
+                class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
+              >
+                {booking.label}
+              </a>
+            )}
 
             <p class="text-xs text-slate-500">
               Rispondiamo appena possibile durante gli orari di apertura.
@@ -183,12 +184,14 @@ const inoltre = [
                 </a>
               )}
 
-              <a
-                href={bookingUrl}
-                class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
-              >
-                Prenota ora
-              </a>
+              {booking && (
+                <a
+                  href={booking.url}
+                  class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
+                >
+                  {booking.label}
+                </a>
+              )}
             </div>
           </div>
         </div>

@@ -1,12 +1,7 @@
 export const siteConfig = {
-  // Identity of the facility this deploy serves. Must match the slug returned
-  // by GET /api/public/v1/facility.
-  facilitySlug: 'morobello',
-
-  // URLs — overridable via .env per environment (preview vs production).
-  coreApiBase: 'http://localhost:8765/api/public/v1',
-  coreAppUrl: 'http://localhost:8765',
-  siteUrl: 'https://www.morobello.it',
+  // Stable slug used to identify this deploy against the backend. Must match
+  // the value returned by GET /site (SitePayload.slug).
+  siteSlug: 'morobello',
 
   defaultLocale: 'it' as const,
   supportedLocales: ['it', 'en'] as const,
@@ -14,9 +9,9 @@ export const siteConfig = {
   brand: {
     primaryColor: '#0c4a6e',
     accentColor: '#facc15',
-    logoUrl: '/images/logo-morobello.webp',
-    faviconUrl: '/images/favicon/favicon.svg',
-    ogImageUrl: '/images/customers/solarium-giardino.webp',
+    logoUrl: 'https://placehold.co/200x200/3291a8/ffffff/png?text=D',
+    faviconUrl: 'https://placehold.co/64x64/3291a8/ffffff/png?text=D',
+    ogImageUrl: 'https://picsum.photos/seed/pool-og/1200/630',
   },
 
   analytics: {
