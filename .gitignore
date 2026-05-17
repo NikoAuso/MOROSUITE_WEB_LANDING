@@ -22,7 +22,7 @@ Thumbs.db
 
 # editors / IDE
 .idea
-.vscode/settings.json
+.vscode
 *.swp
 *.swo
 
