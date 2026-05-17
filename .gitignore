@@ -1,15 +1,40 @@
+# dependencies
 node_modules
+
+# build output
 dist
 .astro
 .cloudflare
+.wrangler
+
+# environment
 .env
 .env.*
 !.env.example
-.DS_Store
+
+# logs
 *.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editors / IDE
 .idea
 .vscode/settings.json
+*.swp
+*.swo
+
+# Claude Code (user-local config)
+.claude/settings.local.json
+
+# caches
 .cache
+.eslintcache
+*.tsbuildinfo
+
+# tests / reports
 playwright-report
 test-results
 .lighthouseci
