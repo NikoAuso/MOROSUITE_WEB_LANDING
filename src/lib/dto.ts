@@ -12,7 +12,6 @@
  *   GET /site/opening-hours    → OpeningHoursPayload
  *   GET /site/pricing          → PricingPayload
  *   GET /legal/{doc}           → LegalPayload   (doc ∈ LegalDocumentName)
- *   GET /seo/structured-data   → SeoPayload
  *
  * Responses MUST be `application/json`. On failure the server SHOULD
  * return an `ApiError` payload with an HTTP status >= 400; the template
@@ -265,43 +264,6 @@ export type LegalPayload = {
 
   /** Document body in the format declared by `format`. Trust boundary, see above. */
   body: string;
-};
-
-// ---------------------------------------------------------------------------
-// SEO / schema.org structured data
-// ---------------------------------------------------------------------------
-
-/**
- * Pre-built JSON-LD payload injected into every page's `<head>`.
- *
- * Returned by `GET /seo/structured-data`. The template overrides `url` and
- * `image` at render time with the canonical site URL and OG image (see
- * `src/lib/seo.ts`).
- *
- * Currently typed for a `SwimmingPool` entity since this template targets
- * pool facilities; future verticals MAY widen `@type`.
- */
-export type SeoPayload = {
-  '@context': 'https://schema.org';
-  '@type': 'SwimmingPool';
-  name: string | null;
-  /** Placeholder URL — replaced at render time. */
-  url: string;
-  /** Placeholder image list — replaced at render time. */
-  image: string[];
-  address: {
-    '@type': 'PostalAddress';
-    streetAddress: string | null;
-    addressLocality: string | null;
-    addressRegion: string | null;
-    postalCode: string | null;
-    addressCountry: string | null;
-  };
-  telephone: string | null;
-  /** Service area (e.g. country name or region). */
-  areaServed: string;
-  /** ISO-639-1 codes mirroring `SitePayload.languages`. */
-  availableLanguage: string[];
 };
 
 // ---------------------------------------------------------------------------

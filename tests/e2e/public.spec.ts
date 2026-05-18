@@ -1,17 +1,11 @@
 import { expect, test } from '@playwright/test';
 
-test('homepage emits canonical + og + structured-data', async ({ page }) => {
+test('homepage emits canonical + og meta tags', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.locator('link[rel=canonical]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
-
-  const ld = await page.locator('script[type="application/ld+json"]').first().textContent();
-  expect(ld).toBeTruthy();
-  const parsed = JSON.parse(ld!);
-  expect(parsed['@type']).toBe('SwimmingPool');
-  expect(parsed.url).toMatch(/^https?:\/\//);
 });
 
 test('sitemap-index.xml is reachable', async ({ request }) => {

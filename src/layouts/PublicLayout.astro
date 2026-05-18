@@ -1,7 +1,6 @@
 ---
 import { config } from '@/lib/config';
 import { api } from '@/lib/api';
-import { resolveStructuredData } from '@/lib/seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CookieBanner from '@/components/CookieBanner.astro';
@@ -20,11 +19,9 @@ interface Props {
 const { title, description, canonical, ogImage, preloadHeroImage, bodyClass, showNav = true } = Astro.props;
 
 const site = await api.site();
-const seo = await api.seoStructuredData();
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
 const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
-const structuredData = resolveStructuredData(seo);
 ---
 
 <!doctype html>
@@ -75,8 +72,6 @@ const structuredData = resolveStructuredData(seo);
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-
-    <script is:inline type="application/ld+json" set:html={structuredData} />
 
     {/* GA4 consent mode v2 — default denied; the cookie banner upgrades to granted */}
     {config.analytics.ga4MeasurementId && (

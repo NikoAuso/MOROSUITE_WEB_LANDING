@@ -18,7 +18,6 @@ import type {
   PricingPayload,
   LegalPayload,
   LegalDocumentName,
-  SeoPayload,
 } from './dto';
 
 // ---------------------------------------------------------------------------
@@ -217,29 +216,6 @@ export const PLACEHOLDER_PRICING: PricingPayload = {
       rows: [{ label: 'Adulto', range: null, value: 100, is_free: false }],
     },
   ],
-};
-
-// ---------------------------------------------------------------------------
-// SEO / schema.org structured data
-// ---------------------------------------------------------------------------
-
-export const PLACEHOLDER_SEO: SeoPayload = {
-  '@context': 'https://schema.org',
-  '@type': 'SwimmingPool',
-  name: 'Piscina Demo',
-  url: 'https://www.example.com',
-  image: ['https://www.example.com/og.jpg'],
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'Via di Esempio, 1',
-    addressLocality: 'Milano',
-    addressRegion: 'MI',
-    postalCode: '20100',
-    addressCountry: 'IT',
-  },
-  telephone: '+39 000 000 0000',
-  areaServed: 'Italia',
-  availableLanguage: ['it', 'en'],
 };
 
 // ---------------------------------------------------------------------------

@@ -5,14 +5,12 @@ import type {
   PricingPayload,
   LegalPayload,
   LegalDocumentName,
-  SeoPayload,
 } from './dto';
 import {
   PLACEHOLDER_SITE,
   PLACEHOLDER_OPENING_HOURS,
   PLACEHOLDER_PRICING,
   PLACEHOLDER_LEGAL,
-  PLACEHOLDER_SEO,
 } from './placeholders';
 
 // Per-process cache of successful responses (keyed by absolute URL) so
@@ -113,5 +111,4 @@ export const api = {
   pricing: () => fetchJsonSafe<PricingPayload>('/site/pricing', PLACEHOLDER_PRICING),
   legal: (doc: LegalDocumentName) =>
     fetchJsonSafe<LegalPayload>(`/legal/${doc}`, PLACEHOLDER_LEGAL[doc]),
-  seoStructuredData: () => fetchJsonSafe<SeoPayload>('/seo/structured-data', PLACEHOLDER_SEO),
 };
