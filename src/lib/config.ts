@@ -9,7 +9,10 @@ const DEMO_API_BASE_URL = 'http://localhost:8765/api/public/v1';
 const DEMO_SITE_URL = 'http://localhost:4321';
 const DEFAULT_CACHE_TTL_SECONDS = 300;
 
-const cacheTtlSeconds = Number(env.CACHE_TTL_SECONDS) || DEFAULT_CACHE_TTL_SECONDS;
+const parsedTtl = Number(env.CACHE_TTL_SECONDS);
+const cacheTtlSeconds = Number.isFinite(parsedTtl) && parsedTtl >= 0
+  ? parsedTtl
+  : DEFAULT_CACHE_TTL_SECONDS;
 
 export const config = {
   ...base,
