@@ -273,9 +273,13 @@ export type LegalPayload = {
 /**
  * Standard error envelope. Returned by the backend with an HTTP status >= 400.
  *
- * The template tolerates fetch failures: instead of aborting the build, the
- * affected wrappers in `src/lib/api.ts` return a placeholder payload from
- * `src/lib/placeholders.ts` so the page still renders with dummy content.
+ * The template tolerates fetch failures: the wrappers in `src/lib/api.ts`
+ * return `null` instead of throwing, and the consumers (pages and components)
+ * render an explicit "non disponibile" state for that endpoint. A response
+ * that is technically 200 but "empty in a significant way" — e.g. `daily_hours:
+ * null` for opening hours, `has_prices: false` for pricing, an empty `body` for
+ * legal — is normalized to `null` by the same wrappers and treated the same
+ * way. `/site === null` short-circuits the whole page to HTTP 503.
  */
 export type ApiError = {
   error: { code: string; message: string };

@@ -26,6 +26,5 @@ export const FALLBACK_COPY = {
   cta: {
     booking: 'Prenotazioni non disponibili',
     login: 'Accesso non disponibile',
-    register: 'Registrazione non disponibile',
   },
 } as const;

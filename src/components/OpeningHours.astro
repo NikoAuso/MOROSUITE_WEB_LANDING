@@ -11,10 +11,6 @@ interface Props {
 const { hours, site } = Astro.props;
 const seasonDates = site.season_dates ?? [];
 
-if (!hours) {
-  // fall through to error state
-}
-
 const todayKey = hours
   ? new Date()
       .toLocaleDateString('en-US', { weekday: 'long', timeZone: hours.timezone })

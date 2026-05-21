@@ -19,10 +19,13 @@ trap "kill $MOCK_PID 2>/dev/null || true" EXIT INT TERM
 # Wait briefly for the mock to bind its port.
 sleep 0.5
 
+# Do NOT use `exec` here: it replaces this bash shell with node, which
+# disarms the EXIT trap above and would leak the mock-backend as an orphan
+# bound to its port if Lighthouse tears down the server group.
 HOST="${HOST:-127.0.0.1}" \
 PORT="${PORT:-4321}" \
 API_BASE_URL="${API_BASE_URL:-http://127.0.0.1:${MOCK_BACKEND_PORT}/api/public/v1}" \
 API_AUTH_TOKEN="${API_AUTH_TOKEN:-$MOCK_BACKEND_TOKEN}" \
 PUBLIC_SITE_URL="${PUBLIC_SITE_URL:-http://127.0.0.1:${PORT:-4321}}" \
 CACHE_TTL_SECONDS="${CACHE_TTL_SECONDS:-60}" \
-  exec node ./dist/server/entry.mjs
+  node ./dist/server/entry.mjs
