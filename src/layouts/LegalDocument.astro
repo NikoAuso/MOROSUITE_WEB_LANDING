@@ -2,15 +2,19 @@
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import { config } from '@/lib/config';
 import { renderLegalMarkdown } from '@/lib/markdown';
-import type { LegalPayload } from '@/lib/dto';
+import type { LegalPayload, SitePayload } from '@/lib/dto';
 
 interface Props {
   document: LegalPayload;
+  site: SitePayload;
 }
 
-const { document } = Astro.props;
+const { document, site } = Astro.props;
 const htmlBody = renderLegalMarkdown(document.body);
 
+// TODO: with the backend behind Bearer auth, the browser can't fetch this URL
+// directly. Either expose /legal/{doc}.pdf without auth on the backend, or
+// add a template-side proxy route that re-attaches the token server-side.
 const pdfUrl = `${config.apiBaseUrl}/legal/${document.doc}.pdf`;
 const title = `${document.title}`;
 const description = `${document.title} — versione ${document.version}.`;
@@ -24,7 +28,7 @@ const formattedEffective = document.effective_date
   : null;
 ---
 
-<PublicLayout title={title} description={description} showNav={false}>
+<PublicLayout title={title} description={description} site={site} showNav={false}>
   <section class="bg-slate-50">
     <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <article>

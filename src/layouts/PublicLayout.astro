@@ -1,6 +1,6 @@
 ---
 import { config } from '@/lib/config';
-import { api } from '@/lib/api';
+import type { SitePayload } from '@/lib/dto';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CookieBanner from '@/components/CookieBanner.astro';
@@ -9,6 +9,7 @@ import '@/styles/tokens.css';
 interface Props {
   title: string;
   description: string;
+  site: SitePayload;
   canonical?: string;
   ogImage?: string;
   preloadHeroImage?: string;
@@ -16,9 +17,16 @@ interface Props {
   showNav?: boolean;
 }
 
-const { title, description, canonical, ogImage, preloadHeroImage, bodyClass, showNav = true } = Astro.props;
-
-const site = await api.site();
+const {
+  title,
+  description,
+  site,
+  canonical,
+  ogImage,
+  preloadHeroImage,
+  bodyClass,
+  showNav = true,
+} = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
 const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;

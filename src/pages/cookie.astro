@@ -1,8 +1,36 @@
 ---
 import LegalDocument from '@/layouts/LegalDocument.astro';
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
+import ErrorState from '@/components/ErrorState.astro';
 import { api } from '@/lib/api';
+import { FALLBACK_COPY } from '@/lib/copy';
 
-const document = await api.legal('cookie');
+const [site, document] = await Promise.all([api.site(), api.legal('cookie')]);
+
+if (!site) {
+  Astro.response.status = 503;
+  Astro.response.headers.set('Retry-After', '60');
+}
 ---
 
-<LegalDocument document={document} />
+{site ? (
+  document ? (
+    <LegalDocument document={document} site={site} />
+  ) : (
+    <PublicLayout
+      title={FALLBACK_COPY.legal.title}
+      description={FALLBACK_COPY.legal.description}
+      site={site}
+      showNav={false}
+    >
+      <ErrorState
+        code={FALLBACK_COPY.legal.badge}
+        title={FALLBACK_COPY.legal.title}
+        description={FALLBACK_COPY.legal.description}
+      />
+    </PublicLayout>
+  )
+) : (
+  <ServiceUnavailable />
+)}
