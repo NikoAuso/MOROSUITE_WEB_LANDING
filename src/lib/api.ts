@@ -12,6 +12,8 @@ type CacheEntry<T> = { value: T | null; timestamp: number };
 const cache = new Map<string, CacheEntry<unknown>>();
 const inflight = new Map<string, Promise<unknown>>();
 
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
 function authHeaders(): Record<string, string> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (config.apiAuthToken) {
@@ -22,6 +24,7 @@ function authHeaders(): Record<string, string> {
 
 async function rawFetch<T>(url: string): Promise<T | null> {
   const { retries, retryDelayMs, timeoutMs } = config.fetch;
+  const headers = authHeaders();
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -29,15 +32,12 @@ async function rawFetch<T>(url: string): Promise<T | null> {
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: authHeaders(),
-      });
+      const response = await fetch(url, { signal: controller.signal, headers });
 
       if (!response.ok) {
         console.warn(`[api] GET ${url} -> HTTP ${response.status}`);
         if (response.status >= 500 && attempt < retries) {
-          await new Promise((r) => setTimeout(r, retryDelayMs * (attempt + 1)));
+          await sleep(retryDelayMs * (attempt + 1));
           continue;
         }
         return null;
@@ -56,7 +56,7 @@ async function rawFetch<T>(url: string): Promise<T | null> {
       }
 
       if (attempt < retries) {
-        await new Promise((r) => setTimeout(r, retryDelayMs * (attempt + 1)));
+        await sleep(retryDelayMs * (attempt + 1));
       }
     } finally {
       clearTimeout(timeout);
@@ -106,7 +106,7 @@ function normalizeOpeningHours(p: OpeningHoursPayload): OpeningHoursPayload | nu
 
 function normalizePricing(p: PricingPayload): PricingPayload | null {
   if (!p.has_prices) return null;
-  if (p.entrance_sections.length === 0 && p.pass_sections.length === 0) return null;
+  if ((p.entrance_sections?.length ?? 0) === 0 && (p.pass_sections?.length ?? 0) === 0) return null;
   return p;
 }
 
