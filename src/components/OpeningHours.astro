@@ -1,23 +1,28 @@
 ---
 import type { SitePayload, OpeningHoursPayload } from '@/lib/dto';
+import ErrorState from '@/components/ErrorState.astro';
+import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
-  hours: OpeningHoursPayload;
+  hours: OpeningHoursPayload | null;
   site: SitePayload;
 }
 
 const { hours, site } = Astro.props;
-
-const todayKey = ((): string => {
-  const d = new Date().toLocaleDateString('en-US', { weekday: 'long', timeZone: hours.timezone });
-  return d.toLowerCase();
-})();
-
 const seasonDates = site.season_dates ?? [];
-const hasContent = (hours.daily_hours && hours.daily_hours.length > 0) || seasonDates.length > 0;
+
+if (!hours) {
+  // fall through to error state
+}
+
+const todayKey = hours
+  ? new Date()
+      .toLocaleDateString('en-US', { weekday: 'long', timeZone: hours.timezone })
+      .toLowerCase()
+  : '';
 ---
 
-{hasContent && (
+{hours ? (
   <section id="orari" class="bg-white">
     <div class="mx-auto max-w-7xl px-4 py-25 sm:px-6 lg:px-8">
       <div class="text-center">
@@ -36,54 +41,62 @@ const hasContent = (hours.daily_hours && hours.daily_hours.length > 0) || season
         </div>
       )}
 
-      {hours.daily_hours && hours.daily_hours.length > 0 && (
-        <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-7">
-          {hours.daily_hours.map((day) => {
-            const isToday = day.key === todayKey;
-            return (
-              <div class="relative pt-3">
-                {isToday && (
-                  <div class="absolute left-0 right-0 top-0 flex justify-center">
-                    <span class="rounded-full bg-sky-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
-                      Oggi
-                    </span>
+      <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-7">
+        {hours.daily_hours!.map((day) => {
+          const isToday = day.key === todayKey;
+          return (
+            <div class="relative pt-3">
+              {isToday && (
+                <div class="absolute left-0 right-0 top-0 flex justify-center">
+                  <span class="rounded-full bg-sky-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    Oggi
+                  </span>
+                </div>
+              )}
+
+              <div class:list={[
+                'flex flex-col items-center rounded-2xl p-5 text-center ring-1 transition-shadow',
+                isToday ? 'bg-sky-100 ring-2 ring-sky-500 shadow-md' : 'bg-slate-50 ring-slate-200',
+              ]}>
+                <div class:list={[
+                  'text-xs font-semibold uppercase tracking-widest',
+                  isToday ? 'text-sky-700' : 'text-slate-500',
+                ]}>
+                  {day.label}
+                </div>
+
+                {day.closed ? (
+                  <div class="mt-3 text-sm font-medium text-slate-400">Chiuso</div>
+                ) : (
+                  <div class="mt-3 flex w-full flex-col gap-2">
+                    {day.intervals.map((interval) => (
+                      <div class:list={[
+                        'rounded-xl px-3 py-2 text-sm font-bold ring-1',
+                        isToday ? 'bg-white/80 text-sky-900 ring-sky-200' : 'bg-white text-slate-800 ring-slate-200',
+                      ]}>
+                        <div class="flex flex-col items-center gap-0.5">
+                          <span class="text-xs font-medium opacity-70">{interval.label}</span>
+                          <span>{interval.open} – {interval.close}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
-
-                <div class:list={[
-                  'flex flex-col items-center rounded-2xl p-5 text-center ring-1 transition-shadow',
-                  isToday ? 'bg-sky-100 ring-2 ring-sky-500 shadow-md' : 'bg-slate-50 ring-slate-200',
-                ]}>
-                  <div class:list={[
-                    'text-xs font-semibold uppercase tracking-widest',
-                    isToday ? 'text-sky-700' : 'text-slate-500',
-                  ]}>
-                    {day.label}
-                  </div>
-
-                  {day.closed ? (
-                    <div class="mt-3 text-sm font-medium text-slate-400">Chiuso</div>
-                  ) : (
-                    <div class="mt-3 flex w-full flex-col gap-2">
-                      {day.intervals.map((interval) => (
-                        <div class:list={[
-                          'rounded-xl px-3 py-2 text-sm font-bold ring-1',
-                          isToday ? 'bg-white/80 text-sky-900 ring-sky-200' : 'bg-white text-slate-800 ring-slate-200',
-                        ]}>
-                          <div class="flex flex-col items-center gap-0.5">
-                            <span class="text-xs font-medium opacity-70">{interval.label}</span>
-                            <span>{interval.open} – {interval.close}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
+      </div>
     </div>
+  </section>
+) : (
+  <section id="orari">
+    <ErrorState
+      code={FALLBACK_COPY.hours.badge}
+      title={FALLBACK_COPY.hours.title}
+      description={FALLBACK_COPY.hours.description}
+      ctaHref="#prezzi"
+      ctaLabel="Vai ai prezzi"
+    />
   </section>
 )}
