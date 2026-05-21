@@ -5,7 +5,7 @@ set -euo pipefail
 # foreground. Used by Lighthouse CI (lighthouserc.json startServerCommand).
 # When the SSR server exits / is killed, the trap cleans up the mock backend.
 
-MOCK_BACKEND_PORT="${MOCK_BACKEND_PORT:-8765}"
+MOCK_BACKEND_PORT="${MOCK_BACKEND_PORT:-8000}"
 MOCK_BACKEND_TOKEN="${MOCK_BACKEND_TOKEN:-test-token}"
 MOCK_BACKEND_REQUIRE_AUTH="${MOCK_BACKEND_REQUIRE_AUTH:-true}"
 
@@ -26,6 +26,7 @@ HOST="${HOST:-127.0.0.1}" \
 PORT="${PORT:-4321}" \
 API_BASE_URL="${API_BASE_URL:-http://127.0.0.1:${MOCK_BACKEND_PORT}/api/public/v1}" \
 API_AUTH_TOKEN="${API_AUTH_TOKEN:-$MOCK_BACKEND_TOKEN}" \
+FACILITY_SLUG="${FACILITY_SLUG:-test-facility}" \
 PUBLIC_SITE_URL="${PUBLIC_SITE_URL:-http://127.0.0.1:${PORT:-4321}}" \
 CACHE_TTL_SECONDS="${CACHE_TTL_SECONDS:-60}" \
   node ./dist/server/entry.mjs

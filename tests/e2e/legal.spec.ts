@@ -9,6 +9,6 @@ for (const doc of ['policy', 'cookie'] as const) {
 
     const pdfLink = page.locator(`a[href$="/legal/${doc}.pdf"]`);
     await expect(pdfLink).toBeVisible();
-    await expect(pdfLink).toHaveAttribute('href', /\/api\/public\/v1\/legal\/.+\.pdf$/);
+    await expect(pdfLink).toHaveAttribute('href', /\/api\/public\/v1\/[^/]+\/legal\/.+\.pdf$/);
   });
 }

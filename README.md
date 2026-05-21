@@ -50,14 +50,15 @@ sotto un process manager (PM2, systemd, Docker), tipicamente dietro un reverse p
 
    Crea un `.env` (o passa le variabili al process manager in produzione):
 
-   | Variabile                   | Obbligatoria in prod? | Default (dev)                         | Descrizione                                                                          |
-   | --------------------------- | --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------ |
-   | `API_BASE_URL`              | sì                    | `http://localhost:8765/api/public/v1` | URL **assoluto** del backend che implementa il contratto (vedi `src/lib/dto.ts`).    |
-   | `API_AUTH_TOKEN`            | sì                    | _vuoto_                               | Bearer token inviato in `Authorization` su tutte le chiamate (eccetto `/up`).        |
-   | `PUBLIC_SITE_URL`           | sì                    | `http://localhost:4321`               | URL canonico del sito (canonical, sitemap, OG).                                      |
-   | `CACHE_TTL_SECONDS`         | no                    | `300`                                 | TTL (secondi) della cache in-process per ogni endpoint del backend.                  |
-   | `PUBLIC_GA4_MEASUREMENT_ID` | no                    | _vuoto_                               | ID misurazione GA4 (consent-mode v2). Vuoto = nessuno script gtag iniettato.         |
-   | `PORT` / `HOST`             | no                    | adapter Node defaults                 | Porta e indirizzo di bind del server SSR.                                            |
+   | Variabile                   | Obbligatoria in prod? | Default (dev)                         | Descrizione                                                                                              |
+   | --------------------------- | --------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+   | `API_BASE_URL`              | sì                    | `http://127.0.0.1:8000/api/public/v1` | Radice del backend. Le URL complete vengono composte come `${API_BASE_URL}/${FACILITY_SLUG}/site`, ecc.  |
+   | `FACILITY_SLUG`             | sì                    | `demo`                                | Slug della facility servita da questo deploy. Inserito subito dopo `/v1/` in ogni URL del backend.       |
+   | `API_AUTH_TOKEN`            | sì                    | _vuoto_                               | Bearer token inviato in `Authorization` su tutte le chiamate (eccetto `/up`).                            |
+   | `PUBLIC_SITE_URL`           | sì                    | `http://localhost:4321`               | URL canonico del sito (canonical, sitemap, OG).                                                          |
+   | `CACHE_TTL_SECONDS`         | no                    | `300`                                 | TTL (secondi) della cache in-process per ogni endpoint del backend.                                      |
+   | `PUBLIC_GA4_MEASUREMENT_ID` | no                    | _vuoto_                               | ID misurazione GA4 (consent-mode v2). Vuoto = nessuno script gtag iniettato.                             |
+   | `PORT` / `HOST`             | no                    | adapter Node defaults                 | Porta e indirizzo di bind del server SSR.                                                                |
 
    > `API_AUTH_TOKEN` **non** ha prefisso `PUBLIC_`: vive solo lato server e non viene mai esposto al browser. `src/lib/api.ts`
    > non lo logga mai (i log degli errori contengono solo URL e status code).

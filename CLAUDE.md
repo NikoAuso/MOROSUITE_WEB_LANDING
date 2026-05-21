@@ -41,9 +41,11 @@ for the UI mode.
    `features`, `fetch`. This is the **white-label switchboard**. It does NOT contain per-environment URLs
    (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in `src/lib/config.ts`.
 2. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
-   `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`. Prefers `process.env.*` over
-   `import.meta.env.*` for server-only vars so the Node process can override build-time inlined values. **Always import
-   `@/lib/config` from runtime code, not `@config` directly**.
+   `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`. Composes
+   `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site`, `/site/pricing`, etc.
+   Also exposes `apiRoot` (without slug) and `facilitySlug` separately. Prefers `process.env.*` over `import.meta.env.*`
+   for server-only vars so the Node process can override build-time inlined values. **Always import `@/lib/config` from
+   runtime code, not `@config` directly**.
 3. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
    - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
    - **Single-flight / request coalescing**: concurrent requests for an expired key attach to the same in-flight
@@ -128,14 +130,15 @@ for the UI mode.
      favicon and OG image are absolute URLs to hosted assets, not local files.
 3. Set env vars in the deploy environment:
 
-   | Var                         | Required in prod? | Default                               | Use                                           |
-   |-----------------------------|-------------------|---------------------------------------|-----------------------------------------------|
-   | `API_BASE_URL`              | yes               | `http://localhost:8765/api/public/v1` | Backend endpoint base URL                     |
-   | `API_AUTH_TOKEN`            | yes               | —                                     | Bearer token on every backend call (not `/up`)|
-   | `PUBLIC_SITE_URL`           | yes               | `http://localhost:4321`               | Canonical URL, sitemap, OG tags               |
-   | `CACHE_TTL_SECONDS`         | no                | `300`                                 | In-process cache TTL in seconds               |
-   | `PUBLIC_GA4_MEASUREMENT_ID` | no                | —                                     | GA4 measurement ID (omit to disable GA4)      |
-   | `PORT` / `HOST`             | no                | Astro Node defaults                   | Server bind address and port                  |
+   | Var                         | Required in prod? | Default                               | Use                                                                       |
+   |-----------------------------|-------------------|---------------------------------------|---------------------------------------------------------------------------|
+   | `API_BASE_URL`              | yes               | `http://127.0.0.1:8000/api/public/v1` | Backend root. Full URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>`     |
+   | `FACILITY_SLUG`             | yes               | `demo`                                | Slug of the facility this deploy serves. Inserted right after `/v1/`.     |
+   | `API_AUTH_TOKEN`            | yes               | —                                     | Bearer token on every backend call (not `/up`)                            |
+   | `PUBLIC_SITE_URL`           | yes               | `http://localhost:4321`               | Canonical URL, sitemap, OG tags                                           |
+   | `CACHE_TTL_SECONDS`         | no                | `300`                                 | In-process cache TTL in seconds                                           |
+   | `PUBLIC_GA4_MEASUREMENT_ID` | no                | —                                     | GA4 measurement ID (omit to disable GA4)                                  |
+   | `PORT` / `HOST`             | no                | Astro Node defaults                   | Server bind address and port                                              |
 
 4. Build and start:
    ```bash
