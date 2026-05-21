@@ -1,27 +1,39 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
-const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:4321';
+const BASE_URL = 'http://127.0.0.1:4321';
+const MOCK_URL = 'http://127.0.0.1:8765/api/public/v1';
+const TOKEN = 'test-token';
 
 export default defineConfig({
   testDir: '.',
-  timeout: 30_000,
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
-  use: {
-    baseURL,
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-  },
-  webServer: process.env.E2E_BASE_URL
-    ? undefined
-    : {
-        command: 'npm run preview -- --port 4321',
-        url: 'http://localhost:4321',
-        cwd: '../..',
-        reuseExistingServer: !process.env.CI,
-        timeout: 60_000,
+  fullyParallel: false,
+  reporter: 'list',
+  use: { baseURL: BASE_URL },
+
+  webServer: [
+    {
+      command: 'node tests/e2e/fixtures/mock-backend.mjs',
+      url: 'http://127.0.0.1:8765/up',
+      reuseExistingServer: false,
+      env: {
+        MOCK_BACKEND_PORT: '8765',
+        MOCK_BACKEND_REQUIRE_AUTH: 'true',
+        MOCK_BACKEND_TOKEN: TOKEN,
+        MOCK_BACKEND_MODE: process.env.MOCK_BACKEND_MODE ?? 'ok',
       },
-  projects: [{ name: 'chromium', use: devices['Desktop Chrome'] }],
+    },
+    {
+      command: 'node ./dist/server/entry.mjs',
+      url: BASE_URL,
+      reuseExistingServer: false,
+      env: {
+        HOST: '127.0.0.1',
+        PORT: '4321',
+        API_BASE_URL: MOCK_URL,
+        API_AUTH_TOKEN: TOKEN,
+        PUBLIC_SITE_URL: BASE_URL,
+        CACHE_TTL_SECONDS: '1',
+      },
+    },
+  ],
 });
