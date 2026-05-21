@@ -6,109 +6,119 @@ import type {
   LegalPayload,
   LegalDocumentName,
 } from './dto';
-import {
-  PLACEHOLDER_SITE,
-  PLACEHOLDER_OPENING_HOURS,
-  PLACEHOLDER_PRICING,
-  PLACEHOLDER_LEGAL,
-} from './placeholders';
 
-// Per-process cache of successful responses (keyed by absolute URL) so
-// calling `api.site()` from a page AND its layout costs one round-trip.
-const memo = new Map<string, unknown>();
+type CacheEntry<T> = { value: T | null; timestamp: number };
 
-// Per-process circuit breaker. The first time any endpoint on a given host
-// fails at the network level (ECONNREFUSED, DNS, timeout, etc.) we mark the
-// host as unreachable; every subsequent fetch to it short-circuits to the
-// placeholder immediately. This is what turns an offline backend from a
-// 30-second wall of retries into a sub-second build.
-const deadHosts = new Set<string>();
+const cache = new Map<string, CacheEntry<unknown>>();
+const inflight = new Map<string, Promise<unknown>>();
 
-class HostUnreachableError extends Error {}
-
-async function fetchJson<T>(path: string): Promise<T> {
-  const url = `${config.apiBaseUrl}${path}`;
-  const host = new URL(url).host;
-
-  if (memo.has(url)) {
-    return memo.get(url) as T;
+function authHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  if (config.apiAuthToken) {
+    headers.Authorization = `Bearer ${config.apiAuthToken}`;
   }
+  return headers;
+}
 
-  if (deadHosts.has(host)) {
-    throw new HostUnreachableError(`Skipping ${url}: host ${host} marked unreachable.`);
-  }
-
+async function rawFetch<T>(url: string): Promise<T | null> {
+  const { retries, retryDelayMs, timeoutMs } = config.fetch;
   let lastError: unknown;
 
-  for (let attempt = 0; attempt < config.fetch.retries + 1; attempt++) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), config.fetch.timeoutMs);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const response = await fetch(url, {
         signal: controller.signal,
-        headers: { Accept: 'application/json' },
+        headers: authHeaders(),
       });
 
       if (!response.ok) {
-        throw new Error(`GET ${url} → ${response.status}`);
+        console.warn(`[api] GET ${url} -> HTTP ${response.status}`);
+        if (response.status >= 500 && attempt < retries) {
+          await new Promise((r) => setTimeout(r, retryDelayMs * (attempt + 1)));
+          continue;
+        }
+        return null;
       }
 
-      const data = (await response.json()) as T;
-      memo.set(url, data);
-      return data;
+      return (await response.json()) as T;
     } catch (error) {
       lastError = error;
+      const isNetworkError =
+        error instanceof TypeError ||
+        (error as { name?: string }).name === 'AbortError';
 
-      // Network-level errors (ECONNREFUSED, DNS failure, abort/timeout) mean
-      // the host is not reachable: stop retrying and trip the breaker so the
-      // remaining endpoints don't waste the same wait time.
-      if (error instanceof TypeError || (error as { name?: string }).name === 'AbortError') {
-        if (!deadHosts.has(host)) {
-          deadHosts.add(host);
-          console.warn(
-            `[api] ${host} unreachable (${String(error)}). Skipping further requests this build.`,
-          );
-        }
-        break;
+      if (isNetworkError) {
+        console.warn(`[api] GET ${url} -> network error: ${String(error)}`);
+        return null;
       }
 
-      // HTTP error from a live server: a retry may succeed.
-      if (attempt < config.fetch.retries) {
-        await new Promise((r) => setTimeout(r, config.fetch.retryDelayMs * (attempt + 1)));
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, retryDelayMs * (attempt + 1)));
       }
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  throw new Error(
-    `Failed to fetch ${url} after ${config.fetch.retries + 1} attempts: ${String(lastError)}`,
-  );
+  console.error(`[api] GET ${url} -> exhausted retries: ${String(lastError)}`);
+  return null;
 }
 
-/**
- * Same as `fetchJson` but, on failure, returns the provided fallback so the
- * build can still complete. Fallbacks come from `./placeholders.ts` — edit
- * that file to change the demo content shown offline.
- */
-async function fetchJsonSafe<T>(path: string, fallback: T): Promise<T> {
-  try {
-    return await fetchJson<T>(path);
-  } catch (error) {
-    // Quiet log: HostUnreachableError already produced a single warn above.
-    if (!(error instanceof HostUnreachableError)) {
-      console.warn(`[api] ${path} unreachable, using placeholder: ${String(error)}`);
-    }
-    return fallback;
+async function fetchJson<T>(
+  path: string,
+  normalize: (data: T) => T | null = (d) => d,
+): Promise<T | null> {
+  const url = `${config.apiBaseUrl}${path}`;
+  const now = Date.now();
+  const entry = cache.get(url) as CacheEntry<T> | undefined;
+
+  if (entry && now - entry.timestamp < config.fetch.cacheTtlMs) {
+    return entry.value;
   }
+
+  const inflightPromise = inflight.get(url);
+  if (inflightPromise) {
+    return inflightPromise as Promise<T | null>;
+  }
+
+  const promise = (async (): Promise<T | null> => {
+    try {
+      const raw = await rawFetch<T>(url);
+      const value = raw === null ? null : normalize(raw);
+      cache.set(url, { value, timestamp: Date.now() });
+      return value;
+    } finally {
+      inflight.delete(url);
+    }
+  })();
+
+  inflight.set(url, promise);
+  return promise;
+}
+
+function normalizeOpeningHours(p: OpeningHoursPayload): OpeningHoursPayload | null {
+  if (!p.daily_hours || p.daily_hours.length === 0) return null;
+  return p;
+}
+
+function normalizePricing(p: PricingPayload): PricingPayload | null {
+  if (!p.has_prices) return null;
+  if (p.entrance_sections.length === 0 && p.pass_sections.length === 0) return null;
+  return p;
+}
+
+function normalizeLegal(p: LegalPayload): LegalPayload | null {
+  if (!p.body || p.body.trim() === '') return null;
+  return p;
 }
 
 export const api = {
-  site: () => fetchJsonSafe<SitePayload>('/site', PLACEHOLDER_SITE),
-  openingHours: () =>
-    fetchJsonSafe<OpeningHoursPayload>('/site/opening-hours', PLACEHOLDER_OPENING_HOURS),
-  pricing: () => fetchJsonSafe<PricingPayload>('/site/pricing', PLACEHOLDER_PRICING),
+  site: () => fetchJson<SitePayload>('/site'),
+  openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
+  pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
   legal: (doc: LegalDocumentName) =>
-    fetchJsonSafe<LegalPayload>(`/legal/${doc}`, PLACEHOLDER_LEGAL[doc]),
+    fetchJson<LegalPayload>(`/legal/${doc}`, normalizeLegal),
 };
