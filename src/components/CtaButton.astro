@@ -1,0 +1,55 @@
+---
+type CtaLink = { label: string; url: string };
+
+interface Props {
+  link: CtaLink | null;
+  fallbackLabel: string;
+  /** When true and link is null, render nothing instead of a disabled button. */
+  hideWhenMissing?: boolean;
+  /** External link styling (adds target/rel). */
+  external?: boolean;
+  /** Pass-through class applied to the rendered <a> or <button>. */
+  class?: string;
+  /** Optional aria-label override. */
+  'aria-label'?: string;
+}
+
+const {
+  link,
+  fallbackLabel,
+  hideWhenMissing = false,
+  external = false,
+  class: extraClass = '',
+  'aria-label': ariaLabel,
+} = Astro.props;
+
+const disabledClass = 'opacity-50 cursor-not-allowed pointer-events-none';
+---
+
+{link ? (
+  external ? (
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class={extraClass}
+      aria-label={ariaLabel}
+    >
+      {link.label}
+    </a>
+  ) : (
+    <a href={link.url} class={extraClass} aria-label={ariaLabel}>
+      {link.label}
+    </a>
+  )
+) : hideWhenMissing ? null : (
+  <button
+    type="button"
+    disabled
+    aria-disabled="true"
+    title={fallbackLabel}
+    class={`${extraClass} ${disabledClass}`.trim()}
+  >
+    {fallbackLabel}
+  </button>
+)}
