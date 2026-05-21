@@ -4,30 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A **white-label Astro 6 static-site template** for the public marketing site of a single venue (one site per deploy).
-All dynamic data is fetched **at build time** from a read-only HTTP backend that implements the contract in [
-`src/lib/dto.ts`](src/lib/dto.ts), served under the absolute URL configured in the `API_BASE_URL` env var. The backend
-is a fully external service: the template does not host any part of it. The output in `dist/` is fully static and
-deployed to Cloudflare Pages.
+A **white-label Astro 6 SSR template** for the public marketing site of a single venue (one site per deploy).
+All dynamic data is fetched **at request time** from a read-only HTTP backend that implements the contract in
+[`src/lib/dto.ts`](src/lib/dto.ts), served under the absolute URL configured in the `API_BASE_URL` env var. Every
+backend call carries a Bearer token from `API_AUTH_TOKEN`. The backend is a fully external service: the template does
+not host any part of it.
 
 The template is backend-agnostic: any server that returns the documented JSON shapes under the canonical paths can drive
-it.
+it. Results are cached in-process (default TTL 300 s, tunable via `CACHE_TTL_SECONDS`).
 
-Stack: Astro 6 (static) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5 + `marked` for legal
-markdown. Playwright for E2E, Lighthouse CI for perf/SEO gates. Node **22.12+**.
+Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5 +
+`marked` for legal markdown. Vitest for unit tests, Playwright for E2E, Lighthouse CI for perf/SEO gates. Node **22+**.
 
 ## Commands
 
-| Command            | Purpose                                                                                          |
-|--------------------|--------------------------------------------------------------------------------------------------|
-| `npm run dev`      | Dev server on `:4321` (HMR). Works offline (API calls fall back to empty payloads).              |
-| `npm run build`    | Static build into `dist/`. Does NOT fail on API errors (each wrapper has an `EMPTY_*` fallback). |
-| `npm run preview`  | Serve `dist/` locally.                                                                           |
-| `npm run check`    | `astro check` + `tsc --noEmit`. Run before claiming success.                                     |
-| `npm run lint`     | ESLint (flat config in `eslint.config.js`).                                                      |
-| `npm run format`   | Prettier write. `format:check` for read-only.                                                    |
-| `npm run test:e2e` | Playwright. Auto-starts `preview` via `webServer` config.                                        |
-| `npm run test:lh`  | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9).                                            |
+| Command                    | Purpose                                                                                                     |
+|----------------------------|-------------------------------------------------------------------------------------------------------------|
+| `npm run dev`              | Dev server on `:4321` (HMR). Calls backend on every request; shows inline "non disponibile" if down.        |
+| `npm run build`            | SSR build into `dist/`. Entry point: `dist/server/entry.mjs`.                                               |
+| `npm run preview`          | `node ./dist/server/entry.mjs` — runs the built server locally.                                             |
+| `npm run check`            | `astro check` + `tsc --noEmit`. Run before claiming success.                                                |
+| `npm run lint`             | ESLint (flat config in `eslint.config.js`).                                                                 |
+| `npm run format`           | Prettier write. `format:check` for read-only.                                                               |
+| `npm test`                 | Vitest unit tests (cache layer, single-flight, auth, null normalization).                                    |
+| `npm run test:e2e`         | Playwright against mock backend (ok mode). Auto-starts mock + SSR server via `webServer`.                   |
+| `npm run test:e2e:degraded`| Playwright with backend unreachable — asserts 503 home, inline fallbacks for legal.                         |
+| `npm run test:e2e:empty`   | Playwright with mock backend in empty-payload mode — asserts `<ErrorState>` for hours/pricing, disabled CTA.|
+| `npm run test:lh`          | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9).                                                      |
 
 Run a single E2E spec: `npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/seo.spec.ts`. Add `--ui`
 for the UI mode.
@@ -35,75 +38,110 @@ for the UI mode.
 ## Architecture: how a page renders
 
 1. **`site.config.ts`** — committed, per-deploy identity: `siteSlug`, brand (colors, logo/favicon/og URLs), `analytics`,
-   `features`, `fetch`. This is the **white-label switchboard**. Notably it does NOT contain per-environment URLs (
-   `APP_BASE_URL`, `API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
-   `src/lib/config.ts`.
-2. **`src/lib/config.ts`** — merges `site.config.ts` with `import.meta.env.*` overrides (env wins). Reads
-   `API_BASE_URL`, `APP_BASE_URL`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`. All URL fields fall back to local
-   `DEMO_*` constants declared in this file (separating env concerns from white-label config). **Always import
-   `@/lib/config` from runtime code, not `@config` directly**. Note: `appBaseUrl` is consumed only by
-   `src/lib/placeholders.ts` to build the offline `links.*.url` demo values — at runtime the template always reads CTA
-   URLs from `SitePayload.links`.
-3. **`src/lib/api.ts`** — the only network layer. `fetchJson` does **per-process memoization** + retry-with-backoff (
-   `config.fetch.retries`/`retryDelayMs`/`timeoutMs`) **plus a per-host circuit breaker**: a network-level failure (
-   ECONNREFUSED / DNS / timeout) on any endpoint marks the host as dead, and every subsequent fetch to it short-circuits
-   to the placeholder immediately. This keeps an offline backend from turning the build into a 30-second retry wall.
-   HTTP errors from a live server (e.g. 503) still go through the normal retry loop. `fetchJsonSafe` wraps `fetchJson`
-   and returns the provided fallback on failure so a missing backend never breaks the build. All wrappers (`api.site`,
-   `api.openingHours`, `api.pricing`, `api.legal(doc)`, `api.seoStructuredData`) fall back to a `PLACEHOLDER_*` value
-   from `src/lib/placeholders.ts` and always resolve to a real payload (no `null`s).
-4. **`src/lib/placeholders.ts`** — **single source of truth for offline/demo content**. Holds `PLACEHOLDER_SITE`,
-   `PLACEHOLDER_OPENING_HOURS`, `PLACEHOLDER_PRICING`, `PLACEHOLDER_SEO` and `PLACEHOLDER_LEGAL` (keyed by
-   `LegalDocumentName`, only `policy` and `cookie`). Edit this file to tweak what users see when the backend is down.
-5. **`src/lib/dto.ts`** — the public API contract. TypeScript types with JSDoc for every field, plus the canonical
-   endpoint map (`/site`, `/site/opening-hours`, `/site/pricing`, `/legal/{doc}`, `/seo/structured-data`).
-   **Intentional contract**: any drift between the backend's responses and these types is a build-break here. When the
-   contract changes, update this file first, then propagate to `src/lib/placeholders.ts`.
+   `features`, `fetch`. This is the **white-label switchboard**. It does NOT contain per-environment URLs
+   (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in `src/lib/config.ts`.
+2. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
+   `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`. Prefers `process.env.*` over
+   `import.meta.env.*` for server-only vars so the Node process can override build-time inlined values. **Always import
+   `@/lib/config` from runtime code, not `@config` directly**.
+3. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
+   - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
+   - **Single-flight / request coalescing**: concurrent requests for an expired key attach to the same in-flight
+     `Promise` rather than firing redundant fetches.
+   - **Bearer auth**: every call includes `Authorization: Bearer ${config.apiAuthToken}` (except `/up`, which is called
+     without auth by the health endpoint).
+   - **`T | null` returns, never throws**: network errors, non-2xx responses, timeouts, and "empty in a meaningful way"
+     payloads all cache and return `null`. Callers never see exceptions.
+   - Exported wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`, `api.legal(doc)`.
+4. **`src/lib/dto.ts`** — the public API contract. TypeScript types with JSDoc for every field, plus the canonical
+   endpoint map (`/site`, `/site/opening-hours`, `/site/pricing`, `/legal/{doc}`). **Intentional contract**: any drift
+   between the backend's responses and these types is a type error here. When the contract changes, update this file
+   first, then propagate to the affected components.
+5. **`src/lib/copy.ts`** — centralizes all user-visible fallback strings (`FALLBACK_COPY.service`, `.hours`,
+   `.pricing`, `.legal`, `.cta.*`). Edit here to change what visitors see when data is unavailable.
 6. **`src/pages/*.astro`** — top-level route, runs API calls in frontmatter (often with `Promise.all`), passes typed
-   payloads into components, wraps everything in `PublicLayout`.
-7. **`src/layouts/PublicLayout.astro`** — `<head>` (canonical, OG, JSON-LD, GA4 consent-mode v2 bootstrap, Bunny Fonts,
-   Font Awesome CDN) + `<Header>` / `<Footer>` / `<CookieBanner>`. Every page should go through this.
+   payloads into components, wraps everything in `PublicLayout`. Pattern:
+   - `const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);`
+   - If `site === null`: set `Astro.response.status = 503` + `Retry-After: 60`, return `<ServiceUnavailable />`.
+   - Otherwise: render `<PublicLayout site={site}>...</PublicLayout>` with the remaining nullable payloads passed to
+     the relevant components.
+7. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` as a prop (does not fetch it itself).
+   Renders `<head>` (canonical, OG, JSON-LD, GA4 consent-mode v2 bootstrap, Bunny Fonts, Font Awesome CDN) +
+   `<Header>` / `<Footer>` / `<CookieBanner>`. Every page goes through this layout.
 8. **`src/layouts/LegalDocument.astro`** — wraps `PublicLayout` and renders an `api.legal(doc)` payload (markdown → HTML
-   via `src/lib/markdown.ts`). Used by `policy.astro` and `cookie.astro` — the only two legal pages this template
-   serves (booking T&C live on the booking app; the on-site rules are rendered inline as the homepage `#regolamento`
-   section).
-9. **`src/pages/404.astro`** — generic Not Found page using `PublicLayout` + `<ErrorState>`. Astro emits it as
-   `dist/404.html`; Cloudflare Pages serves it automatically for missing routes.
-10. **`src/components/ErrorState.astro`** — reusable centered error block (badge + title + description + CTA). Use it
-    for unexpected error states (the API layer's placeholders already cover offline/missing-data cases).
+   via `src/lib/markdown.ts`). If `legal === null`, renders an `<ErrorState>` with the "documento temporaneamente non
+   disponibile" copy instead of the document body. Used by `policy.astro` and `cookie.astro`.
+9. **`src/components/ServiceUnavailable.astro`** — standalone minimal page (no dependency on `SitePayload`). Rendered
+   when `site === null`. Includes `<meta name="robots" content="noindex,nofollow">` and no GA4 script.
+10. **`src/components/CtaButton.astro`** — wrapper for `SitePayload.links.*`. If `link` is present renders an `<a>`;
+    if `link === null` and `hideWhenMissing` is set renders nothing; otherwise renders a `<button disabled
+    aria-disabled="true">` with the `fallbackLabel` and disabled styling. Use this everywhere instead of raw
+    `{link && <a>}` patterns.
+11. **`src/pages/health.ts`** — `GET /health`. Always responds 200 with
+    `{ status, backend_reachable, backend_up, timestamp }` and `Cache-Control: no-store`. Use for process-manager
+    healthchecks and smoke tests. `backend_up` probes `${API_BASE_URL host root}/up` without auth (2 s timeout, no
+    cache). `backend_reachable` is `true` if `api.site()` returns non-null. `status` is `'ok'` when both are true,
+    `'degraded'` otherwise.
+12. **`src/pages/404.astro`** — generic Not Found page using `<ErrorState>`. Does not depend on `SitePayload`.
+13. **`src/components/ErrorState.astro`** — reusable centered error block (badge + title + description + CTA). Use for
+    non-critical inline "non disponibile" states (hours, pricing, legal when site is up).
 
 ## Conventions & gotchas
 
 - **CTAs to external apps** (booking, login, register, hotel) come from `SitePayload.links` (`site.links.booking`/
-  `login`/`register`/`hotel`), each shaped as `{ label, url } | null`. Render with
-  `{link && <a href={link.url}>{link.label}</a>}`. Do NOT hardcode any CTA URL in the template. There's an E2E test (
-  `tests/e2e/cta.spec.ts`) that fails if any login/prenota link resolves to `http://localhost:4321/...` — i.e. if a
-  relative href was used by mistake.
+  `login`/`register`/`hotel`), each shaped as `{ label, url } | null`. Always render with `<CtaButton link={...}
+  fallbackLabel={...} />` — never with a raw `<a>` or a hardcoded URL. If `link` is `null`, `CtaButton` shows a
+  disabled button (or hides, for `hotel`). There is an E2E test (`tests/e2e/cta.spec.ts`) that fails if any
+  login/prenota link resolves to `http://localhost:4321/...` — i.e. if a relative href was used by mistake.
 - **Navigation is hardcoded.** Header/footer entries live in `src/lib/navigation.ts`, not the API. To white-label menus
   per client, fork and edit; don't try to expose them through the backend.
-- **Legal markdown is trusted.** `src/lib/markdown.ts` runs `marked.parse` and inserts the output via `set:html` with no
-  sanitization — source bodies are expected to come from trusted internal authors. Don't change this without also adding
-  a sanitizer.
+- **Legal markdown is trusted.** `src/lib/markdown.ts` runs `marked.parse` and inserts the output via `set:html` with
+  no sanitization — source bodies are expected to come from trusted internal authors. Don't change this without also
+  adding a sanitizer.
 - **Tailwind 4 CSS-first**: tokens are declared in `src/styles/tokens.css` using `@theme { --... }`. No
   `tailwind.config.ts`. Add design tokens there, not in JS.
 - **Path aliases** (`tsconfig.json`): `@/*` → `src/*`, `@config` → `./site.config.ts`. Prefer `@/lib/config` over
   `@config` in non-config code so env overrides apply.
 - **Cookie consent**: `PublicLayout.astro` injects GA4 with `gtag('consent', 'default', ...)` set to
-  `analytics.consentDefault` (default `denied`). `CookieBanner.astro` persists the user's choice in `localStorage` under
-  `cookie_consent` with a 6-month TTL (Garante 10/06/2021) and calls `gtag('consent', 'update', ...)`. There is no "edit
-  preferences" affordance — the banner reappears only when the TTL expires.
+  `analytics.consentDefault` (default `denied`). `CookieBanner.astro` persists the user's choice in `localStorage`
+  under `cookie_consent` with a 6-month TTL (Garante 10/06/2021) and calls `gtag('consent', 'update', ...)`. There is
+  no "edit preferences" affordance — the banner reappears only when the TTL expires.
 - **Trailing slashes**: `astro.config.mjs` sets `trailingSlash: 'never'`. Keep internal hrefs without trailing slashes
   to avoid canonical churn.
 - **Sitemap**: `@astrojs/sitemap` filters out routes containing `/_`. `robots.txt` is generated by `astro-robots-txt`
-  and points at `sitemap-index.xml`.
+  and points at `sitemap-index.xml`. Note: the health endpoint lives at `/health` (not `/_health`) so it appears in the
+  route table but is excluded from the sitemap via its own `<meta name="robots">` / response headers.
 - **E2E body selector**: legal pages use `.prose`. When adding new legal-style pages, keep that class so the legal spec
   matcher continues to work.
+- **Caching `null`**: the cache layer stores `null` results with the same TTL as successful payloads. This prevents a
+  backend outage from causing every pageview to attempt a full retry sequence (which would add seconds of latency per
+  request). To force a cache flush restart the Node process.
+- **`API_AUTH_TOKEN` is server-only**: it has no `PUBLIC_` prefix, so Astro never bundles it into the client. Never
+  log its value — `src/lib/api.ts` logs only the URL and status code on errors.
 
 ## White-labeling a new deploy
 
-(Per README) edit `site.config.ts` (`siteSlug`, `brand.*` — `logoUrl`/`faviconUrl`/`ogImageUrl` are absolute URLs to
-hosted assets, NOT files under `public/`; `public/` only contains `_headers` for Cloudflare). Set the env vars
-`API_BASE_URL` and `PUBLIC_SITE_URL` in the deploy environment (the `DEMO_*` fallbacks in `src/lib/config.ts` only cover
-local dev; `APP_BASE_URL` is consumed only by `src/lib/placeholders.ts` for offline CTA demo URLs, so production deploys
-can leave it empty). Set the matching GitHub secrets, then push to `main` for Cloudflare Pages to publish. `siteSlug`
-must match what `GET /site` returns (`SitePayload.slug`) from the targeted backend.
+1. Fork or branch the repo.
+2. Edit `site.config.ts` (branding and per-deploy identity only):
+   - `siteSlug` — must match `SitePayload.slug` returned by `GET /site` on the target backend.
+   - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` — logo,
+     favicon and OG image are absolute URLs to hosted assets, not local files.
+3. Set env vars in the deploy environment:
+
+   | Var                         | Required in prod? | Default                               | Use                                           |
+   |-----------------------------|-------------------|---------------------------------------|-----------------------------------------------|
+   | `API_BASE_URL`              | yes               | `http://localhost:8765/api/public/v1` | Backend endpoint base URL                     |
+   | `API_AUTH_TOKEN`            | yes               | —                                     | Bearer token on every backend call (not `/up`)|
+   | `PUBLIC_SITE_URL`           | yes               | `http://localhost:4321`               | Canonical URL, sitemap, OG tags               |
+   | `CACHE_TTL_SECONDS`         | no                | `300`                                 | In-process cache TTL in seconds               |
+   | `PUBLIC_GA4_MEASUREMENT_ID` | no                | —                                     | GA4 measurement ID (omit to disable GA4)      |
+   | `PORT` / `HOST`             | no                | Astro Node defaults                   | Server bind address and port                  |
+
+4. Build and start:
+   ```bash
+   npm ci && npm run build
+   node ./dist/server/entry.mjs
+   ```
+   Run under PM2 or systemd for automatic restarts. Put Nginx or Caddy in front for TLS, gzip, and to serve
+   `dist/client/` directly (bypassing Node for static assets).
+5. Smoke-test: `curl https://<sito>/health` should return `{"status":"ok","backend_reachable":true,"backend_up":true,...}`.
