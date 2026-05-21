@@ -5,15 +5,15 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import robotsTxt from 'astro-robots-txt';
 import tailwindcss from '@tailwindcss/vite';
+import node from '@astrojs/node';
 
-// astro.config runs in Node before Vite injects import.meta.env, so we
-// reach for the env explicitly via Vite's loadEnv helper.
 const env = loadEnv(process.env.NODE_ENV ?? 'development', process.cwd(), '');
 const siteUrl = env.PUBLIC_SITE_URL || 'http://localhost:4321';
 
 export default defineConfig({
   site: siteUrl,
-  output: 'static',
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   trailingSlash: 'never',
   integrations: [
     sitemap({
