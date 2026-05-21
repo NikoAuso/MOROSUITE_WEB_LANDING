@@ -22,6 +22,7 @@
     "test:e2e:ui": "playwright test --config tests/e2e/playwright.config.ts --ui",
     "test:e2e:degraded": "npm run build && playwright test --config tests/e2e/playwright.degraded.config.ts",
     "test:e2e:empty": "MOCK_BACKEND_MODE=empty npm run test:e2e",
+    "pretest:lh": "npm run build",
     "test:lh": "lhci autorun"
   },
   "dependencies": {
