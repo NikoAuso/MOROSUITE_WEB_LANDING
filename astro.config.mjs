@@ -7,6 +7,8 @@ import robotsTxt from 'astro-robots-txt';
 import tailwindcss from '@tailwindcss/vite';
 import node from '@astrojs/node';
 
+// astro.config runs in Node before Vite injects import.meta.env, so we
+// reach for the env explicitly via Vite's loadEnv helper.
 const env = loadEnv(process.env.NODE_ENV ?? 'development', process.cwd(), '');
 const siteUrl = env.PUBLIC_SITE_URL || 'http://localhost:4321';
 
