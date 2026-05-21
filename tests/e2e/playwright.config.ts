@@ -12,7 +12,7 @@ export default defineConfig({
 
   webServer: [
     {
-      command: 'node tests/e2e/fixtures/mock-backend.mjs',
+      command: 'node fixtures/mock-backend.mjs',
       url: 'http://127.0.0.1:8765/up',
       reuseExistingServer: false,
       env: {
@@ -23,7 +23,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'node ./dist/server/entry.mjs',
+      command: 'node ../../dist/server/entry.mjs',
       url: BASE_URL,
       reuseExistingServer: false,
       env: {

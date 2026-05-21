@@ -1,9 +1,18 @@
 import { siteConfig as base } from '@config';
 
-// import.meta.env is populated by Vite at build time. At runtime under SSR,
-// Astro re-resolves the variables from process.env on each request, so the
-// fallbacks below kick in only when the corresponding variable is unset.
-const env = import.meta.env;
+// import.meta.env is populated by Vite at build time. For server-only
+// (non-PUBLIC_) variables Vite inlines the build-time value, so at runtime
+// we fall back to process.env to allow the SSR node process to override them.
+const _imenv = import.meta.env;
+const _proc = typeof process !== 'undefined' ? process.env : {};
+const env = {
+  ..._imenv,
+  API_BASE_URL: _proc['API_BASE_URL'] || _imenv['API_BASE_URL'],
+  API_AUTH_TOKEN: _proc['API_AUTH_TOKEN'] || _imenv['API_AUTH_TOKEN'],
+  CACHE_TTL_SECONDS: _proc['CACHE_TTL_SECONDS'] || _imenv['CACHE_TTL_SECONDS'],
+  PUBLIC_SITE_URL: _proc['PUBLIC_SITE_URL'] || _imenv['PUBLIC_SITE_URL'],
+  PUBLIC_GA4_MEASUREMENT_ID: _proc['PUBLIC_GA4_MEASUREMENT_ID'] || _imenv['PUBLIC_GA4_MEASUREMENT_ID'],
+};
 
 const DEMO_API_BASE_URL = 'http://localhost:8765/api/public/v1';
 const DEMO_SITE_URL = 'http://localhost:4321';
