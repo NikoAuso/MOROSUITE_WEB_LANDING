@@ -25,9 +25,10 @@ export const siteConfig = {
     pdfDownload: true,
   },
 
-  // Build-time fetcher behaviour. Tuned for "fail fast then serve placeholder":
-  // worst case on a fully unreachable host is one ECONNREFUSED (~ms) plus the
-  // circuit breaker in src/lib/api.ts skipping every subsequent endpoint.
+  // Network behaviour for backend calls. Tuned for "fail fast under SSR":
+  // if the backend doesn't answer quickly, the cache populates a null for
+  // CACHE_TTL_SECONDS and pages render the explicit "non disponibile" state
+  // instead of hanging the request.
   fetch: {
     retries: 1,
     retryDelayMs: 250,
