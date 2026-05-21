@@ -1,5 +1,7 @@
 ---
 import type { SitePayload } from '@/lib/dto';
+import CtaButton from '@/components/CtaButton.astro';
+import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
   site: SitePayload;
@@ -77,14 +79,11 @@ const inoltre = [
               </a>
             )}
 
-            {booking && (
-              <a
-                href={booking.url}
-                class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
-              >
-                {booking.label}
-              </a>
-            )}
+            <CtaButton
+              link={booking}
+              fallbackLabel={FALLBACK_COPY.cta.booking}
+              class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
+            />
 
             <p class="text-xs text-slate-500">
               Rispondiamo appena possibile durante gli orari di apertura.
@@ -184,14 +183,11 @@ const inoltre = [
                 </a>
               )}
 
-              {booking && (
-                <a
-                  href={booking.url}
-                  class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
-                >
-                  {booking.label}
-                </a>
-              )}
+              <CtaButton
+                link={booking}
+                fallbackLabel={FALLBACK_COPY.cta.booking}
+                class="inline-flex items-center justify-center rounded-2xl border border-green-700 px-6 py-3 text-sm font-semibold text-green-700 hover:bg-green-50 transition focus:outline-none focus:ring-2 focus:ring-green-600/20"
+              />
             </div>
           </div>
         </div>

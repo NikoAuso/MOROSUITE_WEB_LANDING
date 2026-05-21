@@ -1,5 +1,7 @@
 ---
 import type { SitePayload } from '@/lib/dto';
+import CtaButton from '@/components/CtaButton.astro';
+import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
   site: SitePayload;
@@ -33,16 +35,13 @@ const sections = [
           ))}
         </div>
 
-        {booking && (
-          <div class="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href={booking.url}
-              class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
-            >
-              {booking.label}
-            </a>
-          </div>
-        )}
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <CtaButton
+            link={booking}
+            fallbackLabel={FALLBACK_COPY.cta.booking}
+            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+          />
+        </div>
       </div>
 
       <div class="lg:col-span-6">

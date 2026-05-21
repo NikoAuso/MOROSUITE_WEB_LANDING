@@ -2,6 +2,8 @@
 import { config } from '@/lib/config';
 import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
+import CtaButton from '@/components/CtaButton.astro';
+import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
   site: SitePayload;
@@ -141,14 +143,11 @@ const tiktok = site.social?.tiktok;
       <div class="text-center lg:text-left">
         © {new Date().getFullYear()} {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
       </div>
-      {login && (
-        <a
-          href={login.url}
-          class="inline-flex w-full items-center justify-center rounded-full border border-sky-300/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-200/60 hover:bg-sky-500/20 sm:w-auto lg:justify-self-end"
-        >
-          {login.label}
-        </a>
-      )}
+      <CtaButton
+        link={login}
+        fallbackLabel={FALLBACK_COPY.cta.login}
+        class="inline-flex w-full items-center justify-center rounded-full border border-sky-300/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-200/60 hover:bg-sky-500/20 sm:w-auto lg:justify-self-end"
+      />
     </div>
   </div>
 </footer>

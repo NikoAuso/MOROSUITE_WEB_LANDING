@@ -1,5 +1,7 @@
 ---
 import type { SitePayload } from '@/lib/dto';
+import CtaButton from '@/components/CtaButton.astro';
+import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
   site: SitePayload;
@@ -40,14 +42,11 @@ const heroImage = 'https://picsum.photos/seed/poolside/1920/1080';
         </p>
 
         <div class="mt-7 flex flex-wrap items-center gap-3">
-          {booking && (
-            <a
-              href={booking.url}
-              class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
-            >
-              {booking.label}
-            </a>
-          )}
+          <CtaButton
+            link={booking}
+            fallbackLabel={FALLBACK_COPY.cta.booking}
+            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+          />
           <a
             href="#piscina"
             class="inline-flex items-center justify-center rounded-2xl bg-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/40 transition"
