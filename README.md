@@ -12,7 +12,7 @@ drive it. The reference example is a seasonal venue (opening hours, pricing, reg
 layer is hospitality-specific: it suits any single-venue/single-brand site that wants its content owned by a backend.
 
 Want to see it running without writing a backend? Set `DEMO_MODE=true` and it serves bundled sample data. See
-[Demo in 1 minute](#demo-in-1-minute).
+[Running the demo](#running-the-demo).
 
 ## What you get
 
@@ -26,24 +26,87 @@ Want to see it running without writing a backend? Set `DEMO_MODE=true` and it se
 
 | Requirement  | Minimum                                                                        |
 | ------------ | ------------------------------------------------------------------------------ |
-| Node.js      | **22+** (see `engines.node` in `package.json`)                                 |
+| Node.js      | **22+** (see `engines.node` in `package.json`; a `.nvmrc` pins `22`)           |
 | npm          | bundled with Node 22 (do not use pnpm/yarn — keep `package-lock.json` in sync) |
-| Backend HTTP | only for real data; not needed in demo mode                                    |
+| Git          | to clone the repository                                                        |
+| Backend HTTP | **not needed for the demo**; required only for real data                       |
 
-## Demo in 1 minute
+## Running the demo
+
+The demo renders the whole site from a bundled, type-checked dataset
+([`src/lib/demo-data.ts`](src/lib/demo-data.ts)) plus the local legal documents in
+[`src/content/legal/`](src/content/legal/) — **no backend, no API token, no database**. It's the fastest way to see
+the template before wiring a real backend.
+
+### Requirements
+
+- **Node.js 22+** and **npm** (there's a `.nvmrc` pinning `22` — run `nvm use` if you use nvm).
+- **Git** to clone the repository.
+- Nothing else: the demo needs no backend, no `API_AUTH_TOKEN`, and no network access to any API.
+
+### 1. Get the code
 
 ```bash
-# Click "Use this template" on GitHub (or fork), then clone your copy:
+# "Use this template" on GitHub (or fork), then clone your copy:
 git clone https://github.com/<you>/<your-repo>.git
 cd <your-repo>
+```
+
+### 2. Install dependencies
+
+```bash
 npm install
-cp .env.example .env   # .env.example ships with DEMO_MODE=true
+```
+
+### 3. Enable demo mode
+
+```bash
+cp .env.example .env
+```
+
+`.env.example` already ships with `DEMO_MODE=true`, so copying it is enough — no editing required. Demo mode is what
+makes the data layer serve bundled data instead of calling a backend.
+
+### 4. Start the dev server
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:4321](http://localhost:4321): the site renders fully from
-[`src/lib/demo-data.ts`](src/lib/demo-data.ts) — no backend required. To connect a real backend, set `DEMO_MODE=false`
-in `.env` and fill in `API_BASE_URL` / `FACILITY_SLUG` / `API_AUTH_TOKEN`.
+Open **[http://localhost:4321](http://localhost:4321)**. You should see a fully populated site:
+
+- **Home** (`/`) — hero, opening hours, pricing tables and the other sections, all from the demo dataset.
+- **Privacy & Cookie** (`/policy`, `/cookie`) — rendered from the placeholder Markdown in `src/content/legal/`.
+- **Health** (`/health`) — returns `{"status":"ok","demo":true,...}`.
+
+### Verify you're in demo mode
+
+```bash
+curl http://localhost:4321/health
+# → {"status":"ok","backend_reachable":true,"backend_up":true,"demo":true,...}
+```
+
+`"demo":true` confirms the site is served entirely from bundled data. In this mode the pages render **even if no
+backend exists or the configured API is unreachable** — the network is never touched.
+
+### Run the demo as a production build (optional)
+
+```bash
+npm run build                                  # → dist/server/entry.mjs + dist/client/
+DEMO_MODE=true node ./dist/server/entry.mjs    # serves on http://localhost:4321
+```
+
+### Turn the demo off (connect a real backend)
+
+Set `DEMO_MODE=false` in `.env` (or remove it) and fill in the backend variables — see
+[Configuration](#configuration):
+
+```bash
+DEMO_MODE=false
+API_BASE_URL=https://your-backend.example.com/api/public/v1
+FACILITY_SLUG=your-facility
+API_AUTH_TOKEN=your-bearer-token
+```
 
 ## How it works
 
