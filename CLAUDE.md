@@ -18,7 +18,7 @@ The template is backend-agnostic: any server that returns the documented JSON sh
 it. Results are cached in-process (default TTL 300 s, tunable via `CACHE_TTL_SECONDS`).
 
 Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
-Vitest for unit tests, Playwright for E2E, Lighthouse CI for perf/SEO gates. Node **22+**.
+Vitest for unit tests, Playwright for E2E, and a Lighthouse config (`lighthouserc.json`) for manual perf/SEO audits (run `npm run test:lh` against a real deploy — not a CI gate). Node **22+**.
 
 ## Commands
 

@@ -19,7 +19,7 @@ Want to see it running without writing a backend? Set `DEMO_MODE=true` and it se
 - Astro 6 SSR (`output: 'server'`, `@astrojs/node` standalone) — builds to a Node server (`dist/server/entry.mjs`).
 - In-process response cache (default TTL 300 s) with single-flight request coalescing.
 - Bearer-authenticated backend calls that **never throw**: failures degrade to explicit "non disponibile" UI.
-- Tailwind 4 (CSS-first `@theme`), TypeScript 5, GA4 consent-mode v2, sitemap + robots, Lighthouse CI gates.
+- Tailwind 4 (CSS-first `@theme`), TypeScript 5, GA4 consent-mode v2, sitemap + robots, and a Lighthouse config for manual perf/SEO/a11y audits.
 - A typed demo dataset so a fresh clone renders a complete site with zero backend.
 
 ## Prerequisites
