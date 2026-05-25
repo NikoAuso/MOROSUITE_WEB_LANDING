@@ -25,7 +25,7 @@ Thumbs.db
 *.swo
 
 # Claude Code (user-local config)
-.claude/settings.local.json
+.claude/
 
 # caches
 .cache
