@@ -10,7 +10,8 @@ interface Props {
 }
 
 const { pricing, site } = Astro.props;
-const entranceSections = pricing?.entrance_sections.filter((section) => section.rows.length > 0) ?? [];
+const entranceSections =
+  pricing?.entrance_sections.filter((section) => section.rows.length > 0) ?? [];
 const passSections = pricing?.pass_sections.filter((section) => section.rows.length > 0) ?? [];
 const booking = site.links?.booking ?? null;
 const whatsapp = site.contacts?.whatsapp;
