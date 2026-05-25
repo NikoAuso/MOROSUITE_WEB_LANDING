@@ -3,6 +3,7 @@ import type { PricingPayload, SitePayload } from '@/lib/dto';
 import ErrorState from '@/components/ErrorState.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { visiblePricingSections } from '@/lib/pricing';
 
 interface Props {
   pricing: PricingPayload | null;
@@ -10,9 +11,8 @@ interface Props {
 }
 
 const { pricing, site } = Astro.props;
-const entranceSections =
-  pricing?.entrance_sections.filter((section) => section.rows.length > 0) ?? [];
-const passSections = pricing?.pass_sections.filter((section) => section.rows.length > 0) ?? [];
+const entranceSections = pricing ? visiblePricingSections(pricing.entrance_sections) : [];
+const passSections = pricing ? visiblePricingSections(pricing.pass_sections) : [];
 const booking = site.links?.booking ?? null;
 const whatsapp = site.contacts?.whatsapp;
 const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;

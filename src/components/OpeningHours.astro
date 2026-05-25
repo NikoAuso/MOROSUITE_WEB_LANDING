@@ -2,6 +2,7 @@
 import type { SitePayload, OpeningHoursPayload } from '@/lib/dto';
 import ErrorState from '@/components/ErrorState.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { formatSeasonDate } from '@/lib/format';
 
 interface Props {
   hours: OpeningHoursPayload | null;
@@ -9,15 +10,6 @@ interface Props {
 }
 
 const { hours, site } = Astro.props;
-
-const formatSeasonDate = (iso: string | null): string | null =>
-  iso
-    ? new Date(`${iso}T00:00:00`).toLocaleDateString('it-IT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : null;
 
 const seasonCards = [
   { label: 'Inizio stagione', value: formatSeasonDate(site.season.start_date) },
