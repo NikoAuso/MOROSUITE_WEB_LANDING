@@ -1,10 +1,26 @@
 ---
 const services = [
-  { icon: 'fa-martini-glass-citrus', title: 'Bar & Ristorante', text: 'Cocktail, snack e piatti leggeri serviti comodamente in terrazza.' },
+  {
+    icon: 'fa-martini-glass-citrus',
+    title: 'Bar & Ristorante',
+    text: 'Cocktail, snack e piatti leggeri serviti comodamente in terrazza.',
+  },
   { icon: 'fa-shower', title: 'Spogliatoi', text: 'Spogliatoi con docce e armadietti.' },
-  { icon: 'fa-wifi', title: 'Wi-Fi Gratuito', text: 'Connessione disponibile in tutta l\'area piscina.' },
-  { icon: 'fa-square-parking', title: 'Parcheggio', text: 'Area interna (fino esaurimento) e indicazioni di accesso.' },
-  { icon: 'fa-wheelchair', title: 'Accessibilità', text: 'Accessi dedicati e percorsi agevolati per tutti.' },
+  {
+    icon: 'fa-wifi',
+    title: 'Wi-Fi Gratuito',
+    text: "Connessione disponibile in tutta l'area piscina.",
+  },
+  {
+    icon: 'fa-square-parking',
+    title: 'Parcheggio',
+    text: 'Area interna (fino esaurimento) e indicazioni di accesso.',
+  },
+  {
+    icon: 'fa-wheelchair',
+    title: 'Accessibilità',
+    text: 'Accessi dedicati e percorsi agevolati per tutti.',
+  },
 ];
 ---
 
@@ -12,9 +28,12 @@ const services = [
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
     <div class="text-center">
       <div class="text-xs font-semibold tracking-widest text-sky-700">I NOSTRI SERVIZI</div>
-      <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">Tutto per il Tuo Comfort</h2>
+      <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
+        Tutto per il Tuo Comfort
+      </h2>
       <p class="mx-auto mt-4 max-w-2xl text-slate-600">
-        Una gamma completa di servizi per rendere la tua giornata in piscina comoda, semplice e indimenticabile.
+        Una gamma completa di servizi per rendere la tua giornata in piscina comoda, semplice e
+        indimenticabile.
       </p>
     </div>
 
@@ -59,17 +78,19 @@ const services = [
 
       <div class="lg:col-span-5">
         <div class="space-y-5">
-          {services.map((s) => (
-            <div class="flex gap-4">
-              <div class="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                <i class={`fa-solid ${s.icon} text-xl leading-none`} aria-hidden="true"></i>
+          {
+            services.map((s) => (
+              <div class="flex gap-4">
+                <div class="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                  <i class={`fa-solid ${s.icon} text-xl leading-none`} aria-hidden="true" />
+                </div>
+                <div>
+                  <div class="font-extrabold text-slate-900">{s.title}</div>
+                  <div class="mt-1 text-sm text-slate-600">{s.text}</div>
+                </div>
               </div>
-              <div>
-                <div class="font-extrabold text-slate-900">{s.title}</div>
-                <div class="mt-1 text-sm text-slate-600">{s.text}</div>
-              </div>
-            </div>
-          ))}
+            ))
+          }
         </div>
       </div>
     </div>

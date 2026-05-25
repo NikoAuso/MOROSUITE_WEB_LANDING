@@ -21,33 +21,44 @@ const booking = site.links?.booking ?? null;
       <div class="flex items-center gap-4">
         <a href="/" class="flex items-center gap-3 text-white">
           <div class="flex size-11 items-center justify-center rounded-lg overflow-hidden">
-            <img src={config.brand.logoUrl} alt={site.name ?? 'Logo'} class="h-full w-full object-contain" />
+            <img
+              src={config.brand.logoUrl}
+              alt={site.name ?? 'Logo'}
+              class="h-full w-full object-contain"
+            />
           </div>
-          <span class="hidden text-lg font-extrabold sm:inline">{site.short_name ?? site.name}</span>
+          <span class="hidden text-lg font-extrabold sm:inline">{site.short_name ?? site.name}</span
+          >
         </a>
       </div>
 
-      {showNav && (
-        <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
-          {PRIMARY_NAV.map((link) => (
-            <a href={link.href} class="hover:text-white transition">{link.label}</a>
-          ))}
-        </nav>
-      )}
+      {
+        showNav && (
+          <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
+            {PRIMARY_NAV.map((link) => (
+              <a href={link.href} class="hover:text-white transition">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        )
+      }
 
       <div class="flex items-center gap-2">
-        {showNav && (
-          <button
-            type="button"
-            data-mobile-menu-toggle
-            class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden"
-            aria-label="Apri menu di navigazione"
-            aria-expanded="false"
-          >
-            <i data-mobile-menu-open-icon class="fa-solid fa-bars text-base"></i>
-            <i data-mobile-menu-close-icon class="fa-solid fa-xmark text-base" hidden></i>
-          </button>
-        )}
+        {
+          showNav && (
+            <button
+              type="button"
+              data-mobile-menu-toggle
+              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden"
+              aria-label="Apri menu di navigazione"
+              aria-expanded="false"
+            >
+              <i data-mobile-menu-open-icon class="fa-solid fa-bars text-base" />
+              <i data-mobile-menu-close-icon class="fa-solid fa-xmark text-base" hidden />
+            </button>
+          )
+        }
 
         <CtaButton
           link={hotel}
@@ -66,34 +77,40 @@ const booking = site.links?.booking ?? null;
     </div>
   </div>
 
-  {showNav && (
-    <div
-      data-mobile-menu
-      class="absolute inset-x-0 top-full border-t border-white/10 bg-sky-900/95 shadow-2xl backdrop-blur md:hidden"
-      hidden
-    >
-      <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <nav class="grid gap-2 text-sm font-semibold text-white">
-          {PRIMARY_NAV.map((link) => (
-            <a href={link.href} data-mobile-menu-link class="rounded-xl px-4 py-3 transition hover:bg-white/10">
-              {link.label}
-            </a>
-          ))}
-          {hotel && (
-            <a
-              href={hotel.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-mobile-menu-link
-              class="rounded-xl px-4 py-3 transition hover:bg-white/10"
-            >
-              {hotel.label}
-            </a>
-          )}
-        </nav>
+  {
+    showNav && (
+      <div
+        data-mobile-menu
+        class="absolute inset-x-0 top-full border-t border-white/10 bg-sky-900/95 shadow-2xl backdrop-blur md:hidden"
+        hidden
+      >
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <nav class="grid gap-2 text-sm font-semibold text-white">
+            {PRIMARY_NAV.map((link) => (
+              <a
+                href={link.href}
+                data-mobile-menu-link
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+              >
+                {link.label}
+              </a>
+            ))}
+            {hotel && (
+              <a
+                href={hotel.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-mobile-menu-link
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+              >
+                {hotel.label}
+              </a>
+            )}
+          </nav>
+        </div>
       </div>
-    </div>
-  )}
+    )
+  }
 </header>
 
 <script>

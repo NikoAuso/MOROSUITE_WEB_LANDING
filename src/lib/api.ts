@@ -1,4 +1,5 @@
 import { config } from './config';
+import { DEMO_DATA } from './demo-data';
 import type {
   SitePayload,
   OpeningHoursPayload,
@@ -47,8 +48,7 @@ async function rawFetch<T>(url: string): Promise<T | null> {
     } catch (error) {
       lastError = error;
       const isNetworkError =
-        error instanceof TypeError ||
-        (error as { name?: string }).name === 'AbortError';
+        error instanceof TypeError || (error as { name?: string }).name === 'AbortError';
 
       if (isNetworkError) {
         console.warn(`[api] GET ${url} -> network error: ${String(error)}`);
@@ -71,6 +71,11 @@ async function fetchJson<T>(
   path: string,
   normalize: (data: T) => T | null = (d) => d,
 ): Promise<T | null> {
+  if (config.demoMode) {
+    const raw = DEMO_DATA[path] as T | undefined;
+    return raw === undefined ? null : normalize(raw);
+  }
+
   const url = `${config.apiBaseUrl}${path}`;
   const now = Date.now();
   const entry = cache.get(url) as CacheEntry<T> | undefined;
@@ -119,6 +124,5 @@ export const api = {
   site: () => fetchJson<SitePayload>('/site'),
   openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
   pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
-  legal: (doc: LegalDocumentName) =>
-    fetchJson<LegalPayload>(`/legal/${doc}`, normalizeLegal),
+  legal: (doc: LegalDocumentName) => fetchJson<LegalPayload>(`/legal/${doc}`, normalizeLegal),
 };

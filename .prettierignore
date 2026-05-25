@@ -1,0 +1,19 @@
+# dependencies & build output
+node_modules
+dist
+.astro
+
+# generated / lockfiles
+package-lock.json
+
+# test & perf reports
+playwright-report
+test-results
+.lighthouseci
+
+# local docs (gitignored)
+docs
+
+# prettier-plugin-astro 0.14.x cannot parse the inline GA4 consent-mode
+# bootstrap script in this layout (SyntaxError). Excluded from formatting.
+src/layouts/PublicLayout.astro

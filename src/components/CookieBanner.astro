@@ -1,4 +1,5 @@
 ---
+
 ---
 
 <!-- Cookie banner -->
@@ -12,7 +13,8 @@
         <div class="text-sm text-slate-700">
           <div class="font-semibold text-slate-900">Usiamo i cookie</div>
           <p class="mt-1">
-            Utilizziamo cookie tecnici e, previo consenso, cookie analytics (GA4) per migliorare il servizio.
+            Utilizziamo cookie tecnici e, previo consenso, cookie analytics (GA4) per migliorare il
+            servizio.
             <a href="/cookie" class="underline hover:text-slate-900">Cookie Policy</a>.
           </p>
         </div>
@@ -67,7 +69,11 @@
     try {
       const parsed = JSON.parse(raw) as { value: 'accepted' | 'rejected'; timestamp: number };
       const age = Date.now() - parsed.timestamp;
-      if (age >= 0 && CONSENT_TTL_MS >= age && (parsed.value === 'accepted' || parsed.value === 'rejected')) {
+      if (
+        age >= 0 &&
+        CONSENT_TTL_MS >= age &&
+        (parsed.value === 'accepted' || parsed.value === 'rejected')
+      ) {
         return parsed.value;
       }
     } catch {

@@ -10,11 +10,7 @@ import Servizi from '@/components/Servizi.astro';
 import Regolamento from '@/components/Regolamento.astro';
 import Bar from '@/components/Bar.astro';
 
-const [site, hours, pricing] = await Promise.all([
-  api.site(),
-  api.openingHours(),
-  api.pricing(),
-]);
+const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);
 
 if (!site) {
   Astro.response.status = 503;
@@ -26,21 +22,23 @@ const title = `${siteName} | Prenota ingresso e ombrellone`;
 const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giornata di relax.`;
 ---
 
-{site ? (
-  <PublicLayout
-    title={title}
-    description={description}
-    site={site}
-    preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
-  >
-    <Hero site={site} />
-    <PoolFeatures />
-    <OpeningHours hours={hours} site={site} />
-    <PricingTables pricing={pricing} site={site} />
-    <Servizi />
-    <Regolamento site={site} />
-    <Bar site={site} />
-  </PublicLayout>
-) : (
-  <ServiceUnavailable />
-)}
+{
+  site ? (
+    <PublicLayout
+      title={title}
+      description={description}
+      site={site}
+      preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
+    >
+      <Hero site={site} />
+      <PoolFeatures />
+      <OpeningHours hours={hours} site={site} />
+      <PricingTables pricing={pricing} site={site} />
+      <Servizi />
+      <Regolamento site={site} />
+      <Bar site={site} />
+    </PublicLayout>
+  ) : (
+    <ServiceUnavailable />
+  )
+}

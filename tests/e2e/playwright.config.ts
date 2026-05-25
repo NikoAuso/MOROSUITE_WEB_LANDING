@@ -8,7 +8,10 @@ const MODE = process.env.MOCK_BACKEND_MODE ?? 'ok';
 
 export default defineConfig({
   testDir: '.',
-  testIgnore: MODE === 'empty' ? ['cta.spec.ts', 'homepage.spec.ts', 'legal.spec.ts', 'public.spec.ts', 'degraded.spec.ts'] : ['empty.spec.ts', 'degraded.spec.ts'],
+  testIgnore:
+    MODE === 'empty'
+      ? ['cta.spec.ts', 'homepage.spec.ts', 'legal.spec.ts', 'public.spec.ts', 'degraded.spec.ts']
+      : ['empty.spec.ts', 'degraded.spec.ts'],
   fullyParallel: false,
   reporter: 'list',
   use: { baseURL: BASE_URL },

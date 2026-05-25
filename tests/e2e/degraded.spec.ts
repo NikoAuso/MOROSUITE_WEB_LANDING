@@ -18,7 +18,9 @@ test.describe('degraded — backend unreachable', () => {
     expect(res.status()).toBe(503);
   });
 
-  test('/health returns degraded with backend_reachable=false and backend_up=false', async ({ request }) => {
+  test('/health returns degraded with backend_reachable=false and backend_up=false', async ({
+    request,
+  }) => {
     const res = await request.get('/health');
     expect(res.status()).toBe(200);
     const json = await res.json();

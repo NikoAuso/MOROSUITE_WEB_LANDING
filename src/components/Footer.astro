@@ -12,12 +12,10 @@ interface Props {
 const { site } = Astro.props;
 const login = site.links?.login ?? null;
 
-const mapsQuery = [site.address.locality, site.address.region]
-  .filter(Boolean)
-  .join(' ');
+const mapsQuery = [site.address.locality, site.address.region].filter(Boolean).join(' ');
 const mapsUrl = mapsQuery
   ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
-  : site.address.google_maps_url ?? null;
+  : (site.address.google_maps_url ?? null);
 
 const phone = site.contacts?.phone;
 const phoneTel = phone ? `tel:${phone.replace(/\s+/g, '')}` : null;
@@ -45,43 +43,50 @@ const tiktok = site.social?.tiktok;
           <div class="text-lg font-extrabold text-white">{site.short_name ?? site.name}</div>
         </div>
         <p class="mt-4 text-sm text-white/70">
-          La destinazione perfetta per il tuo relax estivo. Tuffati in un mondo di freschezza e divertimento.
+          La destinazione perfetta per il tuo relax estivo. Tuffati in un mondo di freschezza e
+          divertimento.
         </p>
 
         <div class="mt-6 flex gap-3">
-          {instagram && (
-            <a
-              href={instagram}
-              aria-label="Instagram"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-pink-500 transition hover:bg-pink-500 hover:text-white"
-            >
-              <i class="fa-brands fa-instagram text-lg"></i>
-            </a>
-          )}
-          {facebook && (
-            <a
-              href={facebook}
-              aria-label="Facebook"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-blue-600 transition hover:bg-blue-600 hover:text-white"
-            >
-              <i class="fa-brands fa-facebook-f text-lg"></i>
-            </a>
-          )}
-          {tiktok && (
-            <a
-              href={tiktok}
-              aria-label="TikTok"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-black"
-            >
-              <i class="fa-brands fa-tiktok text-lg"></i>
-            </a>
-          )}
+          {
+            instagram && (
+              <a
+                href={instagram}
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-pink-500 transition hover:bg-pink-500 hover:text-white"
+              >
+                <i class="fa-brands fa-instagram text-lg" />
+              </a>
+            )
+          }
+          {
+            facebook && (
+              <a
+                href={facebook}
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-blue-600 transition hover:bg-blue-600 hover:text-white"
+              >
+                <i class="fa-brands fa-facebook-f text-lg" />
+              </a>
+            )
+          }
+          {
+            tiktok && (
+              <a
+                href={tiktok}
+                aria-label="TikTok"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-black"
+              >
+                <i class="fa-brands fa-tiktok text-lg" />
+              </a>
+            )
+          }
         </div>
       </div>
 
@@ -89,9 +94,15 @@ const tiktok = site.social?.tiktok;
       <div>
         <div class="text-sm font-extrabold text-white">Link Rapidi</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
-          {PRIMARY_NAV.map((link) => (
-            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
-          ))}
+          {
+            PRIMARY_NAV.map((link) => (
+              <li>
+                <a href={link.href} class="hover:text-white">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </div>
 
@@ -99,9 +110,15 @@ const tiktok = site.social?.tiktok;
       <div>
         <div class="text-sm font-extrabold text-white">Risorse utili</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
-          {FOOTER_NAV.map((link) => (
-            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
-          ))}
+          {
+            FOOTER_NAV.map((link) => (
+              <li>
+                <a href={link.href} class="hover:text-white">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </div>
 
@@ -109,19 +126,39 @@ const tiktok = site.social?.tiktok;
       <div>
         <div class="text-sm font-extrabold text-white">Contatti</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
-          {mapsUrl && site.address.street && (
-            <li>
-              <a href={mapsUrl} class="hover:text-white" target="_blank" rel="noopener noreferrer">
-                {site.address.street} – {site.address.postal_code} {site.address.locality} ({site.address.region})
-              </a>
-            </li>
-          )}
-          {phoneTel && (
-            <li><a href={phoneTel} class="hover:text-white">{phone}</a></li>
-          )}
-          {emailHref && (
-            <li><a href={emailHref} class="hover:text-white">{email}</a></li>
-          )}
+          {
+            mapsUrl && site.address.street && (
+              <li>
+                <a
+                  href={mapsUrl}
+                  class="hover:text-white"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {site.address.street} – {site.address.postal_code} {site.address.locality} (
+                  {site.address.region})
+                </a>
+              </li>
+            )
+          }
+          {
+            phoneTel && (
+              <li>
+                <a href={phoneTel} class="hover:text-white">
+                  {phone}
+                </a>
+              </li>
+            )
+          }
+          {
+            emailHref && (
+              <li>
+                <a href={emailHref} class="hover:text-white">
+                  {email}
+                </a>
+              </li>
+            )
+          }
         </ul>
       </div>
 
@@ -129,10 +166,21 @@ const tiktok = site.social?.tiktok;
       <div>
         <div class="text-sm font-extrabold text-white">Azienda</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
-          {site.gdpr.titolare && <li><span class="font-semibold text-white/90">{site.gdpr.titolare}</span></li>}
-          {site.address.street && (
-            <li>Sede legale: {site.address.street}, {site.address.postal_code} {site.address.locality} ({site.address.region})</li>
-          )}
+          {
+            site.gdpr.titolare && (
+              <li>
+                <span class="font-semibold text-white/90">{site.gdpr.titolare}</span>
+              </li>
+            )
+          }
+          {
+            site.address.street && (
+              <li>
+                Sede legale: {site.address.street}, {site.address.postal_code}{' '}
+                {site.address.locality} ({site.address.region})
+              </li>
+            )
+          }
         </ul>
       </div>
     </div>
@@ -141,7 +189,8 @@ const tiktok = site.social?.tiktok;
       class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/60 lg:flex-row lg:items-center lg:justify-between"
     >
       <div class="text-center lg:text-left">
-        © {new Date().getFullYear()} {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
+        © {new Date().getFullYear()}
+        {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
       </div>
       <CtaButton
         link={login}

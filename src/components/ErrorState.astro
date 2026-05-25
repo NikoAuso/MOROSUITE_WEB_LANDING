@@ -22,16 +22,18 @@ const {
 ---
 
 <section class="bg-slate-50">
-  <div class="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8">
-    <span class="inline-flex items-center rounded-full bg-sky-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-sky-700">
+  <div
+    class="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8"
+  >
+    <span
+      class="inline-flex items-center rounded-full bg-sky-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-sky-700"
+    >
       {code}
     </span>
     <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
       {title}
     </h1>
-    {description && (
-      <p class="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">{description}</p>
-    )}
+    {description && <p class="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">{description}</p>}
     <a
       href={ctaHref}
       class="mt-8 inline-flex items-center justify-center rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 transition"

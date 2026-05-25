@@ -14,23 +14,25 @@ if (!site) {
 }
 ---
 
-{site ? (
-  document ? (
-    <LegalDocument document={document} site={site} />
-  ) : (
-    <PublicLayout
-      title={FALLBACK_COPY.legal.title}
-      description={FALLBACK_COPY.legal.description}
-      site={site}
-      showNav={false}
-    >
-      <ErrorState
-        code={FALLBACK_COPY.legal.badge}
+{
+  site ? (
+    document ? (
+      <LegalDocument document={document} site={site} />
+    ) : (
+      <PublicLayout
         title={FALLBACK_COPY.legal.title}
         description={FALLBACK_COPY.legal.description}
-      />
-    </PublicLayout>
+        site={site}
+        showNav={false}
+      >
+        <ErrorState
+          code={FALLBACK_COPY.legal.badge}
+          title={FALLBACK_COPY.legal.title}
+          description={FALLBACK_COPY.legal.description}
+        />
+      </PublicLayout>
+    )
+  ) : (
+    <ServiceUnavailable />
   )
-) : (
-  <ServiceUnavailable />
-)}
+}

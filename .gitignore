@@ -4,8 +4,6 @@ node_modules
 # build output
 dist
 .astro
-.cloudflare
-.wrangler
 
 # environment
 .env
@@ -38,3 +36,6 @@ Thumbs.db
 playwright-report
 test-results
 .lighthouseci
+
+# local docs (specs/plans — kept locally, not tracked)
+docs/

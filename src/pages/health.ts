@@ -20,24 +20,37 @@ async function probeBackendUp(): Promise<boolean> {
   }
 }
 
+function healthResponse(body: Record<string, unknown>): Response {
+  return new Response(JSON.stringify({ ...body, timestamp: new Date().toISOString() }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+    },
+  });
+}
+
 export const GET: APIRoute = async () => {
+  // In demo mode there is no external backend: data is served from
+  // src/lib/demo-data.ts, so the app is healthy by definition. Skip the /up
+  // probe (it would always fail and report a misleading "degraded").
+  if (config.demoMode) {
+    return healthResponse({
+      status: 'ok',
+      backend_reachable: true,
+      backend_up: true,
+      demo: true,
+    });
+  }
+
   const [site, backendUp] = await Promise.all([api.site(), probeBackendUp()]);
   const backendReachable = site !== null;
   const status = backendReachable && backendUp ? 'ok' : 'degraded';
 
-  return new Response(
-    JSON.stringify({
-      status,
-      backend_reachable: backendReachable,
-      backend_up: backendUp,
-      timestamp: new Date().toISOString(),
-    }),
-    {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
-      },
-    },
-  );
+  return healthResponse({
+    status,
+    backend_reachable: backendReachable,
+    backend_up: backendUp,
+    demo: false,
+  });
 };

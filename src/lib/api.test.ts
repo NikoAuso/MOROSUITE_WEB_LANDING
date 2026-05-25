@@ -12,26 +12,55 @@ vi.mock('@/lib/config', () => ({
 }));
 
 const SITE_OK = {
-  slug: 'demo', name: 'Test', short_name: 'Test', tagline: null,
-  languages: ['it'], default_locale: 'it',
-  online_bookings_enabled: true, customer_can_book_any_weekday: true,
-  contacts: {}, address: {}, gdpr: { titolare: null, email_privacy: null, email_security: null },
-  social: {}, season: { start_date: null, end_date: null }, season_dates: null,
+  slug: 'demo',
+  name: 'Test',
+  short_name: 'Test',
+  tagline: null,
+  languages: ['it'],
+  default_locale: 'it',
+  online_bookings_enabled: true,
+  customer_can_book_any_weekday: true,
+  contacts: {},
+  address: {},
+  gdpr: { titolare: null, email_privacy: null, email_security: null },
+  social: {},
+  season: { start_date: null, end_date: null },
+  season_dates: null,
   links: { booking: null, login: null, register: null, hotel: null },
 };
 
 const HOURS_OK = {
   timezone: 'Europe/Rome',
-  daily_hours: [{ key: 'monday', label: 'Lun', closed: false,
-    intervals: [{ slot: 'morning', label: 'M', open: '09:00', close: '12:00' }] }],
+  daily_hours: [
+    {
+      key: 'monday',
+      label: 'Lun',
+      closed: false,
+      intervals: [{ slot: 'morning', label: 'M', open: '09:00', close: '12:00' }],
+    },
+  ],
 };
 
 const PRICING_OK = {
-  active_price_list_name: 'L', has_prices: true,
-  entrance_count: 1, pass_count: 0,
-  entrance_sections: [{ label: 'A',
-    rows: [{ label: 'X', range: null, weekday_value: 10, weekend_value: 12,
-             weekday_is_free: false, weekend_is_free: false }] }],
+  active_price_list_name: 'L',
+  has_prices: true,
+  entrance_count: 1,
+  pass_count: 0,
+  entrance_sections: [
+    {
+      label: 'A',
+      rows: [
+        {
+          label: 'X',
+          range: null,
+          weekday_value: 10,
+          weekend_value: 12,
+          weekday_is_free: false,
+          weekend_is_free: false,
+        },
+      ],
+    },
+  ],
   pass_sections: [],
 };
 
@@ -39,7 +68,8 @@ let fetchSpy: ReturnType<typeof vi.spyOn>;
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
-    status, headers: { 'Content-Type': 'application/json' },
+    status,
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 
@@ -102,7 +132,11 @@ describe('api.site', () => {
 
   it('coalesces concurrent requests into a single fetch (single-flight)', async () => {
     let resolveFetch: (v: Response) => void = () => {};
-    fetchSpy.mockReturnValue(new Promise((r) => { resolveFetch = r; }));
+    fetchSpy.mockReturnValue(
+      new Promise((r) => {
+        resolveFetch = r;
+      }),
+    );
     const { api } = await import('./api');
     const p1 = api.site();
     const p2 = api.site();
@@ -147,21 +181,31 @@ describe('api.openingHours empty normalization', () => {
 
 describe('api.pricing empty normalization', () => {
   it('returns null when has_prices is false', async () => {
-    fetchSpy.mockResolvedValue(jsonResponse({
-      active_price_list_name: null, has_prices: false,
-      entrance_count: 0, pass_count: 0,
-      entrance_sections: [], pass_sections: [],
-    }));
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        active_price_list_name: null,
+        has_prices: false,
+        entrance_count: 0,
+        pass_count: 0,
+        entrance_sections: [],
+        pass_sections: [],
+      }),
+    );
     const { api } = await import('./api');
     expect(await api.pricing()).toBeNull();
   });
 
   it('returns null when both section arrays are empty', async () => {
-    fetchSpy.mockResolvedValue(jsonResponse({
-      active_price_list_name: 'L', has_prices: true,
-      entrance_count: 0, pass_count: 0,
-      entrance_sections: [], pass_sections: [],
-    }));
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        active_price_list_name: 'L',
+        has_prices: true,
+        entrance_count: 0,
+        pass_count: 0,
+        entrance_sections: [],
+        pass_sections: [],
+      }),
+    );
     const { api } = await import('./api');
     expect(await api.pricing()).toBeNull();
   });
@@ -175,19 +219,31 @@ describe('api.pricing empty normalization', () => {
 
 describe('api.legal empty normalization', () => {
   it('returns null when body is empty string', async () => {
-    fetchSpy.mockResolvedValue(jsonResponse({
-      doc: 'policy', version: '1', effective_date: null,
-      format: 'markdown', title: 'T', body: '',
-    }));
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        doc: 'policy',
+        version: '1',
+        effective_date: null,
+        format: 'markdown',
+        title: 'T',
+        body: '',
+      }),
+    );
     const { api } = await import('./api');
     expect(await api.legal('policy')).toBeNull();
   });
 
   it('returns the payload when body is non-empty', async () => {
-    fetchSpy.mockResolvedValue(jsonResponse({
-      doc: 'policy', version: '1', effective_date: '2026-01-01',
-      format: 'markdown', title: 'T', body: '# H',
-    }));
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        doc: 'policy',
+        version: '1',
+        effective_date: '2026-01-01',
+        format: 'markdown',
+        title: 'T',
+        body: '# H',
+      }),
+    );
     const { api } = await import('./api');
     const result = await api.legal('policy');
     expect(result).not.toBeNull();

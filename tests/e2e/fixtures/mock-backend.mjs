@@ -14,18 +14,21 @@ const FACILITY_ROUTE = /^\/api\/public\/v1\/([^/]+)(\/.+)$/;
 
 const HANDLERS = {
   '/site': () => SITE,
-  '/site/opening-hours': () => MODE === 'empty'
-    ? { timezone: 'Europe/Rome', daily_hours: null }
-    : HOURS,
-  '/site/pricing': () => MODE === 'empty'
-    ? { active_price_list_name: null, has_prices: false, entrance_count: 0, pass_count: 0, entrance_sections: [], pass_sections: [] }
-    : PRICING,
-  '/legal/policy': () => MODE === 'empty'
-    ? { ...LEGAL_POLICY, body: '' }
-    : LEGAL_POLICY,
-  '/legal/cookie': () => MODE === 'empty'
-    ? { ...LEGAL_COOKIE, body: '' }
-    : LEGAL_COOKIE,
+  '/site/opening-hours': () =>
+    MODE === 'empty' ? { timezone: 'Europe/Rome', daily_hours: null } : HOURS,
+  '/site/pricing': () =>
+    MODE === 'empty'
+      ? {
+          active_price_list_name: null,
+          has_prices: false,
+          entrance_count: 0,
+          pass_count: 0,
+          entrance_sections: [],
+          pass_sections: [],
+        }
+      : PRICING,
+  '/legal/policy': () => (MODE === 'empty' ? { ...LEGAL_POLICY, body: '' } : LEGAL_POLICY),
+  '/legal/cookie': () => (MODE === 'empty' ? { ...LEGAL_COOKIE, body: '' } : LEGAL_COOKIE),
 };
 
 // In empty mode, /site stays populated (otherwise everything 503s and we can't
@@ -63,5 +66,7 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`[mock-backend] listening on http://127.0.0.1:${PORT} (mode=${MODE}, auth=${REQUIRE_AUTH})`);
+  console.log(
+    `[mock-backend] listening on http://127.0.0.1:${PORT} (mode=${MODE}, auth=${REQUIRE_AUTH})`,
+  );
 });

@@ -23,16 +23,19 @@ const sections = [
       <div class="lg:col-span-6">
         <h2 class="text-3xl font-extrabold tracking-tight">Bar in piscina</h2>
         <p class="mt-4 text-white/80">
-          Caffetteria, snack, pranzi leggeri e aperitivi: perfetto per una pausa durante la giornata.
+          Caffetteria, snack, pranzi leggeri e aperitivi: perfetto per una pausa durante la
+          giornata.
         </p>
 
         <div class="mt-6 grid gap-3">
-          {sections.map((s) => (
-            <div class="group rounded-2xl bg-white/10 p-4">
-              <div class="font-semibold flex items-center justify-between">{s.title}</div>
-              <p class="mt-2 text-sm text-white/80">{s.text}</p>
-            </div>
-          ))}
+          {
+            sections.map((s) => (
+              <div class="group rounded-2xl bg-white/10 p-4">
+                <div class="font-semibold flex items-center justify-between">{s.title}</div>
+                <p class="mt-2 text-sm text-white/80">{s.text}</p>
+              </div>
+            ))
+          }
         </div>
 
         <div class="mt-8 flex flex-wrap items-center gap-3">
