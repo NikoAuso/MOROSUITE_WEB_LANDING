@@ -40,7 +40,7 @@ const SITE: SitePayload = {
   season_dates: null,
   links: {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
-    login: { label: 'Accedi', url: 'https://app.example.com/login' },
+    login: { label: 'Area gestori', url: 'https://app.example.com/login' },
     register: { label: 'Registrati', url: 'https://app.example.com/register' },
     hotel: { label: 'Sito hotel', url: 'https://hotel.example.com' },
   },
