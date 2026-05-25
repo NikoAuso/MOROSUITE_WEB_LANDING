@@ -14,7 +14,9 @@
  *
  * Responses MUST be `application/json`. On failure the server SHOULD
  * return an `ApiError` payload with an HTTP status >= 400; the template
- * surfaces such failures as build errors.
+ * tolerates such failures at runtime — `src/lib/api.ts` returns `null` and the
+ * affected section renders an explicit "non disponibile" fallback (the home
+ * responds 503 only when `/site` itself is null).
  *
  * Any drift between a backend response and the shapes below is a build-break
  * here, by design: a type mismatch is caught at the template repo's CI level
