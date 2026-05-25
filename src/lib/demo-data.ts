@@ -37,12 +37,12 @@ const SITE: SitePayload = {
   },
   social: { instagram: 'https://instagram.com/demo', facebook: null, tiktok: null },
   season: { start_date: '2026-06-01', end_date: '2026-09-15' },
-  season_dates: [{ label: 'Stagione estiva', value: '01/06 – 15/09' }],
+  season_dates: null,
   links: {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
     login: { label: 'Accedi', url: 'https://app.example.com/login' },
     register: { label: 'Registrati', url: 'https://app.example.com/register' },
-    hotel: { label: 'Hotel', url: 'https://hotel.example.com' },
+    hotel: { label: 'Sito hotel', url: 'https://hotel.example.com' },
   },
 };
 
@@ -53,37 +53,55 @@ const OPENING_HOURS: OpeningHoursPayload = {
       key: 'monday',
       label: 'Lunedì',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     {
       key: 'tuesday',
       label: 'Martedì',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     {
       key: 'wednesday',
       label: 'Mercoledì',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     {
       key: 'thursday',
       label: 'Giovedì',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     {
       key: 'friday',
       label: 'Venerdì',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '10:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     {
       key: 'saturday',
       label: 'Sabato',
       closed: false,
-      intervals: [{ slot: 'morning', label: 'Mattina', open: '09:00', close: '13:00' }],
+      intervals: [
+        { slot: 'morning', label: 'Mattina', open: '09:00', close: '13:00' },
+        { slot: 'afternoon', label: 'Pomeriggio', open: '15:00', close: '19:00' },
+      ],
     },
     { key: 'sunday', label: 'Domenica', closed: true, intervals: [] },
   ],
@@ -92,27 +110,64 @@ const OPENING_HOURS: OpeningHoursPayload = {
 const PRICING: PricingPayload = {
   active_price_list_name: 'Listino demo',
   has_prices: true,
-  entrance_count: 2,
+  entrance_count: 6,
   pass_count: 1,
   entrance_sections: [
     {
-      label: 'Adulti',
+      label: 'Intero',
       rows: [
         {
-          label: 'Intero',
+          label: 'Adulto',
           range: 'dai 14 anni',
-          weekday_value: 12,
+          weekday_value: 10,
           weekend_value: 15,
           weekday_is_free: false,
           weekend_is_free: false,
         },
         {
-          label: 'Pomeridiano',
+          label: 'Bambino',
+          range: '3–13 anni',
+          weekday_value: 7,
+          weekend_value: 10,
+          weekday_is_free: false,
+          weekend_is_free: false,
+        },
+        {
+          label: 'Under 3',
+          range: '0–2 anni',
+          weekday_value: 0,
+          weekend_value: 0,
+          weekday_is_free: true,
+          weekend_is_free: true,
+        },
+      ],
+    },
+    {
+      label: 'Pomeridiano',
+      rows: [
+        {
+          label: 'Adulto',
           range: 'dalle 15:00',
           weekday_value: 8,
           weekend_value: 10,
           weekday_is_free: false,
           weekend_is_free: false,
+        },
+        {
+          label: 'Bambino',
+          range: '3–13 anni',
+          weekday_value: 5,
+          weekend_value: 7,
+          weekday_is_free: false,
+          weekend_is_free: false,
+        },
+        {
+          label: 'Under 3',
+          range: '0–2 anni',
+          weekday_value: 0,
+          weekend_value: 0,
+          weekday_is_free: true,
+          weekend_is_free: true,
         },
       ],
     },

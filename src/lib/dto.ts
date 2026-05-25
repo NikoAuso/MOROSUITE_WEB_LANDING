@@ -105,7 +105,7 @@ export type SitePayload = {
     end_date: string | null;
   };
 
-  /** Human-formatted seasonal cards (e.g. `{ label: "Stagione estiva", value: "06/06 – 14/09" }`) rendered in the opening-hours block. Null hides the block. */
+  /** Optional human-formatted seasonal cards. NOT rendered by the default OpeningHours component (which shows `season.start_date`/`season.end_date`); kept for custom templates. */
   season_dates: Array<{ label: string; value: string }> | null;
 
   /**
