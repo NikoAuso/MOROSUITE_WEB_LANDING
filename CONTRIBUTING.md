@@ -45,7 +45,9 @@ E2E uses a local mock backend (`tests/e2e/fixtures/`) — no external services n
 - **Design tokens** go in `src/styles/tokens.css` via `@theme`, not in JS (Tailwind 4 CSS-first; no
   `tailwind.config.ts`).
 - **Demo data** lives in `src/lib/demo-data.ts`, typed against the DTOs — update it when the contract changes so the
-  demo stays representative.
+  demo stays representative. (Legal documents are not part of the demo payloads; they live in `src/content/legal/`.)
+- **Legal pages** (`/policy`, `/cookie`) are repo-owned Markdown in `src/content/legal/` (an Astro content
+  collection) — edit those files, not the backend.
 - **Fallback copy** is centralized in `src/lib/copy.ts`.
 
 ## Commits & PRs

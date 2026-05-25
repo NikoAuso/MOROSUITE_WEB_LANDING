@@ -22,7 +22,6 @@ export const siteConfig = {
   features: {
     showLiveAvailability: false,
     showPricingFilters: true,
-    pdfDownload: true,
   },
 
   // Network behaviour for backend calls. Tuned for "fail fast under SSR":

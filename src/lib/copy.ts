@@ -18,11 +18,6 @@ export const FALLBACK_COPY = {
     title: 'Listino non disponibile',
     description: 'Non riusciamo a recuperare il listino prezzi. Riprova tra qualche minuto.',
   },
-  legal: {
-    badge: 'Documento',
-    title: 'Documento temporaneamente non disponibile',
-    description: 'Non riusciamo a recuperare il documento richiesto. Riprova tra qualche minuto.',
-  },
   cta: {
     booking: 'Prenotazioni non disponibili',
     login: 'Accesso non disponibile',

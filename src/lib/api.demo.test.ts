@@ -30,16 +30,13 @@ describe('api in demo mode', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('serves opening hours, pricing and legal from demo data', async () => {
+  it('serves opening hours and pricing from demo data', async () => {
     const { api } = await import('./api');
     expect(await api.openingHours()).toEqual(DEMO_DATA['/site/opening-hours']);
     expect(await api.pricing()).toEqual(DEMO_DATA['/site/pricing']);
-    expect(await api.legal('policy')).toEqual(DEMO_DATA['/legal/policy']);
-    expect(await api.legal('cookie')).toEqual(DEMO_DATA['/legal/cookie']);
-    // Demo fixtures must survive the normalize step (non-empty hours/prices/body).
+    // Demo fixtures must survive the normalize step (non-empty hours/prices).
     expect(await api.openingHours()).not.toBeNull();
     expect(await api.pricing()).not.toBeNull();
-    expect(await api.legal('policy')).not.toBeNull();
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

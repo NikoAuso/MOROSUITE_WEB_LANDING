@@ -1,12 +1,6 @@
 import { config } from './config';
 import { DEMO_DATA } from './demo-data';
-import type {
-  SitePayload,
-  OpeningHoursPayload,
-  PricingPayload,
-  LegalPayload,
-  LegalDocumentName,
-} from './dto';
+import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
 
 type CacheEntry<T> = { value: T | null; timestamp: number };
 
@@ -115,14 +109,8 @@ function normalizePricing(p: PricingPayload): PricingPayload | null {
   return p;
 }
 
-function normalizeLegal(p: LegalPayload): LegalPayload | null {
-  if (!p.body || p.body.trim() === '') return null;
-  return p;
-}
-
 export const api = {
   site: () => fetchJson<SitePayload>('/site'),
   openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
   pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
-  legal: (doc: LegalDocumentName) => fetchJson<LegalPayload>(`/legal/${doc}`, normalizeLegal),
 };

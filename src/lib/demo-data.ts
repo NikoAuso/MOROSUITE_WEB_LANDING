@@ -1,4 +1,4 @@
-import type { SitePayload, OpeningHoursPayload, PricingPayload, LegalPayload } from './dto';
+import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
 
 /**
  * Bundled demo payloads served when DEMO_MODE is enabled (see src/lib/config.ts
@@ -126,29 +126,9 @@ const PRICING: PricingPayload = {
   ],
 };
 
-const LEGAL_POLICY: LegalPayload = {
-  doc: 'policy',
-  version: '1.0',
-  effective_date: '2026-01-01',
-  format: 'markdown',
-  title: 'Privacy policy',
-  body: '## Privacy policy\n\nTesto della policy di esempio servito in demo mode.',
-};
-
-const LEGAL_COOKIE: LegalPayload = {
-  doc: 'cookie',
-  version: '1.0',
-  effective_date: '2026-01-01',
-  format: 'markdown',
-  title: 'Cookie policy',
-  body: '## Cookie policy\n\nTesto cookie di esempio servito in demo mode.',
-};
-
 /** Path-keyed demo payloads. Keys match the `path` passed to `fetchJson`. */
 export const DEMO_DATA: Record<string, unknown> = {
   '/site': SITE,
   '/site/opening-hours': OPENING_HOURS,
   '/site/pricing': PRICING,
-  '/legal/policy': LEGAL_POLICY,
-  '/legal/cookie': LEGAL_COOKIE,
 };

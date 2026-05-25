@@ -17,8 +17,8 @@ For local exploration without a backend, set `DEMO_MODE=true`: `src/lib/api.ts` 
 The template is backend-agnostic: any server that returns the documented JSON shapes under the canonical paths can drive
 it. Results are cached in-process (default TTL 300 s, tunable via `CACHE_TTL_SECONDS`).
 
-Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5 +
-`marked` for legal markdown. Vitest for unit tests, Playwright for E2E, Lighthouse CI for perf/SEO gates. Node **22+**.
+Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
+Vitest for unit tests, Playwright for E2E, Lighthouse CI for perf/SEO gates. Node **22+**.
 
 ## Commands
 
@@ -32,7 +32,7 @@ Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/s
 | `npm run format`            | Prettier write. `format:check` for read-only.                                                                |
 | `npm test`                  | Vitest unit tests (cache layer, single-flight, auth, null normalization).                                    |
 | `npm run test:e2e`          | Playwright against mock backend (ok mode). Auto-starts mock + SSR server via `webServer`.                    |
-| `npm run test:e2e:degraded` | Playwright with backend unreachable — asserts 503 home, inline fallbacks for legal.                          |
+| `npm run test:e2e:degraded` | Playwright with backend unreachable — asserts 503 for home and the legal pages, degraded `/health`.          |
 | `npm run test:e2e:empty`    | Playwright with mock backend in empty-payload mode — asserts `<ErrorState>` for hours/pricing, disabled CTA. |
 | `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9).                                                        |
 
@@ -60,13 +60,13 @@ for the UI mode.
      without auth by the health endpoint).
    - **`T | null` returns, never throws**: network errors, non-2xx responses, timeouts, and "empty in a meaningful way"
      payloads all cache and return `null`. Callers never see exceptions.
-   - Exported wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`, `api.legal(doc)`.
+   - Exported wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`.
 4. **`src/lib/dto.ts`** — the public API contract. TypeScript types with JSDoc for every field, plus the canonical
-   endpoint map (`/site`, `/site/opening-hours`, `/site/pricing`, `/legal/{doc}`). **Intentional contract**: any drift
-   between the backend's responses and these types is a type error here. When the contract changes, update this file
-   first, then propagate to the affected components.
+   endpoint map (`/site`, `/site/opening-hours`, `/site/pricing`). Legal docs are local (`src/content/legal/`), not
+   backend-served. **Intentional contract**: any drift between the backend's responses and these types is a type error
+   here. When the contract changes, update this file first, then propagate to the affected components.
 5. **`src/lib/copy.ts`** — centralizes all user-visible fallback strings (`FALLBACK_COPY.service`, `.hours`,
-   `.pricing`, `.legal`, `.cta.*`). Edit here to change what visitors see when data is unavailable.
+   `.pricing`, `.cta.*`). Edit here to change what visitors see when data is unavailable.
 6. **`src/pages/*.astro`** — top-level route, runs API calls in frontmatter (often with `Promise.all`), passes typed
    payloads into components, wraps everything in `PublicLayout`. Pattern:
    - `const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);`
@@ -76,9 +76,9 @@ for the UI mode.
 7. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` as a prop (does not fetch it itself).
    Renders `<head>` (canonical, OG, JSON-LD, GA4 consent-mode v2 bootstrap, Bunny Fonts, Font Awesome CDN) +
    `<Header>` / `<Footer>` / `<CookieBanner>`. Every page goes through this layout.
-8. **`src/layouts/LegalDocument.astro`** — wraps `PublicLayout` and renders an `api.legal(doc)` payload (markdown → HTML
-   via `src/lib/markdown.ts`). If `legal === null`, renders an `<ErrorState>` with the "documento temporaneamente non
-   disponibile" copy instead of the document body. Used by `policy.astro` and `cookie.astro`.
+8. **`src/layouts/LegalDocument.astro`** — renders a `legal` content-collection entry (`src/content/legal/*.md`) via
+   Astro's native `<Content />`. Used by `policy.astro` and `cookie.astro`, which load the entry with
+   `getEntry('legal', …)` and still fetch `site` from the backend for the layout (so they 503 when `/site` is null).
 9. **`src/components/ServiceUnavailable.astro`** — standalone minimal page (no dependency on `SitePayload`). Rendered
    when `site === null`. Includes `<meta name="robots" content="noindex,nofollow">` and no GA4 script.
 10. **`src/components/CtaButton.astro`** — wrapper for `SitePayload.links.*`. If `link` is present renders an `<a>`;
@@ -93,7 +93,7 @@ for the UI mode.
     probe.
 12. **`src/pages/404.astro`** — generic Not Found page using `<ErrorState>`. Does not depend on `SitePayload`.
 13. **`src/components/ErrorState.astro`** — reusable centered error block (badge + title + description + CTA). Use for
-    non-critical inline "non disponibile" states (hours, pricing, legal when site is up).
+    non-critical inline "non disponibile" states (hours, pricing).
 
 ## Conventions & gotchas
 
@@ -105,9 +105,6 @@ for the UI mode.
   mistake.
 - **Navigation is hardcoded.** Header/footer entries live in `src/lib/navigation.ts`, not the API. To white-label menus
   per client, fork and edit; don't try to expose them through the backend.
-- **Legal markdown is trusted.** `src/lib/markdown.ts` runs `marked.parse` and inserts the output via `set:html` with
-  no sanitization — source bodies are expected to come from trusted internal authors. Don't change this without also
-  adding a sanitizer.
 - **Tailwind 4 CSS-first**: tokens are declared in `src/styles/tokens.css` using `@theme { --... }`. No
   `tailwind.config.ts`. Add design tokens there, not in JS.
 - **Path aliases** (`tsconfig.json`): `@/*` → `src/*`, `@config` → `./site.config.ts`. Prefer `@/lib/config` over

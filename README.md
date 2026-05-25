@@ -4,7 +4,7 @@
 
 A **white-label Astro 6 SSR template** for a marketing/showcase website whose content is driven entirely by an
 external HTTP backend. The template ships no business data of its own: site identity, opening hours, pricing, CTA
-links and legal documents are fetched **at request time** from a read-only backend that implements the contract in
+links are fetched **at request time** from a read-only backend that implements the contract in
 [`src/lib/dto.ts`](src/lib/dto.ts).
 
 The template is **backend-agnostic** — any server returning the documented JSON shapes under the canonical paths can
@@ -49,14 +49,14 @@ in `.env` and fill in `API_BASE_URL` / `FACILITY_SLUG` / `API_AUTH_TOKEN`.
 
 ```
 page request
-  → api.site() / api.openingHours() / api.pricing() / api.legal(doc)   (src/lib/api.ts)
+  → api.site() / api.openingHours() / api.pricing()   (src/lib/api.ts)
     → DEMO_MODE on?  → bundled data from src/lib/demo-data.ts           (no network, no cache)
     → DEMO_MODE off? → in-process cache → single-flight → fetch backend with Bearer token
                          → on any failure / empty payload: return null → render fallback UI
 ```
 
 - `GET /site` returning `null` short-circuits the page to **HTTP 503** + `Retry-After: 60` (`<ServiceUnavailable />`).
-- Empty/failed hours, pricing or legal render an inline `<ErrorState>` instead.
+- Empty/failed hours or pricing render an inline `<ErrorState>` instead.
 - Missing CTA links render a disabled `<CtaButton>`. All fallback copy lives in [`src/lib/copy.ts`](src/lib/copy.ts).
 
 ## Configuration
@@ -82,23 +82,26 @@ page request
 Any backend can drive the template as long as it implements the JSON shapes in
 [`src/lib/dto.ts`](src/lib/dto.ts). All responses are `application/json` under the configured base URL.
 
-| Method | Path                  | Response DTO          | Consumed by                                     |
-| ------ | --------------------- | --------------------- | ----------------------------------------------- |
-| `GET`  | `/site`               | `SitePayload`         | Layout (header/footer), home                    |
-| `GET`  | `/site/opening-hours` | `OpeningHoursPayload` | Home (hours section)                            |
-| `GET`  | `/site/pricing`       | `PricingPayload`      | Home (pricing section)                          |
-| `GET`  | `/legal/{doc}`        | `LegalPayload`        | `/policy`, `/cookie` (`doc` ∈ `policy\|cookie`) |
+| Method | Path                  | Response DTO          | Consumed by                  |
+| ------ | --------------------- | --------------------- | ---------------------------- |
+| `GET`  | `/site`               | `SitePayload`         | Layout (header/footer), home |
+| `GET`  | `/site/opening-hours` | `OpeningHoursPayload` | Home (hours section)         |
+| `GET`  | `/site/pricing`       | `PricingPayload`      | Home (pricing section)       |
 
 Plus `GET /up` **at the host root** (not under the `/api/...` prefix), **without auth**, returning `200 OK` when the
 service is live — used by the template's `/health` probe. On error the backend should return HTTP `>= 400` with an
 `ApiError` body `{ error: { code, message } }`. Calls are server-to-server (no CORS needed). See the JSDoc in
 `src/lib/dto.ts` for every field.
 
-> **Trust boundary:** `LegalPayload.body` is rendered markdown → HTML via `set:html` **without sanitization**. Serve
-> only trusted internal content, or add a sanitizer before changing the contract.
-
-`src/lib/demo-data.ts` is a complete, type-checked example of all five payloads — a useful reference when building a
+`src/lib/demo-data.ts` is a complete, type-checked example of all three payloads — a useful reference when building a
 backend.
+
+### Legal documents
+
+The privacy and cookie pages are **repo-owned**, not backend-served: edit the Markdown in
+[`src/content/legal/policy.md`](src/content/legal/policy.md) and
+[`src/content/legal/cookie.md`](src/content/legal/cookie.md) (frontmatter: `title`, `version`, `effective_date`).
+Astro renders them natively at `/policy` and `/cookie`.
 
 ## White-labeling a deploy
 

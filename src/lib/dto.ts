@@ -11,7 +11,6 @@
  *   GET /site                  → SitePayload
  *   GET /site/opening-hours    → OpeningHoursPayload
  *   GET /site/pricing          → PricingPayload
- *   GET /legal/{doc}           → LegalPayload   (doc ∈ LegalDocumentName)
  *
  * Responses MUST be `application/json`. On failure the server SHOULD
  * return an `ApiError` payload with an HTTP status >= 400; the template
@@ -226,47 +225,6 @@ export type PricingPayload = {
 };
 
 // ---------------------------------------------------------------------------
-// Legal documents (terms, privacy, cookie, internal regulations)
-// ---------------------------------------------------------------------------
-
-/**
- * Closed set of legal documents the template renders.
- *
- * Limited to documents required for a public marketing site that loads
- * cookies/analytics (GDPR + Garante 10/06/2021). Terms of service for the
- * booking flow live on the booking app, not here; the on-site regulations
- * are rendered inline in the homepage `#regolamento` section.
- */
-export type LegalDocumentName = 'policy' | 'cookie';
-
-/**
- * A single versioned legal document. Returned by `GET /legal/{doc}`.
- *
- * **Trust boundary**: `body` is rendered through `marked` and inserted via
- * `set:html` WITHOUT sanitization. Only serve bodies authored by trusted
- * internal authors, or add a sanitizer before changing this contract.
- */
-export type LegalPayload = {
-  /** Echo of the requested document slug. */
-  doc: LegalDocumentName;
-
-  /** Free-form version string (e.g. `1.3.0`, `2026-01`). Shown verbatim. */
-  version: string;
-
-  /** ISO-8601 date the version became effective. `null` hides the date badge. */
-  effective_date: string | null;
-
-  /** Body format. Currently only `markdown` is supported. */
-  format: 'markdown';
-
-  /** Page title (h1) and OG title. */
-  title: string;
-
-  /** Document body in the format declared by `format`. Trust boundary, see above. */
-  body: string;
-};
-
-// ---------------------------------------------------------------------------
 // Error shape
 // ---------------------------------------------------------------------------
 
@@ -277,9 +235,9 @@ export type LegalPayload = {
  * return `null` instead of throwing, and the consumers (pages and components)
  * render an explicit "non disponibile" state for that endpoint. A response
  * that is technically 200 but "empty in a significant way" — e.g. `daily_hours:
- * null` for opening hours, `has_prices: false` for pricing, an empty `body` for
- * legal — is normalized to `null` by the same wrappers and treated the same
- * way. `/site === null` short-circuits the whole page to HTTP 503.
+ * null` for opening hours, `has_prices: false` for pricing — is normalized to
+ * `null` by the same wrappers and treated the same way. `/site === null`
+ * short-circuits the whole page to HTTP 503.
  */
 export type ApiError = {
   error: { code: string; message: string };

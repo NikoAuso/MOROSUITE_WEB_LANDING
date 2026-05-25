@@ -1,12 +1,16 @@
 ---
 import LegalDocument from '@/layouts/LegalDocument.astro';
-import PublicLayout from '@/layouts/PublicLayout.astro';
 import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
-import ErrorState from '@/components/ErrorState.astro';
 import { api } from '@/lib/api';
-import { FALLBACK_COPY } from '@/lib/copy';
+import { getEntry } from 'astro:content';
 
-const [site, document] = await Promise.all([api.site(), api.legal('policy')]);
+const [site, entry] = await Promise.all([api.site(), getEntry('legal', 'policy')]);
+
+// The document is a committed file, so this is effectively unreachable; guard
+// defensively in case the content file is removed.
+if (!entry) {
+  return new Response(null, { status: 404 });
+}
 
 if (!site) {
   Astro.response.status = 503;
@@ -14,25 +18,4 @@ if (!site) {
 }
 ---
 
-{
-  site ? (
-    document ? (
-      <LegalDocument document={document} site={site} />
-    ) : (
-      <PublicLayout
-        title={FALLBACK_COPY.legal.title}
-        description={FALLBACK_COPY.legal.description}
-        site={site}
-        showNav={false}
-      >
-        <ErrorState
-          code={FALLBACK_COPY.legal.badge}
-          title={FALLBACK_COPY.legal.title}
-          description={FALLBACK_COPY.legal.description}
-        />
-      </PublicLayout>
-    )
-  ) : (
-    <ServiceUnavailable />
-  )
-}
+{site ? <LegalDocument entry={entry} site={site} /> : <ServiceUnavailable />}

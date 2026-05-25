@@ -116,21 +116,3 @@ export const PRICING = {
     },
   ],
 };
-
-export const LEGAL_POLICY = {
-  doc: 'policy',
-  version: '1.0',
-  effective_date: '2026-01-01',
-  format: 'markdown',
-  title: 'Privacy policy',
-  body: '## Privacy policy\n\nTesto della policy.',
-};
-
-export const LEGAL_COOKIE = {
-  doc: 'cookie',
-  version: '1.0',
-  effective_date: '2026-01-01',
-  format: 'markdown',
-  title: 'Cookie policy',
-  body: '## Cookie policy\n\nTesto cookie.',
-};

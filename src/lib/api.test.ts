@@ -216,37 +216,3 @@ describe('api.pricing empty normalization', () => {
     expect(await api.pricing()).toEqual(PRICING_OK);
   });
 });
-
-describe('api.legal empty normalization', () => {
-  it('returns null when body is empty string', async () => {
-    fetchSpy.mockResolvedValue(
-      jsonResponse({
-        doc: 'policy',
-        version: '1',
-        effective_date: null,
-        format: 'markdown',
-        title: 'T',
-        body: '',
-      }),
-    );
-    const { api } = await import('./api');
-    expect(await api.legal('policy')).toBeNull();
-  });
-
-  it('returns the payload when body is non-empty', async () => {
-    fetchSpy.mockResolvedValue(
-      jsonResponse({
-        doc: 'policy',
-        version: '1',
-        effective_date: '2026-01-01',
-        format: 'markdown',
-        title: 'T',
-        body: '# H',
-      }),
-    );
-    const { api } = await import('./api');
-    const result = await api.legal('policy');
-    expect(result).not.toBeNull();
-    expect(result?.body).toBe('# H');
-  });
-});

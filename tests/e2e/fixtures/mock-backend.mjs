@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { SITE, HOURS, PRICING, LEGAL_POLICY, LEGAL_COOKIE } from './payloads.mjs';
+import { SITE, HOURS, PRICING } from './payloads.mjs';
 
 const PORT = Number(process.env.MOCK_BACKEND_PORT) || 18000;
 const REQUIRE_AUTH = process.env.MOCK_BACKEND_REQUIRE_AUTH === 'true';
@@ -27,8 +27,6 @@ const HANDLERS = {
           pass_sections: [],
         }
       : PRICING,
-  '/legal/policy': () => (MODE === 'empty' ? { ...LEGAL_POLICY, body: '' } : LEGAL_POLICY),
-  '/legal/cookie': () => (MODE === 'empty' ? { ...LEGAL_COOKIE, body: '' } : LEGAL_COOKIE),
 };
 
 // In empty mode, /site stays populated (otherwise everything 503s and we can't
