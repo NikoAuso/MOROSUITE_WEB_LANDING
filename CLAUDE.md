@@ -26,7 +26,7 @@ Vitest for unit tests, Playwright for E2E, Lighthouse CI for perf/SEO gates. Nod
 | --------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `npm run dev`               | Dev server on `:4321` (HMR). Calls backend on every request; shows inline "non disponibile" if down.         |
 | `npm run build`             | SSR build into `dist/`. Entry point: `dist/server/entry.mjs`.                                                |
-| `npm run preview`           | `node ./dist/server/entry.mjs` — runs the built server locally.                                              |
+| `npm run preview`           | `node --env-file-if-exists=.env ./dist/server/entry.mjs` — runs the built server locally, loading `.env`.    |
 | `npm run check`             | `astro check` + `tsc --noEmit`. Run before claiming success.                                                 |
 | `npm run lint`              | ESLint (flat config in `eslint.config.js`).                                                                  |
 | `npm run format`            | Prettier write. `format:check` for read-only.                                                                |

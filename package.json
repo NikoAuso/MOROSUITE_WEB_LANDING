@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
     "astro": "astro",
     "check": "astro check && tsc --noEmit",
     "lint": "eslint .",

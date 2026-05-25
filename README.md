@@ -92,9 +92,13 @@ backend exists or the configured API is unreachable** — the network is never t
 ### Run the demo as a production build (optional)
 
 ```bash
-npm run build                                  # → dist/server/entry.mjs + dist/client/
-DEMO_MODE=true node ./dist/server/entry.mjs    # serves on http://localhost:4321
+npm run build      # → dist/server/entry.mjs + dist/client/
+npm run preview    # runs the built server, reads .env (DEMO_MODE=true) → http://localhost:4321
 ```
+
+> `npm run preview` runs the built server and loads `.env` (via Node's `--env-file-if-exists`), so the demo works the
+> same as `npm run dev`. The **bare** `node ./dist/server/entry.mjs` does **not** read `.env` — in real production you
+> provide env vars through your process manager (PM2/systemd/Docker), see [Build & run in production](#build--run-in-production).
 
 ### Turn the demo off (connect a real backend)
 
@@ -180,8 +184,10 @@ Astro renders them natively at `/policy` and `/cookie`.
 
 ```bash
 npm ci && npm run build      # → dist/server/entry.mjs + dist/client/
-node ./dist/server/entry.mjs # or `npm run preview`
+node ./dist/server/entry.mjs # env vars come from the environment, NOT from .env
 ```
+
+(For a local run that reads `.env`, use `npm run preview` instead.)
 
 Run under PM2 / systemd / Docker for auto-restart; put Nginx or Caddy in front for TLS, gzip, and to serve
 `dist/client/` directly. Smoke-test: `curl https://<site>/health` → `{"status":"ok","backend_reachable":true,...}`.
@@ -194,18 +200,18 @@ backend to probe.
 
 ## Scripts
 
-| Command                     | Purpose                                                                        |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| `npm run dev`               | Dev server with HMR on `:4321`.                                                |
-| `npm run build`             | SSR build into `dist/`.                                                        |
-| `npm run preview`           | Run the built server locally.                                                  |
-| `npm run check`             | `astro check` + `tsc --noEmit`. Run before claiming success.                   |
-| `npm run lint` / `format`   | ESLint / Prettier.                                                             |
-| `npm test`                  | Vitest unit tests (cache, single-flight, auth, demo mode, null normalization). |
-| `npm run test:e2e`          | Playwright E2E against the mock backend (`ok` mode).                           |
-| `npm run test:e2e:degraded` | E2E with the backend unreachable.                                              |
-| `npm run test:e2e:empty`    | E2E with empty payloads.                                                       |
-| `npm run test:lh`           | Lighthouse CI (perf ≥ 0.9, SEO ≥ 0.95, a11y warn ≥ 0.9).                       |
+| Command                     | Purpose                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| `npm run dev`               | Dev server with HMR on `:4321`.                                                       |
+| `npm run build`             | SSR build into `dist/`.                                                               |
+| `npm run preview`           | Run the built `dist/server/entry.mjs` locally; loads `.env` (`--env-file-if-exists`). |
+| `npm run check`             | `astro check` + `tsc --noEmit`. Run before claiming success.                          |
+| `npm run lint` / `format`   | ESLint / Prettier.                                                                    |
+| `npm test`                  | Vitest unit tests (cache, single-flight, auth, demo mode, null normalization).        |
+| `npm run test:e2e`          | Playwright E2E against the mock backend (`ok` mode).                                  |
+| `npm run test:e2e:degraded` | E2E with the backend unreachable.                                                     |
+| `npm run test:e2e:empty`    | E2E with empty payloads.                                                              |
+| `npm run test:lh`           | Lighthouse CI (perf ≥ 0.9, SEO ≥ 0.95, a11y warn ≥ 0.9).                              |
 
 ## Contributing
 
