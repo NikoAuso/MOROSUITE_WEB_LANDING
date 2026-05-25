@@ -22,7 +22,7 @@ const formatSeasonDate = (iso: string | null): string | null =>
 const seasonCards = [
   { label: 'Inizio stagione', value: formatSeasonDate(site.season.start_date) },
   { label: 'Fine stagione', value: formatSeasonDate(site.season.end_date) },
-].filter((card) => card.value !== null);
+].filter((card): card is { label: string; value: string } => card.value !== null);
 
 const todayKey = hours
   ? new Date()

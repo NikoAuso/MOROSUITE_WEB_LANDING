@@ -10,6 +10,8 @@ interface Props {
 }
 
 const { pricing, site } = Astro.props;
+const entranceSections = pricing?.entrance_sections.filter((section) => section.rows.length > 0) ?? [];
+const passSections = pricing?.pass_sections.filter((section) => section.rows.length > 0) ?? [];
 const booking = site.links?.booking ?? null;
 const whatsapp = site.contacts?.whatsapp;
 const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;
@@ -101,10 +103,8 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
 
               <div class="mt-4">
                 <div class="price-tab-panel grid gap-4 text-sm text-slate-700" data-tab="entrance">
-                  {pricing.entrance_sections.length > 0 ? (
-                    pricing.entrance_sections
-                      .filter((section) => section.rows.length > 0)
-                      .map((section) => (
+                  {entranceSections.length > 0 ? (
+                    entranceSections.map((section) => (
                       <div class="space-y-3">
                         <div class="text-xs font-semibold uppercase tracking-widest text-slate-500">
                           {section.label}
@@ -150,10 +150,8 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
                 </div>
 
                 <div class="price-tab-panel hidden gap-4 text-sm text-slate-700" data-tab="pass">
-                  {pricing.pass_sections.length > 0 ? (
-                    pricing.pass_sections
-                      .filter((section) => section.rows.length > 0)
-                      .map((section) => (
+                  {passSections.length > 0 ? (
+                    passSections.map((section) => (
                       <div class="space-y-3">
                         <div class="text-xs font-semibold uppercase tracking-widest text-slate-500">
                           {section.label}
