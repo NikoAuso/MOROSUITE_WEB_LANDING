@@ -1,4 +1,4 @@
-# Public Site Template
+# MoroSuite Web Landing
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -33,8 +33,9 @@ Want to see it running without writing a backend? Set `DEMO_MODE=true` and it se
 ## Demo in 1 minute
 
 ```bash
-git clone <your-fork-url>
-cd <repo>
+# Click "Use this template" on GitHub (or fork), then clone your copy:
+git clone https://github.com/<you>/<your-repo>.git
+cd <your-repo>
 npm install
 cp .env.example .env   # .env.example ships with DEMO_MODE=true
 npm run dev
