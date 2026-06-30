@@ -3,7 +3,8 @@ import type { PricingPayload, SitePayload } from '@/lib/dto';
 import ErrorState from '@/components/ErrorState.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
-import { visiblePricingSections } from '@/lib/pricing';
+import { visiblePricingSections, formatPrice, countRows } from '@/lib/pricing';
+import { whatsappUrl } from '@/lib/format';
 
 interface Props {
   pricing: PricingPayload | null;
@@ -13,15 +14,10 @@ interface Props {
 const { pricing, site } = Astro.props;
 const entranceSections = pricing ? visiblePricingSections(pricing.entrance_sections) : [];
 const passSections = pricing ? visiblePricingSections(pricing.pass_sections) : [];
+const entranceCount = countRows(entranceSections);
+const passCount = countRows(passSections);
 const booking = site.links?.booking ?? null;
-const whatsapp = site.contacts?.whatsapp;
-const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;
-
-const formatPrice = (value: number | null, isFree: boolean): string => {
-  if (value === null) return '—';
-  if (isFree) return 'Gratis';
-  return `€ ${value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
+const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
 ---
 
 <section id="prezzi" class="bg-slate-50">
@@ -53,9 +49,9 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
             class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
           />
           {
-            whatsappUrl && (
+            whatsappLink && (
               <a
-                href={whatsappUrl}
+                href={whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
@@ -90,14 +86,14 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
                     class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
                     data-tab-target="entrance"
                   >
-                    Ingressi ({pricing.entrance_count})
+                    Ingressi ({entranceCount})
                   </button>
                   <button
                     type="button"
                     class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
                     data-tab-target="pass"
                   >
-                    Abbonamenti ({pricing.pass_count})
+                    Abbonamenti ({passCount})
                   </button>
                 </div>
               </div>
@@ -125,14 +121,14 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
                                 )}
                               </div>
                               <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
-                                {row.weekday_value === null ? (
+                                {row.weekday_value === null && !row.weekday_is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
                                   formatPrice(row.weekday_value, row.weekday_is_free)
                                 )}
                               </div>
                               <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
-                                {row.weekend_value === null ? (
+                                {row.weekend_value === null && !row.weekend_is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
                                   formatPrice(row.weekend_value, row.weekend_is_free)
@@ -176,7 +172,7 @@ const formatPrice = (value: number | null, isFree: boolean): string => {
                                 )}
                               </div>
                               <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
-                                {row.value === null ? (
+                                {row.value === null && !row.is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
                                   formatPrice(row.value, row.is_free)

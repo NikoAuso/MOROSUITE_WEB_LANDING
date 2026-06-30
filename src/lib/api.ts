@@ -98,6 +98,15 @@ async function fetchJson<T>(
   return promise;
 }
 
+function normalizeSite(p: SitePayload): SitePayload | null {
+  // The components dereference these required objects without optional chaining
+  // (footer address/gdpr, opening-hours season). A 200 that omits any of them
+  // violates the dto contract; treat it as null so the page degrades to 503
+  // instead of throwing during SSR render.
+  if (!p.address || !p.gdpr || !p.season) return null;
+  return p;
+}
+
 function normalizeOpeningHours(p: OpeningHoursPayload): OpeningHoursPayload | null {
   if (!p.daily_hours || p.daily_hours.length === 0) return null;
   return p;
@@ -110,7 +119,7 @@ function normalizePricing(p: PricingPayload): PricingPayload | null {
 }
 
 export const api = {
-  site: () => fetchJson<SitePayload>('/site'),
+  site: () => fetchJson<SitePayload>('/site', normalizeSite),
   openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
   pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
 };

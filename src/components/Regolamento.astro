@@ -2,6 +2,7 @@
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { whatsappUrl } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
@@ -9,8 +10,7 @@ interface Props {
 
 const { site } = Astro.props;
 const booking = site.links?.booking ?? null;
-const whatsapp = site.contacts?.whatsapp;
-const whatsappUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` : null;
+const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
 
 const obbligatorio = [
   'Farsi la doccia prima di entrare in acqua.',
@@ -70,9 +70,9 @@ const inoltre = [
 
           <div class="mt-6 flex flex-col gap-3">
             {
-              whatsappUrl && (
+              whatsappLink && (
                 <a
-                  href={whatsappUrl}
+                  href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition focus:outline-none focus:ring-2 focus:ring-green-600/40"
@@ -223,9 +223,9 @@ const inoltre = [
 
             <div class="mt-6 flex flex-col gap-3">
               {
-                whatsappUrl && (
+                whatsappLink && (
                   <a
-                    href={whatsappUrl}
+                    href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition focus:outline-none focus:ring-2 focus:ring-green-600/40"

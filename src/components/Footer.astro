@@ -4,6 +4,7 @@ import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
@@ -12,19 +13,23 @@ interface Props {
 const { site } = Astro.props;
 const login = site.links?.login ?? null;
 
+// The backend-curated pin is canonical; only synthesize a locality+region
+// search when google_maps_url is absent (per the dto contract).
 const mapsQuery = [site.address.locality, site.address.region].filter(Boolean).join(' ');
-const mapsUrl = mapsQuery
-  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
-  : (site.address.google_maps_url ?? null);
+const mapsUrl =
+  safeHref(site.address.google_maps_url) ??
+  (mapsQuery
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
+    : null);
 
 const phone = site.contacts?.phone;
 const phoneTel = phone ? `tel:${phone.replace(/\s+/g, '')}` : null;
 const email = site.contacts?.email;
 const emailHref = email ? `mailto:${email}` : null;
 
-const instagram = site.social?.instagram;
-const facebook = site.social?.facebook;
-const tiktok = site.social?.tiktok;
+const instagram = safeHref(site.social?.instagram);
+const facebook = safeHref(site.social?.facebook);
+const tiktok = safeHref(site.social?.tiktok);
 ---
 
 <footer class="bg-slate-900 border-t border-white/10">

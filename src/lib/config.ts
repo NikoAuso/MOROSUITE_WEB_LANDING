@@ -6,7 +6,6 @@ import { siteConfig as base } from '@config';
 const _imenv = import.meta.env;
 const _proc = typeof process !== 'undefined' ? process.env : {};
 const env = {
-  ..._imenv,
   API_BASE_URL: _proc['API_BASE_URL'] || _imenv['API_BASE_URL'],
   API_AUTH_TOKEN: _proc['API_AUTH_TOKEN'] || _imenv['API_AUTH_TOKEN'],
   FACILITY_SLUG: _proc['FACILITY_SLUG'] || _imenv['FACILITY_SLUG'],
@@ -35,8 +34,6 @@ export const config = {
   // instead of fetching from the backend. Toggled by the DEMO_MODE env var.
   demoMode: env.DEMO_MODE === 'true',
   apiBaseUrl: `${apiRoot}/${facilitySlug}`,
-  apiRoot,
-  facilitySlug,
   apiAuthToken: env.API_AUTH_TOKEN || '',
   siteUrl: env.PUBLIC_SITE_URL || DEMO_SITE_URL,
   fetch: {
@@ -48,5 +45,3 @@ export const config = {
     ga4MeasurementId: env.PUBLIC_GA4_MEASUREMENT_ID || base.analytics.ga4MeasurementId,
   },
 } as const;
-
-export type Config = typeof config;

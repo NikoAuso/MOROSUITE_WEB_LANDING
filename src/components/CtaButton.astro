@@ -1,4 +1,6 @@
 ---
+import { safeHref } from '@/lib/format';
+
 type CtaLink = { label: string; url: string };
 
 interface Props {
@@ -24,13 +26,14 @@ const {
 } = Astro.props;
 
 const disabledClass = 'opacity-50 cursor-not-allowed pointer-events-none';
+const href = link ? safeHref(link.url) : null;
 ---
 
 {
-  link ? (
+  link && href ? (
     external ? (
       <a
-        href={link.url}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         class={extraClass}
@@ -39,7 +42,7 @@ const disabledClass = 'opacity-50 cursor-not-allowed pointer-events-none';
         {link.label}
       </a>
     ) : (
-      <a href={link.url} class={extraClass} aria-label={ariaLabel}>
+      <a href={href} class={extraClass} aria-label={ariaLabel}>
         {link.label}
       </a>
     )

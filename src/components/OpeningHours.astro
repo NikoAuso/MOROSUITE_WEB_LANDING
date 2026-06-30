@@ -16,11 +16,17 @@ const seasonCards = [
   { label: 'Fine stagione', value: formatSeasonDate(site.season.end_date) },
 ].filter((card): card is { label: string; value: string } => card.value !== null);
 
-const todayKey = hours
-  ? new Date()
+let todayKey = '';
+if (hours) {
+  try {
+    todayKey = new Date()
       .toLocaleDateString('en-US', { weekday: 'long', timeZone: hours.timezone })
-      .toLowerCase()
-  : '';
+      .toLowerCase();
+  } catch {
+    // A malformed IANA timezone from the backend throws RangeError here. Skip
+    // the "Oggi" highlight rather than crashing the whole page render.
+  }
+}
 ---
 
 {

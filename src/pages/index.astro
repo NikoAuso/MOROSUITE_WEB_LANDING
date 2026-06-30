@@ -10,7 +10,13 @@ import Servizi from '@/components/Servizi.astro';
 import Regolamento from '@/components/Regolamento.astro';
 import Bar from '@/components/Bar.astro';
 
-const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);
+// Fetch /site first: when it is null the page renders <ServiceUnavailable> and
+// the hours/pricing payloads are discarded, so issuing them during an outage
+// only wastes two retry/backoff round-trips per request.
+const site = await api.site();
+const [hours, pricing] = site
+  ? await Promise.all([api.openingHours(), api.pricing()])
+  : [null, null];
 
 if (!site) {
   Astro.response.status = 503;

@@ -11,5 +11,3 @@ export const FOOTER_NAV = [
   { href: '/policy', label: 'Privacy' },
   { href: '/cookie', label: 'Cookie' },
 ] as const;
-
-export type NavEntry = (typeof PRIMARY_NAV)[number] | (typeof FOOTER_NAV)[number];

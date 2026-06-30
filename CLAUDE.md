@@ -47,7 +47,7 @@ for the UI mode.
 2. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
    `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`. Composes
    `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site`, `/site/pricing`, etc.
-   Also exposes `apiRoot` (without slug) and `facilitySlug` separately. Prefers `process.env.*` over `import.meta.env.*`
+   Prefers `process.env.*` over `import.meta.env.*`
    for server-only vars so the Node process can override build-time inlined values. Also reads `DEMO_MODE` and exposes
    `config.demoMode`. **Always import `@/lib/config` from runtime code, not `@config` directly**.
 3. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
