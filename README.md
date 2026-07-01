@@ -26,7 +26,7 @@ Want to see it running without writing a backend? Set `DEMO_MODE=true` and it se
 ## Prerequisites
 
 | Requirement  | Minimum                                                                        |
-|--------------|--------------------------------------------------------------------------------|
+| ------------ | ------------------------------------------------------------------------------ |
 | Node.js      | **22+** (see `engines.node` in `package.json`; a `.nvmrc` pins `22`)           |
 | npm          | bundled with Node 22 (do not use pnpm/yarn — keep `package-lock.json` in sync) |
 | Git          | to clone the repository                                                        |
@@ -133,7 +133,7 @@ page request
 `.env` (or process-manager env in prod) overrides the demo defaults inlined in `src/lib/config.ts`:
 
 | Variable                    | Required in prod? | Default                                  | Purpose                                                                |
-|-----------------------------|-------------------|------------------------------------------|------------------------------------------------------------------------|
+| --------------------------- | ----------------- | ---------------------------------------- | ---------------------------------------------------------------------- |
 | `DEMO_MODE`                 | no                | `false` (code) / `true` (`.env.example`) | `true` = serve bundled data from `src/lib/demo-data.ts`, no backend.   |
 | `API_BASE_URL`              | yes               | `http://127.0.0.1:8000/api/public/v1`    | Backend root. Full URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>` |
 | `FACILITY_SLUG`             | yes               | `demo`                                   | Slug of the facility this deploy serves; inserted after `/v1/`.        |
@@ -152,7 +152,7 @@ Any backend can drive the template as long as it implements the JSON shapes in
 [`src/lib/dto.ts`](src/lib/dto.ts). All responses are `application/json` under the configured base URL.
 
 | Method | Path                  | Response DTO          | Consumed by                  |
-|--------|-----------------------|-----------------------|------------------------------|
+| ------ | --------------------- | --------------------- | ---------------------------- |
 | `GET`  | `/site`               | `SitePayload`         | Layout (header/footer), home |
 | `GET`  | `/site/opening-hours` | `OpeningHoursPayload` | Home (hours section)         |
 | `GET`  | `/site/pricing`       | `PricingPayload`      | Home (pricing section)       |
@@ -176,8 +176,10 @@ Astro renders them natively at `/policy` and `/cookie`.
 
 1. Use this repo as a template (GitHub "Use this template") or fork it.
 2. Edit `site.config.ts` (branding + per-deploy identity only):
-  - `siteSlug` — must match `SitePayload.slug` returned by `GET /site`.
-  - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` (absolute URLs).
+
+- `siteSlug` — must match `SitePayload.slug` returned by `GET /site`.
+- `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` (absolute URLs).
+
 3. Set env vars (table above). In prod: `DEMO_MODE=false`, `API_BASE_URL`, `FACILITY_SLUG`, `API_AUTH_TOKEN`,
    `PUBLIC_SITE_URL`.
 4. Navigation menus are hardcoded in `src/lib/navigation.ts` — fork and edit to re-theme.
@@ -203,7 +205,7 @@ backend to probe.
 ## Scripts
 
 | Command                     | Purpose                                                                               |
-|-----------------------------|---------------------------------------------------------------------------------------|
+| --------------------------- | ------------------------------------------------------------------------------------- |
 | `npm run dev`               | Dev server with HMR on `:4321`.                                                       |
 | `npm run build`             | SSR build into `dist/`.                                                               |
 | `npm run preview`           | Run the built `dist/server/entry.mjs` locally; loads `.env` (`--env-file-if-exists`). |

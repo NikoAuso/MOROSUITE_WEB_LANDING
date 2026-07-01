@@ -164,11 +164,14 @@ describe('api.site malformed-payload normalization', () => {
     ['address', { ...SITE_OK, address: undefined }],
     ['gdpr', { ...SITE_OK, gdpr: undefined }],
     ['season', { ...SITE_OK, season: undefined }],
-  ])('returns null when the required %s object is missing (so the page degrades to 503)', async (_label, payload) => {
-    fetchSpy.mockResolvedValue(jsonResponse(payload));
-    const { api } = await import('./api');
-    expect(await api.site()).toBeNull();
-  });
+  ])(
+    'returns null when the required %s object is missing (so the page degrades to 503)',
+    async (_label, payload) => {
+      fetchSpy.mockResolvedValue(jsonResponse(payload));
+      const { api } = await import('./api');
+      expect(await api.site()).toBeNull();
+    },
+  );
 
   it('returns the payload when all required objects are present', async () => {
     fetchSpy.mockResolvedValue(jsonResponse(SITE_OK));

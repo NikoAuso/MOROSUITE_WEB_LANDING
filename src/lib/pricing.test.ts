@@ -47,12 +47,7 @@ describe('formatPrice', () => {
 
 describe('countRows', () => {
   it('sums the rows across sections so the badge matches the rendered list', () => {
-    expect(
-      countRows([
-        { rows: [{}, {}] },
-        { rows: [{}] },
-      ]),
-    ).toBe(3);
+    expect(countRows([{ rows: [{}, {}] }, { rows: [{}] }])).toBe(3);
     expect(countRows([])).toBe(0);
   });
 });
