@@ -16,6 +16,7 @@ interface Props {
   showNav?: boolean;
   jsonLd?: Record<string, unknown> | null;
   preloadHeroImage?: string;
+  siteName?: string;
 }
 
 const {
@@ -28,6 +29,7 @@ const {
   showNav = true,
   jsonLd = null,
   preloadHeroImage,
+  siteName = title,
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -52,7 +54,7 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:site_name" content={title} />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="it_IT" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

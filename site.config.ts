@@ -11,7 +11,7 @@ export const siteConfig = {
     accentColor: '#facc15',
     logoUrl: 'https://placehold.co/200x200/3291a8/ffffff/png?text=D',
     faviconUrl: 'https://placehold.co/64x64/3291a8/ffffff/png?text=D',
-    ogImageUrl: 'https://placehold.co/64x64/3291a8/ffffff/png?text=D',
+    ogImageUrl: 'https://placehold.co/1200x630/3291a8/ffffff/png?text=D',
   },
 
   analytics: {
