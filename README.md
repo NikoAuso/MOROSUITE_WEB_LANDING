@@ -5,7 +5,8 @@
 A **white-label Astro 6 SSR template** for a marketing/showcase website whose content is driven entirely by an
 external HTTP backend. The template ships no business data of its own: site identity, opening hours, pricing, CTA
 links are fetched **at request time** from a read-only backend that implements the contract in
-[`src/lib/dto.ts`](src/lib/dto.ts).
+[`src/lib/dto.ts`](src/lib/dto.ts) — see [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md) for a human-readable reference of
+every endpoint and field.
 
 The template is **backend-agnostic** — any server returning the documented JSON shapes under the canonical paths can
 drive it. The reference example is a seasonal venue (opening hours, pricing, regulations), but nothing in the data
