@@ -21,5 +21,6 @@ export const FALLBACK_COPY = {
   cta: {
     booking: 'Prenotazioni non disponibili',
     login: 'Accesso non disponibile',
+    manager: 'Area gestori non disponibile',
   },
 } as const;

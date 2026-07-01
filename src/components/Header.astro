@@ -14,7 +14,7 @@ interface Props {
 
 const { site, showNav = true } = Astro.props;
 const hotel = site.links?.hotel ?? null;
-const booking = site.links?.booking ?? null;
+const login = site.links?.login ?? null;
 const hotelHref = hotel ? safeHref(hotel.url) : null;
 ---
 
@@ -82,8 +82,8 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
         />
 
         <CtaButton
-          link={booking}
-          fallbackLabel={FALLBACK_COPY.cta.booking}
+          link={login}
+          fallbackLabel={FALLBACK_COPY.cta.login}
           class="inline-flex items-center justify-center rounded-xl bg-green-700 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
         />
       </div>

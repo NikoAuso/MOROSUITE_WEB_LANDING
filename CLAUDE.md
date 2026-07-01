@@ -99,8 +99,9 @@ for the UI mode.
 
 ## Conventions & gotchas
 
-- **CTAs to external apps** (booking, login, register, hotel) come from `SitePayload.links` (`site.links.booking`/
-  `login`/`register`/`hotel`), each shaped as `{ label, url } | null`. Always render with
+- **CTAs to external apps** (booking, login, manager, hotel) come from `SitePayload.links` (`site.links.booking`/
+  `login`/`manager`/`hotel`), each shaped as `{ label, url } | null`. Customer `login` renders in the header, the
+  back-office `manager` login in the footer. Always render with
   `<CtaButton link={...} fallbackLabel={...} />` — never with a raw `<a>` or a hardcoded URL. If `link` is `null`,
   `CtaButton` shows a disabled button (or hides, for `hotel`). There is an E2E test (`tests/e2e/cta.spec.ts`) that
   fails if any login/prenota link resolves to `http://localhost:4321/...` — i.e. if a relative href was used by

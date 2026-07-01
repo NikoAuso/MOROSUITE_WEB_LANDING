@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { site } = Astro.props;
-const login = site.links?.login ?? null;
+const manager = site.links?.manager ?? null;
 
 // The backend-curated pin is canonical; only synthesize a locality+region
 // search when google_maps_url is absent (per the dto contract).
@@ -211,8 +211,8 @@ const tiktok = safeHref(site.social?.tiktok);
         {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
       </div>
       <CtaButton
-        link={login}
-        fallbackLabel={FALLBACK_COPY.cta.login}
+        link={manager}
+        fallbackLabel={FALLBACK_COPY.cta.manager}
         class="inline-flex w-full items-center justify-center rounded-full border border-sky-300/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-200/60 hover:bg-sky-500/20 sm:w-auto lg:justify-self-end"
       />
     </div>
