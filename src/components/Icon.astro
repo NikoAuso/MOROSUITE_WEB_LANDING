@@ -16,5 +16,5 @@ const { name, class: className, title, ...rest } = Astro.props;
   class={className}
   aria-hidden={title ? undefined : 'true'}
   title={title}
-  {...(rest as Record<string, unknown>)}
+  {...rest as Record<string, unknown>}
 />
