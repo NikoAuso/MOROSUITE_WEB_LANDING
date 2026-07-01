@@ -81,18 +81,30 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
               </div>
 
               <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-2">
-                <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
+                <div
+                  class="grid grid-cols-2 gap-2 text-sm font-semibold"
+                  role="tablist"
+                  aria-label="Tipologia di prezzo"
+                >
                   <button
                     type="button"
+                    id="tab-entrance"
                     class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
                     data-tab-target="entrance"
+                    role="tab"
+                    aria-controls="panel-entrance"
+                    aria-selected="false"
                   >
                     Ingressi ({entranceCount})
                   </button>
                   <button
                     type="button"
+                    id="tab-pass"
                     class="price-tab rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50"
                     data-tab-target="pass"
+                    role="tab"
+                    aria-controls="panel-pass"
+                    aria-selected="false"
                   >
                     Abbonamenti ({passCount})
                   </button>
@@ -100,7 +112,13 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
               </div>
 
               <div class="mt-4">
-                <div class="price-tab-panel grid gap-4 text-sm text-slate-700" data-tab="entrance">
+                <div
+                  class="price-tab-panel grid gap-4 text-sm text-slate-700"
+                  data-tab="entrance"
+                  role="tabpanel"
+                  id="panel-entrance"
+                  aria-labelledby="tab-entrance"
+                >
                   {entranceSections.length > 0 ? (
                     entranceSections.map((section) => (
                       <div class="space-y-3">
@@ -147,7 +165,13 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                   )}
                 </div>
 
-                <div class="price-tab-panel hidden gap-4 text-sm text-slate-700" data-tab="pass">
+                <div
+                  class="price-tab-panel hidden gap-4 text-sm text-slate-700"
+                  data-tab="pass"
+                  role="tabpanel"
+                  id="panel-pass"
+                  aria-labelledby="tab-pass"
+                >
                   {passSections.length > 0 ? (
                     passSections.map((section) => (
                       <div class="space-y-3">
@@ -217,6 +241,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
       tab.classList.toggle('bg-sky-100', active);
       tab.classList.toggle('text-sky-900', active);
       tab.classList.toggle('text-slate-700', !active);
+      tab.setAttribute('aria-selected', String(active));
     });
     panels.forEach((panel) => {
       const active = panel.dataset.tab === target;
