@@ -15,6 +15,7 @@ interface Props {
   preloadHeroImage?: string;
   bodyClass?: string;
   showNav?: boolean;
+  jsonLd?: Record<string, unknown> | null;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   preloadHeroImage,
   bodyClass,
   showNav = true,
+  jsonLd = null,
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -54,6 +56,10 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+
+    {jsonLd && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+    )}
 
     {/* Favicon — demo placeholder from site.config.ts. Replace with the
         real favicon family (.ico/.svg/apple-touch/manifest) on a real deploy. */}

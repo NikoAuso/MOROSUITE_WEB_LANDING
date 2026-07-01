@@ -2,6 +2,8 @@
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
 import { api } from '@/lib/api';
+import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
+import { config } from '@/lib/config';
 import Hero from '@/components/Hero.astro';
 import PoolFeatures from '@/components/PoolFeatures.astro';
 import OpeningHours from '@/components/OpeningHours.astro';
@@ -26,6 +28,9 @@ if (!site) {
 const siteName = site?.name ?? site?.short_name ?? 'Piscina';
 const title = `${siteName} | Prenota ingresso e ombrellone`;
 const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giornata di relax.`;
+const jsonLd = site
+  ? buildLocalBusinessJsonLd(site, hours, config.siteUrl, config.brand.logoUrl)
+  : null;
 ---
 
 {
@@ -35,6 +40,7 @@ const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giorna
       description={description}
       site={site}
       preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
+      jsonLd={jsonLd}
     >
       <Hero site={site} />
       <PoolFeatures />
