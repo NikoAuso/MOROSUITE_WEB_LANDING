@@ -35,13 +35,7 @@ const jsonLd = site
 
 {
   site ? (
-    <PublicLayout
-      title={title}
-      description={description}
-      site={site}
-      preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
-      jsonLd={jsonLd}
-    >
+    <PublicLayout title={title} description={description} site={site} jsonLd={jsonLd}>
       <Hero site={site} />
       <PoolFeatures />
       <OpeningHours hours={hours} site={site} />

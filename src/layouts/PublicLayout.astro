@@ -12,7 +12,6 @@ interface Props {
   site: SitePayload;
   canonical?: string;
   ogImage?: string;
-  preloadHeroImage?: string;
   bodyClass?: string;
   showNav?: boolean;
   jsonLd?: Record<string, unknown> | null;
@@ -24,7 +23,6 @@ const {
   site,
   canonical,
   ogImage,
-  preloadHeroImage,
   bodyClass,
   showNav = true,
   jsonLd = null,
@@ -65,11 +63,6 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
         real favicon family (.ico/.svg/apple-touch/manifest) on a real deploy. */}
     <link rel="icon" href={config.brand.faviconUrl} />
     <link rel="apple-touch-icon" href={config.brand.faviconUrl} />
-
-    {/* Optional hero preload */}
-    {preloadHeroImage && (
-      <link rel="preload" as="image" href={preloadHeroImage} />
-    )}
 
     {/* Fonts: Instrument Sans via Bunny Fonts (GDPR-friendly Google Fonts mirror) */}
     {/* Loaded non-blocking via media=print + onload swap; display=swap shows a fallback face meanwhile. */}
