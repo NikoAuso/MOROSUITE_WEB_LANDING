@@ -1,8 +1,24 @@
 @import 'tailwindcss';
 
+/* Size-adjusted fallback: matches Instrument Sans metrics closely enough to
+   cut layout shift while the webfont loads (swap). Values are a starting
+   point — calibrate visually against the H1 if the swap is still visible. */
+@font-face {
+  font-family: 'Instrument Fallback';
+  src:
+    local('Segoe UI'),
+    local('Roboto'),
+    local('Helvetica Neue'),
+    local('Arial');
+  size-adjust: 105%;
+  ascent-override: 92%;
+}
+
 @theme {
-  --font-display: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Sans', 'Instrument Fallback', system-ui, -apple-system, 'Segoe UI',
+    Roboto, sans-serif;
+  --font-body: 'Instrument Sans', 'Instrument Fallback', system-ui, -apple-system, 'Segoe UI',
+    Roboto, sans-serif;
 }
 
 :root {
