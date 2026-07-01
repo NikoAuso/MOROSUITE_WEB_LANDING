@@ -18,12 +18,13 @@ The template is backend-agnostic: any server that returns the documented JSON sh
 it. Results are cached in-process (default TTL 300 s, tunable via `CACHE_TTL_SECONDS`).
 
 Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
-Vitest for unit tests, Playwright for E2E, and a Lighthouse config (`lighthouserc.json`) for manual perf/SEO audits (run `npm run test:lh` against a real deploy — not a CI gate). Node **22+**.
+Vitest for unit tests, Playwright for E2E, and a Lighthouse config (`lighthouserc.json`) for manual perf/SEO audits (run
+`npm run test:lh` against a real deploy — not a CI gate). Node **22+**.
 
 ## Commands
 
 | Command                     | Purpose                                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------ |
+|-----------------------------|--------------------------------------------------------------------------------------------------------------|
 | `npm run dev`               | Dev server on `:4321` (HMR). Calls backend on every request; shows inline "non disponibile" if down.         |
 | `npm run build`             | SSR build into `dist/`. Entry point: `dist/server/entry.mjs`.                                                |
 | `npm run preview`           | `node --env-file-if-exists=.env ./dist/server/entry.mjs` — runs the built server locally, loading `.env`.    |
@@ -46,21 +47,22 @@ for the UI mode.
    (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in `src/lib/config.ts`.
 2. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
    `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`. Composes
-   `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site`, `/site/pricing`, etc.
+   `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site`, `/site/pricing`,
+   etc.
    Prefers `process.env.*` over `import.meta.env.*`
    for server-only vars so the Node process can override build-time inlined values. Also reads `DEMO_MODE` and exposes
    `config.demoMode`. **Always import `@/lib/config` from runtime code, not `@config` directly**.
 3. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
-   - **Demo short-circuit**: when `config.demoMode` is on, returns `normalize(DEMO_DATA[path])` from
-     `src/lib/demo-data.ts` and skips network + cache entirely. With it off, behavior is unchanged.
-   - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
-   - **Single-flight / request coalescing**: concurrent requests for an expired key attach to the same in-flight
-     `Promise` rather than firing redundant fetches.
-   - **Bearer auth**: every call includes `Authorization: Bearer ${config.apiAuthToken}` (except `/up`, which is called
-     without auth by the health endpoint).
-   - **`T | null` returns, never throws**: network errors, non-2xx responses, timeouts, and "empty in a meaningful way"
-     payloads all cache and return `null`. Callers never see exceptions.
-   - Exported wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`.
+  - **Demo short-circuit**: when `config.demoMode` is on, returns `normalize(DEMO_DATA[path])` from
+    `src/lib/demo-data.ts` and skips network + cache entirely. With it off, behavior is unchanged.
+  - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
+  - **Single-flight / request coalescing**: concurrent requests for an expired key attach to the same in-flight
+    `Promise` rather than firing redundant fetches.
+  - **Bearer auth**: every call includes `Authorization: Bearer ${config.apiAuthToken}` (except `/up`, which is called
+    without auth by the health endpoint).
+  - **`T | null` returns, never throws**: network errors, non-2xx responses, timeouts, and "empty in a meaningful way"
+    payloads all cache and return `null`. Callers never see exceptions.
+  - Exported wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`.
 4. **`src/lib/dto.ts`** — the public API contract. TypeScript types with JSDoc for every field, plus the canonical
    endpoint map (`/site`, `/site/opening-hours`, `/site/pricing`). Legal docs are local (`src/content/legal/`), not
    backend-served. **Intentional contract**: any drift between the backend's responses and these types is a type error
@@ -69,10 +71,10 @@ for the UI mode.
    `.pricing`, `.cta.*`). Edit here to change what visitors see when data is unavailable.
 6. **`src/pages/*.astro`** — top-level route, runs API calls in frontmatter (often with `Promise.all`), passes typed
    payloads into components, wraps everything in `PublicLayout`. Pattern:
-   - `const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);`
-   - If `site === null`: set `Astro.response.status = 503` + `Retry-After: 60`, return `<ServiceUnavailable />`.
-   - Otherwise: render `<PublicLayout site={site}>...</PublicLayout>` with the remaining nullable payloads passed to
-     the relevant components.
+  - `const [site, hours, pricing] = await Promise.all([api.site(), api.openingHours(), api.pricing()]);`
+  - If `site === null`: set `Astro.response.status = 503` + `Retry-After: 60`, return `<ServiceUnavailable />`.
+  - Otherwise: render `<PublicLayout site={site}>...</PublicLayout>` with the remaining nullable payloads passed to
+    the relevant components.
 7. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` as a prop (does not fetch it itself).
    Renders `<head>` (canonical, OG, JSON-LD, GA4 consent-mode v2 bootstrap, Bunny Fonts, Font Awesome CDN) +
    `<Header>` / `<Footer>` / `<CookieBanner>`. Every page goes through this layout.
@@ -130,13 +132,13 @@ for the UI mode.
 
 1. Fork or branch the repo.
 2. Edit `site.config.ts` (branding and per-deploy identity only):
-   - `siteSlug` — must match `SitePayload.slug` returned by `GET /site` on the target backend.
-   - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` — logo,
-     favicon and OG image are absolute URLs to hosted assets, not local files.
+  - `siteSlug` — must match `SitePayload.slug` returned by `GET /site` on the target backend.
+  - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` — logo,
+    favicon and OG image are absolute URLs to hosted assets, not local files.
 3. Set env vars in the deploy environment:
 
    | Var                         | Required in prod? | Default                               | Use                                                                       |
-   | --------------------------- | ----------------- | ------------------------------------- | ------------------------------------------------------------------------- |
+      | --------------------------- | ----------------- | ------------------------------------- | ------------------------------------------------------------------------- |
    | `DEMO_MODE`                 | no                | `false`                               | `true` serves bundled data from `src/lib/demo-data.ts`; no backend needed |
    | `API_BASE_URL`              | yes               | `http://127.0.0.1:8000/api/public/v1` | Backend root. Full URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>`    |
    | `FACILITY_SLUG`             | yes               | `demo`                                | Slug of the facility this deploy serves. Inserted right after `/v1/`.     |
@@ -153,4 +155,5 @@ for the UI mode.
    ```
    Run under PM2 or systemd for automatic restarts. Put Nginx or Caddy in front for TLS, gzip, and to serve
    `dist/client/` directly (bypassing Node for static assets).
-5. Smoke-test: `curl https://<sito>/health` should return `{"status":"ok","backend_reachable":true,"backend_up":true,...}`.
+5. Smoke-test: `curl https://<sito>/health` should return
+   `{"status":"ok","backend_reachable":true,"backend_up":true,...}`.
