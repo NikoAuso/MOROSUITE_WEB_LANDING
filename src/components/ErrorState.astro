@@ -10,6 +10,8 @@ interface Props {
   ctaHref?: string;
   /** Label of the primary CTA. Defaults to "Torna alla home". */
   ctaLabel?: string;
+  /** Heading level for the title. Defaults to "h2" to allow a single h1 per page. */
+  as?: 'h1' | 'h2';
 }
 
 const {
@@ -18,7 +20,10 @@ const {
   description,
   ctaHref = '/',
   ctaLabel = 'Torna alla home',
+  as = 'h2',
 } = Astro.props;
+
+const Tag = as;
 ---
 
 <section class="bg-slate-50">
@@ -30,9 +35,9 @@ const {
     >
       {code}
     </span>
-    <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+    <Tag class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
       {title}
-    </h1>
+    </Tag>
     {description && <p class="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">{description}</p>}
     <a
       href={ctaHref}

@@ -13,7 +13,7 @@ const description = 'La pagina che stai cercando non esiste o è stata spostata.
 {
   site ? (
     <PublicLayout title={title} description={description} site={site}>
-      <ErrorState code="404" title={title} description={description} />
+      <ErrorState code="404" title={title} description={description} as="h1" />
     </PublicLayout>
   ) : (
     <ServiceUnavailable />
