@@ -39,3 +39,6 @@ test-results
 
 # local docs (specs/plans — kept locally, not tracked)
 docs/
+
+# git worktrees per task
+worktrees/
