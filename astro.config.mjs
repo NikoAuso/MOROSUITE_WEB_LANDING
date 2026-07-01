@@ -6,6 +6,7 @@ import mdx from '@astrojs/mdx';
 import robotsTxt from 'astro-robots-txt';
 import tailwindcss from '@tailwindcss/vite';
 import node from '@astrojs/node';
+import icon from 'astro-icon';
 
 // astro.config runs in Node before Vite injects import.meta.env, so we
 // reach for the env explicitly via Vite's loadEnv helper.
@@ -36,6 +37,7 @@ export default defineConfig({
       sitemap: `${siteUrl}/sitemap-index.xml`,
       policy: [{ userAgent: '*', allow: '/' }],
     }),
+    icon(),
   ],
   vite: {
     plugins: [tailwindcss()],

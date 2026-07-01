@@ -1,7 +1,10 @@
 ---
+import { getImage } from 'astro:assets';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
 import { api } from '@/lib/api';
+import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
+import { config } from '@/lib/config';
 import Hero from '@/components/Hero.astro';
 import PoolFeatures from '@/components/PoolFeatures.astro';
 import OpeningHours from '@/components/OpeningHours.astro';
@@ -9,6 +12,7 @@ import PricingTables from '@/components/PricingTables.astro';
 import Servizi from '@/components/Servizi.astro';
 import Regolamento from '@/components/Regolamento.astro';
 import Bar from '@/components/Bar.astro';
+import heroSrc from '@/assets/hero.jpg';
 
 // Fetch /site first: when it is null the page renders <ServiceUnavailable> and
 // the hours/pricing payloads are discarded, so issuing them during an outage
@@ -26,6 +30,15 @@ if (!site) {
 const siteName = site?.name ?? site?.short_name ?? 'Piscina';
 const title = `${siteName} | Prenota ingresso e ombrellone`;
 const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giornata di relax.`;
+const jsonLd = site
+  ? buildLocalBusinessJsonLd(site, hours, config.siteUrl, config.brand.logoUrl)
+  : null;
+
+// Resolved once here (not inside Hero) so the <head> preload href and the
+// <img> src emitted by Hero are guaranteed to be the exact same URL.
+const heroImage = site
+  ? await getImage({ src: heroSrc, width: 1920, height: 1080, format: 'avif' })
+  : null;
 ---
 
 {
@@ -34,9 +47,11 @@ const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giorna
       title={title}
       description={description}
       site={site}
-      preloadHeroImage="https://picsum.photos/seed/poolside/1920/1080"
+      siteName={siteName}
+      jsonLd={jsonLd}
+      preloadHeroImage={heroImage?.src}
     >
-      <Hero site={site} />
+      <Hero site={site} hero={heroImage!} />
       <PoolFeatures />
       <OpeningHours hours={hours} site={site} />
       <PricingTables pricing={pricing} site={site} />

@@ -12,9 +12,12 @@ interface Props {
   site: SitePayload;
   canonical?: string;
   ogImage?: string;
-  preloadHeroImage?: string;
   bodyClass?: string;
   showNav?: boolean;
+  jsonLd?: Record<string, unknown> | null;
+  preloadHeroImage?: string;
+  siteName?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -23,9 +26,12 @@ const {
   site,
   canonical,
   ogImage,
-  preloadHeroImage,
   bodyClass,
   showNav = true,
+  jsonLd = null,
+  preloadHeroImage,
+  siteName = title,
+  noindex = false,
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -41,6 +47,9 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    {preloadHeroImage && <link rel="preload" as="image" href={preloadHeroImage} />}
 
     {/* Open Graph + Twitter */}
     <meta property="og:type" content="website" />
@@ -48,27 +57,34 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:site_name" content={title} />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="it_IT" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
+    {jsonLd && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+    )}
+
     {/* Favicon — demo placeholder from site.config.ts. Replace with the
         real favicon family (.ico/.svg/apple-touch/manifest) on a real deploy. */}
     <link rel="icon" href={config.brand.faviconUrl} />
     <link rel="apple-touch-icon" href={config.brand.faviconUrl} />
 
-    {/* Optional hero preload */}
-    {preloadHeroImage && (
-      <link rel="preload" as="image" href={preloadHeroImage} />
-    )}
-
     {/* Fonts: Instrument Sans via Bunny Fonts (GDPR-friendly Google Fonts mirror) */}
     {/* Loaded non-blocking via media=print + onload swap; display=swap shows a fallback face meanwhile. */}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
     <link rel="dns-prefetch" href="https://fonts.bunny.net" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="https://fonts.bunny.net/instrument-sans/files/instrument-sans-latin-700-normal.woff2"
+    />
     <link
       href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap"
       rel="stylesheet"
@@ -79,24 +95,6 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
       <link
         href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700&display=swap"
         rel="stylesheet"
-      />
-    </noscript>
-
-    {/* Font Awesome 6 (free) — loaded non-blocking via media=print + onload swap */}
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      media="print"
-      onload="this.media='all'"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
       />
     </noscript>
 
@@ -135,8 +133,11 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
   </head>
 
   <body class:list={['bg-slate-50 text-slate-900', bodyClass]}>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:shadow-lg">
+      Salta al contenuto
+    </a>
     <Header site={site} showNav={showNav} />
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer site={site} />

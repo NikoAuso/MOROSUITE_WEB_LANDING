@@ -16,4 +16,10 @@ if (!site) {
 }
 ---
 
-{site ? <LegalDocument entry={entry} site={site} /> : <ServiceUnavailable />}
+{
+  site ? (
+    <LegalDocument entry={entry} site={site} siteName={site.name ?? site.short_name ?? undefined} />
+  ) : (
+    <ServiceUnavailable />
+  )
+}

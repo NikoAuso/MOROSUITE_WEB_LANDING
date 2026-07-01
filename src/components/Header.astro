@@ -3,7 +3,9 @@ import { config } from '@/lib/config';
 import { PRIMARY_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
+import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
@@ -13,13 +15,17 @@ interface Props {
 const { site, showNav = true } = Astro.props;
 const hotel = site.links?.hotel ?? null;
 const booking = site.links?.booking ?? null;
+const hotelHref = hotel ? safeHref(hotel.url) : null;
 ---
 
 <header class="sticky top-0 z-50 bg-sky-900/90 backdrop-blur border-b border-white/10">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 text-white">
+        <a
+          href="/"
+          class="flex items-center gap-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
+        >
           <div class="flex size-11 items-center justify-center rounded-lg overflow-hidden">
             <img
               src={config.brand.logoUrl}
@@ -34,9 +40,15 @@ const booking = site.links?.booking ?? null;
 
       {
         showNav && (
-          <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
+          <nav
+            aria-label="Principale"
+            class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80"
+          >
             {PRIMARY_NAV.map((link) => (
-              <a href={link.href} class="hover:text-white transition">
+              <a
+                href={link.href}
+                class="hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
+              >
                 {link.label}
               </a>
             ))}
@@ -50,12 +62,13 @@ const booking = site.links?.booking ?? null;
             <button
               type="button"
               data-mobile-menu-toggle
-              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               aria-label="Apri menu di navigazione"
               aria-expanded="false"
+              aria-controls="mobile-menu"
             >
-              <i data-mobile-menu-open-icon class="fa-solid fa-bars text-base" />
-              <i data-mobile-menu-close-icon class="fa-solid fa-xmark text-base" hidden />
+              <Icon name="fa6-solid:bars" data-mobile-menu-open-icon class="text-base" />
+              <Icon name="fa6-solid:xmark" data-mobile-menu-close-icon class="text-base" hidden />
             </button>
           )
         }
@@ -80,28 +93,29 @@ const booking = site.links?.booking ?? null;
   {
     showNav && (
       <div
+        id="mobile-menu"
         data-mobile-menu
         class="absolute inset-x-0 top-full border-t border-white/10 bg-sky-900/95 shadow-2xl backdrop-blur md:hidden"
         hidden
       >
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <nav class="grid gap-2 text-sm font-semibold text-white">
+          <nav aria-label="Menu mobile" class="grid gap-2 text-sm font-semibold text-white">
             {PRIMARY_NAV.map((link) => (
               <a
                 href={link.href}
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               >
                 {link.label}
               </a>
             ))}
-            {hotel && (
+            {hotel && hotelHref && (
               <a
-                href={hotel.url}
+                href={hotelHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               >
                 {hotel.label}
               </a>
@@ -140,4 +154,11 @@ const booking = site.links?.booking ?? null;
   });
 
   links.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+      toggle.focus();
+    }
+  });
 </script>

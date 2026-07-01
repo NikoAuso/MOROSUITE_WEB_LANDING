@@ -1,23 +1,25 @@
 ---
+import Icon from '@/components/Icon.astro';
+
 const services = [
   {
-    icon: 'fa-martini-glass-citrus',
+    icon: 'fa6-solid:martini-glass-citrus',
     title: 'Bar & Ristorante',
     text: 'Cocktail, snack e piatti leggeri serviti comodamente in terrazza.',
   },
-  { icon: 'fa-shower', title: 'Spogliatoi', text: 'Spogliatoi con docce e armadietti.' },
+  { icon: 'fa6-solid:shower', title: 'Spogliatoi', text: 'Spogliatoi con docce e armadietti.' },
   {
-    icon: 'fa-wifi',
+    icon: 'fa6-solid:wifi',
     title: 'Wi-Fi Gratuito',
     text: "Connessione disponibile in tutta l'area piscina.",
   },
   {
-    icon: 'fa-square-parking',
+    icon: 'fa6-solid:square-parking',
     title: 'Parcheggio',
     text: 'Area interna (fino esaurimento) e indicazioni di accesso.',
   },
   {
-    icon: 'fa-wheelchair',
+    icon: 'fa6-solid:wheelchair',
     title: 'Accessibilità',
     text: 'Accessi dedicati e percorsi agevolati per tutti.',
   },
@@ -82,7 +84,7 @@ const services = [
             services.map((s) => (
               <div class="flex gap-4">
                 <div class="mt-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                  <i class={`fa-solid ${s.icon} text-xl leading-none`} aria-hidden="true" />
+                  <Icon name={s.icon} class="text-xl leading-none" />
                 </div>
                 <div>
                   <div class="font-extrabold text-slate-900">{s.title}</div>

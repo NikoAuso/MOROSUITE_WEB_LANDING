@@ -6,9 +6,10 @@ import type { SitePayload } from '@/lib/dto';
 interface Props {
   entry: CollectionEntry<'legal'>;
   site: SitePayload;
+  siteName?: string;
 }
 
-const { entry, site } = Astro.props;
+const { entry, site, siteName } = Astro.props;
 const { Content } = await render(entry);
 const { title, version, effective_date } = entry.data;
 
@@ -23,7 +24,13 @@ const formattedEffective = effective_date
   : null;
 ---
 
-<PublicLayout title={title} description={description} site={site} showNav={false}>
+<PublicLayout
+  title={title}
+  description={description}
+  site={site}
+  siteName={siteName}
+  showNav={false}
+>
   <section class="bg-slate-50">
     <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <article>

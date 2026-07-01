@@ -4,7 +4,7 @@ version: '1.0'
 effective_date: 2026-01-01
 ---
 
-## Cookie Policy
+# Cookie Policy
 
 > ⚠️ **Placeholder** — replace this with your real cookie policy before going live.
 
