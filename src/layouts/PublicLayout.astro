@@ -88,24 +88,6 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
       />
     </noscript>
 
-    {/* Font Awesome 6 (free) — loaded non-blocking via media=print + onload swap */}
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      media="print"
-      onload="this.media='all'"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      />
-    </noscript>
-
     {/* GA4 consent mode v2 — default denied; the cookie banner upgrades to granted */}
     {config.analytics.ga4MeasurementId && (
       <>

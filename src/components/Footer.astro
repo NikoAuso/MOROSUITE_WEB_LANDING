@@ -3,6 +3,7 @@ import { config } from '@/lib/config';
 import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
+import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
 import { safeHref } from '@/lib/format';
 
@@ -62,7 +63,7 @@ const tiktok = safeHref(site.social?.tiktok);
                 rel="noopener noreferrer"
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-pink-500 transition hover:bg-pink-500 hover:text-white"
               >
-                <i class="fa-brands fa-instagram text-lg" />
+                <Icon name="fa6-brands:instagram" class="text-lg" />
               </a>
             )
           }
@@ -75,7 +76,7 @@ const tiktok = safeHref(site.social?.tiktok);
                 rel="noopener noreferrer"
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-blue-600 transition hover:bg-blue-600 hover:text-white"
               >
-                <i class="fa-brands fa-facebook-f text-lg" />
+                <Icon name="fa6-brands:facebook-f" class="text-lg" />
               </a>
             )
           }
@@ -88,7 +89,7 @@ const tiktok = safeHref(site.social?.tiktok);
                 rel="noopener noreferrer"
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-black"
               >
-                <i class="fa-brands fa-tiktok text-lg" />
+                <Icon name="fa6-brands:tiktok" class="text-lg" />
               </a>
             )
           }

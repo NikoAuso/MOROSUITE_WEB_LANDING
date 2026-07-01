@@ -1,22 +1,24 @@
 ---
+import Icon from '@/components/Icon.astro';
+
 const features = [
   {
-    icon: 'fa-droplet',
+    icon: 'fa6-solid:droplet',
     title: 'Acqua Cristallina',
     text: "Filtrazione e controllo costante per un'acqua sempre piacevole.",
   },
   {
-    icon: 'fa-umbrella-beach',
+    icon: 'fa6-solid:umbrella-beach',
     title: 'Solarium',
     text: 'Aree relax con ombrelloni, lettini e spazi ombreggiati.',
   },
   {
-    icon: 'fa-users',
+    icon: 'fa6-solid:users',
     title: 'Area Bambini',
     text: 'Spazi dedicati ai più piccoli per giocare e divertirsi in sicurezza.',
   },
   {
-    icon: 'fa-shield-halved',
+    icon: 'fa6-solid:shield-halved',
     title: 'Sicurezza',
     text: 'Personale qualificato e regole chiare per tutti gli ospiti.',
   },
@@ -48,7 +50,7 @@ const stats = [
         features.map((f) => (
           <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-              <i class={`fa-solid ${f.icon}`} />
+              <Icon name={f.icon} />
             </div>
             <div class="mt-4 text-lg font-bold">{f.title}</div>
             <p class="mt-2 text-sm text-slate-600">{f.text}</p>

@@ -2,6 +2,7 @@
 import type { PricingPayload, SitePayload } from '@/lib/dto';
 import ErrorState from '@/components/ErrorState.astro';
 import CtaButton from '@/components/CtaButton.astro';
+import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
 import { visiblePricingSections, formatPrice, countRows } from '@/lib/pricing';
 import { whatsappUrl } from '@/lib/format';
@@ -69,7 +70,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div class="flex items-center gap-3">
                 <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                  <i class="fa-solid fa-ticket" />
+                  <Icon name="fa6-solid:ticket" />
                 </div>
                 <div>
                   <div class="text-lg font-extrabold text-slate-900">

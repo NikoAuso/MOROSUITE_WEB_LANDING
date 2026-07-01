@@ -3,6 +3,7 @@ import { config } from '@/lib/config';
 import { PRIMARY_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
+import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
@@ -54,8 +55,8 @@ const booking = site.links?.booking ?? null;
               aria-label="Apri menu di navigazione"
               aria-expanded="false"
             >
-              <i data-mobile-menu-open-icon class="fa-solid fa-bars text-base" />
-              <i data-mobile-menu-close-icon class="fa-solid fa-xmark text-base" hidden />
+              <Icon name="fa6-solid:bars" data-mobile-menu-open-icon class="text-base" />
+              <Icon name="fa6-solid:xmark" data-mobile-menu-close-icon class="text-base" hidden />
             </button>
           )
         }
