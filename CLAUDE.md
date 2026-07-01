@@ -80,8 +80,10 @@ for the UI mode.
   the relevant components.
 
 7. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` as a prop (does not fetch it itself).
-   Renders `<head>` (canonical, OG, JSON-LD, GA4 consent-mode v2 bootstrap, Bunny Fonts, Font Awesome CDN) +
-   `<Header>` / `<Footer>` / `<CookieBanner>`. Every page goes through this layout.
+   Renders `<head>` (canonical, OG, `LocalBusiness` JSON-LD from `src/lib/structured-data.ts`, GA4 consent-mode v2
+   bootstrap, Bunny Fonts + preloaded 700 weight, optional `noindex`) + a skip-link + `<Header>` / `<Footer>` /
+   `<CookieBanner>`. Icons are inline SVG via `astro-icon` (`src/components/Icon.astro`), not a CDN. Every page goes
+   through this layout.
 8. **`src/layouts/LegalDocument.astro`** — renders a `legal` content-collection entry (`src/content/legal/*.md`) via
    Astro's native `<Content />`. Used by `policy.astro` and `cookie.astro`, which load the entry with
    `getEntry('legal', …)` and still fetch `site` from the backend for the layout (so they 503 when `/site` is null).
@@ -100,6 +102,10 @@ for the UI mode.
 12. **`src/pages/404.astro`** — generic Not Found page using `<ErrorState>`. Does not depend on `SitePayload`.
 13. **`src/components/ErrorState.astro`** — reusable centered error block (badge + title + description + CTA). Use for
     non-critical inline "non disponibile" states (hours, pricing).
+14. **`src/middleware.ts`** — sets security headers on every HTML response: `Content-Security-Policy` (allows the GA4
+    inline bootstrap + `googletagmanager.com`, Bunny Fonts, self-hosted images/bundles; no external icon CDN),
+    `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`. Non-HTML responses (e.g. `/health` JSON) are left
+    untouched. HSTS/TLS stay at the reverse proxy.
 
 ## Conventions & gotchas
 
