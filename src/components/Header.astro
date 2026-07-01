@@ -22,7 +22,10 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
       <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-3 text-white">
+        <a
+          href="/"
+          class="flex items-center gap-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
+        >
           <div class="flex size-11 items-center justify-center rounded-lg overflow-hidden">
             <img
               src={config.brand.logoUrl}
@@ -39,7 +42,10 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
         showNav && (
           <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
             {PRIMARY_NAV.map((link) => (
-              <a href={link.href} class="hover:text-white transition">
+              <a
+                href={link.href}
+                class="hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
+              >
                 {link.label}
               </a>
             ))}
@@ -53,7 +59,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
             <button
               type="button"
               data-mobile-menu-toggle
-              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               aria-label="Apri menu di navigazione"
               aria-expanded="false"
             >
@@ -93,7 +99,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
               <a
                 href={link.href}
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               >
                 {link.label}
               </a>
@@ -104,7 +110,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
                 target="_blank"
                 rel="noopener noreferrer"
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               >
                 {hotel.label}
               </a>
