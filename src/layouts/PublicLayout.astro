@@ -127,8 +127,11 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
   </head>
 
   <body class:list={['bg-slate-50 text-slate-900', bodyClass]}>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:shadow-lg">
+      Salta al contenuto
+    </a>
     <Header site={site} showNav={showNav} />
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer site={site} />
