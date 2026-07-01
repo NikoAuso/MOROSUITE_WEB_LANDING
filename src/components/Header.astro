@@ -40,7 +40,10 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
 
       {
         showNav && (
-          <nav class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80">
+          <nav
+            aria-label="Principale"
+            class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80"
+          >
             {PRIMARY_NAV.map((link) => (
               <a
                 href={link.href}
@@ -62,6 +65,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
               class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
               aria-label="Apri menu di navigazione"
               aria-expanded="false"
+              aria-controls="mobile-menu"
             >
               <Icon name="fa6-solid:bars" data-mobile-menu-open-icon class="text-base" />
               <Icon name="fa6-solid:xmark" data-mobile-menu-close-icon class="text-base" hidden />
@@ -89,12 +93,13 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
   {
     showNav && (
       <div
+        id="mobile-menu"
         data-mobile-menu
         class="absolute inset-x-0 top-full border-t border-white/10 bg-sky-900/95 shadow-2xl backdrop-blur md:hidden"
         hidden
       >
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <nav class="grid gap-2 text-sm font-semibold text-white">
+          <nav aria-label="Menu mobile" class="grid gap-2 text-sm font-semibold text-white">
             {PRIMARY_NAV.map((link) => (
               <a
                 href={link.href}
@@ -149,4 +154,11 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
   });
 
   links.forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+      toggle.focus();
+    }
+  });
 </script>

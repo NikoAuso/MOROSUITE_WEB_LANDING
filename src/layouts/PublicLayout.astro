@@ -17,6 +17,7 @@ interface Props {
   jsonLd?: Record<string, unknown> | null;
   preloadHeroImage?: string;
   siteName?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -30,6 +31,7 @@ const {
   jsonLd = null,
   preloadHeroImage,
   siteName = title,
+  noindex = false,
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -45,6 +47,7 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     {preloadHeroImage && <link rel="preload" as="image" href={preloadHeroImage} />}
 
@@ -74,6 +77,7 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     {/* Loaded non-blocking via media=print + onload swap; display=swap shows a fallback face meanwhile. */}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
     <link rel="dns-prefetch" href="https://fonts.bunny.net" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link
       rel="preload"
       as="font"
