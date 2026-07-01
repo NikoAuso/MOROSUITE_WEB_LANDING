@@ -7,7 +7,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
   "font-src 'self' https://fonts.bunny.net",
   "img-src 'self' data: https:",
-  "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com",
+  "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
 ].join('; ');

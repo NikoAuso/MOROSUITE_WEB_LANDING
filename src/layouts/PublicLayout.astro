@@ -65,7 +65,7 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <meta name="twitter:image" content={ogImageUrl} />
 
     {jsonLd && (
-      <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
     )}
 
     {/* Favicon — demo placeholder from site.config.ts. Replace with the
