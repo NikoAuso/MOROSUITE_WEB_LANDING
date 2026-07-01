@@ -71,7 +71,7 @@ const stats = [
               data-prefix={s.prefix ?? ''}
               data-suffix={s.suffix}
             >
-              {s.prefix ?? ''}0{s.suffix}
+              {s.prefix ?? ''}{s.target}{s.suffix}
             </div>
             <div class="mt-2 text-xs font-semibold tracking-widest text-slate-700">{s.label}</div>
           </div>
@@ -84,6 +84,7 @@ const stats = [
 <script>
   const els = document.querySelectorAll<HTMLElement>('[data-count-up]');
   if (els.length > 0 && 'IntersectionObserver' in window) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const formatNumber = (value: number, decimals: number): string =>
       decimals === 0
         ? Math.round(value).toLocaleString('it-IT')
@@ -97,6 +98,12 @@ const stats = [
       const decimals = Number(el.dataset.decimals ?? '0');
       const prefix = el.dataset.prefix ?? '';
       const suffix = el.dataset.suffix ?? '';
+
+      if (reduce) {
+        el.textContent = `${prefix}${formatNumber(target, decimals)}${suffix}`;
+        return;
+      }
+
       const duration = 1400;
       const start = performance.now();
 
