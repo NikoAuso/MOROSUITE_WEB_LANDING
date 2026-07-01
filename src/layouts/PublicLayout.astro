@@ -15,6 +15,7 @@ interface Props {
   bodyClass?: string;
   showNav?: boolean;
   jsonLd?: Record<string, unknown> | null;
+  preloadHeroImage?: string;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   bodyClass,
   showNav = true,
   jsonLd = null,
+  preloadHeroImage,
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
@@ -41,6 +43,8 @@ const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+
+    {preloadHeroImage && <link rel="preload" as="image" href={preloadHeroImage} />}
 
     {/* Open Graph + Twitter */}
     <meta property="og:type" content="website" />

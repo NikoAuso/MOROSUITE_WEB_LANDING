@@ -1,21 +1,18 @@
 ---
-import { getImage } from 'astro:assets';
+import type { getImage } from 'astro:assets';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
-import heroSrc from '@/assets/hero.jpg';
 
 interface Props {
   site: SitePayload;
+  hero: Awaited<ReturnType<typeof getImage>>;
 }
 
-const { site } = Astro.props;
+const { site, hero } = Astro.props;
 const booking = site.links?.booking ?? null;
-const hero = await getImage({ src: heroSrc, width: 1920, height: 1080, format: 'avif' });
 ---
-
-<link rel="preload" as="image" href={hero.src} />
 
 <!-- Hero -->
 <section class="relative overflow-hidden min-h-[calc(100vh-64px)]">
