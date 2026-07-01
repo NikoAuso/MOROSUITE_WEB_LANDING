@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A **white-label Astro 6 SSR template** for a backend-driven marketing/showcase site (one site per deploy). The
+A **white-label Astro 7 SSR template** for a backend-driven marketing/showcase site (one site per deploy). The
 template is generic and ships no business data: all dynamic content is fetched **at request time** from a read-only
 HTTP backend that implements the contract in [`src/lib/dto.ts`](src/lib/dto.ts), served under the absolute URL
 configured in the `API_BASE_URL` env var. Every backend call carries a Bearer token from `API_AUTH_TOKEN`. The
@@ -17,7 +17,7 @@ For local exploration without a backend, set `DEMO_MODE=true`: `src/lib/api.ts` 
 The template is backend-agnostic: any server that returns the documented JSON shapes under the canonical paths can drive
 it. Results are cached in-process (default TTL 300 s, tunable via `CACHE_TTL_SECONDS`).
 
-Stack: Astro 6 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
+Stack: Astro 7 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
 Vitest for unit tests, Playwright for E2E, and a Lighthouse config (`lighthouserc.json`) for manual perf/SEO audits (run
 `npm run test:lh` against a real deploy — not a CI gate). Node **22+**.
 

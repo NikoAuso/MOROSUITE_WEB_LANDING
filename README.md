@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A **white-label Astro 6 SSR template** for a marketing/showcase website whose content is driven entirely by an
+A **white-label Astro 7 SSR template** for a marketing/showcase website whose content is driven entirely by an
 external HTTP backend. The template ships no business data of its own: site identity, opening hours, pricing, CTA
 links are fetched **at request time** from a read-only backend that implements the contract in
 [`src/lib/dto.ts`](src/lib/dto.ts) — see [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md) for a human-readable reference of
@@ -17,7 +17,7 @@ Want to see it running without writing a backend? Set `DEMO_MODE=true` and it se
 
 ## What you get
 
-- Astro 6 SSR (`output: 'server'`, `@astrojs/node` standalone) — builds to a Node server (`dist/server/entry.mjs`).
+- Astro 7 SSR (`output: 'server'`, `@astrojs/node` standalone) — builds to a Node server (`dist/server/entry.mjs`).
 - In-process response cache (default TTL 300 s) with single-flight request coalescing.
 - Bearer-authenticated backend calls that **never throw**: failures degrade to explicit "non disponibile" UI.
 - Tailwind 4 (CSS-first `@theme`), TypeScript 5, GA4 consent-mode v2, sitemap + robots, and a Lighthouse config for
