@@ -122,8 +122,6 @@ export type SitePayload = {
     login: { label: string; url: string } | null;
     /** Manager/back-office login CTA (footer). Separate destination from `login`. */
     manager: { label: string; url: string } | null;
-    /** Customer registration CTA (sitemap). */
-    register: { label: string; url: string } | null;
     /** External link to the parent hotel or sister property (header + sitemap). */
     hotel: { label: string; url: string } | null;
   };

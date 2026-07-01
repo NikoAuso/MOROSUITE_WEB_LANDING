@@ -42,7 +42,6 @@ const SITE: SitePayload = {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
     login: { label: 'Accedi', url: 'https://app.example.com/login' },
     manager: { label: 'Area gestori', url: 'https://app.example.com/gestori/login' },
-    register: { label: 'Registrati', url: 'https://app.example.com/register' },
     hotel: { label: 'Sito hotel', url: 'https://hotel.example.com' },
   },
 };
