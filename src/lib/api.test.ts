@@ -26,7 +26,7 @@ const SITE_OK = {
   social: {},
   season: { start_date: null, end_date: null },
   season_dates: null,
-  links: { booking: null, login: null, register: null, hotel: null },
+  links: { booking: null, login: null, manager: null, register: null, hotel: null },
 };
 
 const HOURS_OK = {

@@ -118,8 +118,10 @@ export type SitePayload = {
   links: {
     /** Primary booking CTA (header, hero, pricing tab, bar, regolamento). */
     booking: { label: string; url: string } | null;
-    /** Customer login CTA (footer, sitemap). */
+    /** Customer login CTA (header). */
     login: { label: string; url: string } | null;
+    /** Manager/back-office login CTA (footer). Separate destination from `login`. */
+    manager: { label: string; url: string } | null;
     /** Customer registration CTA (sitemap). */
     register: { label: string; url: string } | null;
     /** External link to the parent hotel or sister property (header + sitemap). */

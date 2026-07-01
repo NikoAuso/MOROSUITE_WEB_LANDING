@@ -31,7 +31,8 @@ export const SITE = {
   season_dates: [{ label: 'Stagione estiva', value: '01/06 – 15/09' }],
   links: {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
-    login: { label: 'Area gestori', url: 'https://app.example.com/login' },
+    login: { label: 'Accedi', url: 'https://app.example.com/login' },
+    manager: { label: 'Area gestori', url: 'https://app.example.com/gestori/login' },
     register: { label: 'Registrati', url: 'https://app.example.com/register' },
     hotel: { label: 'Hotel', url: 'https://hotel.example.com' },
   },
