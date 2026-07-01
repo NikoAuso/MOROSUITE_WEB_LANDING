@@ -5,6 +5,7 @@ import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
+import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
@@ -14,6 +15,7 @@ interface Props {
 const { site, showNav = true } = Astro.props;
 const hotel = site.links?.hotel ?? null;
 const booking = site.links?.booking ?? null;
+const hotelHref = hotel ? safeHref(hotel.url) : null;
 ---
 
 <header class="sticky top-0 z-50 bg-sky-900/90 backdrop-blur border-b border-white/10">
@@ -96,9 +98,9 @@ const booking = site.links?.booking ?? null;
                 {link.label}
               </a>
             ))}
-            {hotel && (
+            {hotel && hotelHref && (
               <a
-                href={hotel.url}
+                href={hotelHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-mobile-menu-link
