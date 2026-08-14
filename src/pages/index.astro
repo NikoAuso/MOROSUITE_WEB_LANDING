@@ -6,21 +6,31 @@ import { api } from '@/lib/api';
 import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
 import { config } from '@/lib/config';
 import { toAbsoluteUrl } from '@/lib/format';
+import { siteContent } from '@content';
+import { enabledSections, resolveFallbackCta } from '@/lib/sections';
 import Hero from '@/components/Hero.astro';
-import PoolFeatures from '@/components/PoolFeatures.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
 import OpeningHours from '@/components/OpeningHours.astro';
 import PricingTables from '@/components/PricingTables.astro';
-import Servizi from '@/components/Servizi.astro';
-import Regolamento from '@/components/Regolamento.astro';
-import Bar from '@/components/Bar.astro';
+import ServiceList from '@/components/ServiceList.astro';
+import RuleGroups from '@/components/RuleGroups.astro';
+import HighlightPanel from '@/components/HighlightPanel.astro';
 import heroSrc from '@/assets/hero.jpg';
+
+const sections = enabledSections(siteContent.sections);
+const needsHours = sections.some((section) => section.type === 'hours');
+const needsPricing = sections.some((section) => section.type === 'pricing');
 
 // Fetch /site first: when it is null the page renders <ServiceUnavailable> and
 // the hours/pricing payloads are discarded, so issuing them during an outage
-// only wastes two retry/backoff round-trips per request.
+// only wastes two retry/backoff round-trips per request. The two follow-ups
+// are also skipped outright when no enabled section consumes them.
 const site = await api.site();
 const [hours, pricing] = site
-  ? await Promise.all([api.openingHours(), api.pricing()])
+  ? await Promise.all([
+      needsHours ? api.openingHours() : Promise.resolve(null),
+      needsPricing ? api.pricing() : Promise.resolve(null),
+    ])
   : [null, null];
 
 if (!site) {
@@ -28,9 +38,10 @@ if (!site) {
   Astro.response.headers.set('Retry-After', '60');
 }
 
-const siteName = site?.name ?? site?.short_name ?? 'Piscina';
-const title = `${siteName} | Prenota ingresso e ombrellone`;
-const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giornata di relax.`;
+const { meta } = siteContent;
+const siteName = site?.name ?? site?.short_name ?? meta.siteNameFallback;
+const title = `${siteName} | ${meta.titleSuffix}`;
+const description = site?.tagline ?? meta.descriptionTemplate.replace('%s', siteName);
 // schema.org wants an absolute logo URL, same as OG.
 const jsonLd = site
   ? buildLocalBusinessJsonLd(
@@ -58,13 +69,40 @@ const heroImage = site
       jsonLd={jsonLd}
       preloadHeroImage={heroImage?.src}
     >
-      <Hero site={site} hero={heroImage!} />
-      <PoolFeatures />
-      <OpeningHours hours={hours} site={site} />
-      <PricingTables pricing={pricing} site={site} />
-      <Servizi />
-      <Regolamento site={site} />
-      <Bar site={site} />
+      {sections.map((section) => {
+        switch (section.type) {
+          case 'hero':
+            return <Hero site={site} hero={heroImage!} content={section.data} />;
+          case 'features':
+            return <FeatureGrid id={section.id} content={section.data} />;
+          case 'hours':
+            return (
+              <OpeningHours
+                id={section.id}
+                hours={hours}
+                site={site}
+                content={section.data}
+                fallbackCta={resolveFallbackCta(section.data.fallbackCta, siteContent.sections)}
+              />
+            );
+          case 'pricing':
+            return (
+              <PricingTables
+                id={section.id}
+                pricing={pricing}
+                site={site}
+                content={section.data}
+                fallbackCta={resolveFallbackCta(section.data.fallbackCta, siteContent.sections)}
+              />
+            );
+          case 'services':
+            return <ServiceList id={section.id} content={section.data} />;
+          case 'rules':
+            return <RuleGroups id={section.id} site={site} content={section.data} />;
+          case 'highlight':
+            return <HighlightPanel id={section.id} site={site} content={section.data} />;
+        }
+      })}
     </PublicLayout>
   ) : (
     <ServiceUnavailable />

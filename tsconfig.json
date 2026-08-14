@@ -3,7 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@config": ["./site.config.ts"]
+      "@config": ["./site.config.ts"],
+      "@content": ["./site.content.ts"]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true

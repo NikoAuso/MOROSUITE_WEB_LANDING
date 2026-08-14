@@ -9,8 +9,13 @@ links are fetched **at request time** from a read-only backend that implements t
 every endpoint and field.
 
 The template is **backend-agnostic** — any server returning the documented JSON shapes under the canonical paths can
-drive it. The reference example is a seasonal venue (opening hours, pricing, regulations), but nothing in the data
-layer is hospitality-specific: it suits any single-venue/single-brand site that wants its content owned by a backend.
+drive it. Editorial copy is not in the components either: the homepage is assembled from
+[`site.content.ts`](site.content.ts), an ordered list of sections you can reorder, disable or rewrite without touching
+`src/`. The bundled example is a seasonal swimming-pool venue; re-theming it for another business means editing that
+one file.
+
+Two files own everything per-deploy: **`site.config.ts`** (identity and branding) and **`site.content.ts`** (which
+sections exist and what they say). The backend owns the live data.
 
 Want to see it running without writing a backend? Set `DEMO_MODE=true` and it serves bundled sample data. See
 [Running the demo](#running-the-demo).
@@ -183,9 +188,25 @@ Astro renders them natively at `/policy` and `/cookie`.
   takes either an absolute URL to a hosted asset or a root-relative path served from `public/`; the defaults are the
   local placeholders in `public/brand/`. Replace `og.svg` with a PNG or JPG — social crawlers do not render SVG.
 
-3. Set env vars (table above). In prod: `DEMO_MODE=false`, `API_BASE_URL`, `FACILITY_SLUG`, `API_AUTH_TOKEN`,
+3. Rewrite `site.content.ts` for the new business. It holds `meta` (homepage title/description) and `sections`, an
+   ordered list of `{ type, id, navLabel, enabled, data }`:
+
+- **Reorder** the array to reorder the page.
+- **`enabled: false`** removes a section from the page, the header menu, the mobile menu and any cross-section
+  anchor pointing at it.
+- **`id`** is the anchor target (`#prezzi`); **`navLabel`** is the menu entry — omit it to keep a section on the page
+  but out of the menu.
+- Available `type`s: `hero`, `features`, `hours`, `pricing`, `services`, `rules`, `highlight`. `hours` and `pricing`
+  render backend data; the rest render only what you write here. Each `data` shape is typed and documented in
+  [`src/lib/sections.ts`](src/lib/sections.ts).
+
+The menu is derived from this file — there is no separate list to keep in sync.
+
+4. Replace the placeholder images in `public/brand/` and `public/placeholder/`.
+5. Rewrite the legal documents in `src/content/legal/` and have them reviewed. Controller identity is not in the
+   Markdown: it comes from `site.gdpr` on the backend.
+6. Set env vars (table above). In prod: `DEMO_MODE=false`, `API_BASE_URL`, `FACILITY_SLUG`, `API_AUTH_TOKEN`,
    `PUBLIC_SITE_URL`.
-4. Navigation menus are hardcoded in `src/lib/navigation.ts` — fork and edit to re-theme.
 
 ## Build & run in production
 

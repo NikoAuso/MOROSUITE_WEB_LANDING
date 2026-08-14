@@ -1,50 +1,27 @@
 ---
 import Icon from '@/components/Icon.astro';
+import type { FeaturesContent } from '@/lib/sections';
 
-const features = [
-  {
-    icon: 'fa6-solid:droplet',
-    title: 'Acqua Cristallina',
-    text: "Filtrazione e controllo costante per un'acqua sempre piacevole.",
-  },
-  {
-    icon: 'fa6-solid:umbrella-beach',
-    title: 'Solarium',
-    text: 'Aree relax con ombrelloni, lettini e spazi ombreggiati.',
-  },
-  {
-    icon: 'fa6-solid:users',
-    title: 'Area Bambini',
-    text: 'Spazi dedicati ai più piccoli per giocare e divertirsi in sicurezza.',
-  },
-  {
-    icon: 'fa6-solid:shield-halved',
-    title: 'Sicurezza',
-    text: 'Personale qualificato e regole chiare per tutti gli ospiti.',
-  },
-];
+interface Props {
+  id: string;
+  content: FeaturesContent;
+}
 
-const stats = [
-  { target: '25', decimals: 0, suffix: 'm', label: 'LUNGHEZZA PISCINA' },
-  { target: '1.5', decimals: 1, suffix: 'm', label: 'PROFONDITÀ MEDIA' },
-  { target: '2000', decimals: 0, prefix: '+', suffix: 'm²', label: 'DI SOLARIUM' },
-  { target: '1000', decimals: 0, prefix: '+', suffix: '', label: 'VISITATORI MENSILI' },
-];
+const { id, content } = Astro.props;
+const { eyebrow, title, lead, items: features, stats } = content;
 ---
 
-<section id="piscina" class="bg-sky-50">
+<section id={id} class="bg-sky-50">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
     <div class="text-center">
-      <div class="text-xs font-semibold tracking-widest text-sky-700">LA NOSTRA PISCINA</div>
+      <div class="text-xs font-semibold tracking-widest text-sky-700">{eyebrow}</div>
       <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
-        Un'Oasi di Freschezza
+        {title}
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-slate-600">
-        La nostra piscina offre spazio per nuoto, relax e divertimento: corsie dedicate, aree family
-        e servizi pensati per rendere la tua giornata semplice e piacevole.
+        {lead}
       </p>
     </div>
-
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {
         features.map((f) => (
@@ -59,7 +36,7 @@ const stats = [
       }
     </div>
 
-    <div class="mt-14 grid gap-8 text-center md:grid-cols-4" id="piscina-stats">
+    <div class="mt-14 grid gap-8 text-center md:grid-cols-4" id={`${id}-stats`}>
       {
         stats.map((s) => (
           <div>

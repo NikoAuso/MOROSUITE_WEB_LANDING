@@ -1,5 +1,6 @@
 ---
 import type { PricingPayload, SitePayload } from '@/lib/dto';
+import type { PricingContent, FallbackCta } from '@/lib/sections';
 import ErrorState from '@/components/ErrorState.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
@@ -8,11 +9,14 @@ import { visiblePricingSections, formatPrice, countRows } from '@/lib/pricing';
 import { whatsappUrl } from '@/lib/format';
 
 interface Props {
+  id: string;
   pricing: PricingPayload | null;
   site: SitePayload;
+  content: PricingContent;
+  fallbackCta?: FallbackCta;
 }
 
-const { pricing, site } = Astro.props;
+const { id, pricing, site, content, fallbackCta } = Astro.props;
 const entranceSections = pricing ? visiblePricingSections(pricing.entrance_sections) : [];
 const passSections = pricing ? visiblePricingSections(pricing.pass_sections) : [];
 const entranceCount = countRows(entranceSections);
@@ -21,28 +25,25 @@ const booking = site.links?.booking ?? null;
 const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
 ---
 
-<section id="prezzi" class="bg-slate-50">
+<section id={id} class="bg-slate-50">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
     <div class="grid gap-10 lg:grid-cols-12 lg:items-start">
       <div class="lg:col-span-6 lg:sticky lg:top-24 self-start">
-        <div class="text-xs font-semibold tracking-widest text-sky-700">PREZZI ATTIVI</div>
+        <div class="text-xs font-semibold tracking-widest text-sky-700">{content.eyebrow}</div>
         <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
-          Tariffe aggiornate in tempo reale
+          {content.title}
         </h2>
         <p class="mt-4 text-slate-600">
-          I prezzi variano in base a data, fascia oraria e tipologia di ingresso. Trovi sempre il
-          listino attivo durante la prenotazione.
+          {content.lead}
         </p>
-        <p class="mt-3 text-md font-semibold text-slate-600">
-          Tutti i prezzi si intendono a persona.
-        </p>
-        <p class="mt-3 rounded-2xl bg-sky-50 px-4 py-3 text-sm text-slate-700 ring-1 ring-sky-100">
-          Le persone con disabilità in possesso di certificazione INPS valida hanno diritto alla
-          riduzione del 50% sul biglietto di ingresso individuale. L'agevolazione è riconosciuta al
-          titolare previa presentazione della certificazione e di un documento di identità in cassa.
-          Gli accompagnatori pagano il biglietto intero. La riduzione è non cumulabile con altre
-          promozioni e non si applica ad abbonamenti o servizi aggiuntivi.
-        </p>
+        {content.note && <p class="mt-3 text-md font-semibold text-slate-600">{content.note}</p>}
+        {
+          content.disclaimer && (
+            <p class="mt-3 rounded-2xl bg-sky-50 px-4 py-3 text-sm text-slate-700 ring-1 ring-sky-100">
+              {content.disclaimer}
+            </p>
+          )
+        }
         <div class="my-6 flex flex-wrap items-center gap-3">
           <CtaButton
             link={booking}
@@ -57,7 +58,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                 rel="noopener noreferrer"
                 class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
               >
-                Chiedi info
+                {content.infoCtaLabel}
               </a>
             )
           }
@@ -76,7 +77,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                   <div class="text-lg font-extrabold text-slate-900">
                     {pricing.active_price_list_name}
                   </div>
-                  <div class="text-sm text-slate-600">Sempre allineato alle disponibilità.</div>
+                  <div class="text-sm text-slate-600">{content.priceListSubtitle}</div>
                 </div>
               </div>
 
@@ -95,7 +96,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                     aria-controls="panel-entrance"
                     aria-selected="false"
                   >
-                    Ingressi ({entranceCount})
+                    {content.entranceTabLabel} ({entranceCount})
                   </button>
                   <button
                     type="button"
@@ -106,7 +107,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                     aria-controls="panel-pass"
                     aria-selected="false"
                   >
-                    Abbonamenti ({passCount})
+                    {content.passTabLabel} ({passCount})
                   </button>
                 </div>
               </div>
@@ -127,9 +128,9 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                         </div>
                         <div class="rounded-2xl bg-white ring-1 ring-slate-200">
                           <div class="grid grid-cols-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                            <div class="px-4 py-2">Fascia età</div>
-                            <div class="px-4 py-2 text-right">Feriali</div>
-                            <div class="px-4 py-2 text-right">Festivi</div>
+                            <div class="px-4 py-2">{content.ageColumnLabel}</div>
+                            <div class="px-4 py-2 text-right">{content.weekdayColumnLabel}</div>
+                            <div class="px-4 py-2 text-right">{content.weekendColumnLabel}</div>
                           </div>
                           {section.rows.map((row) => (
                             <div class="grid grid-cols-3 border-t border-slate-100 text-sm">
@@ -160,7 +161,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                     ))
                   ) : (
                     <div class="rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
-                      Nessun ingresso disponibile al momento.
+                      {content.emptyEntrances}
                     </div>
                   )}
                 </div>
@@ -180,8 +181,8 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                         </div>
                         <div class="rounded-2xl bg-white ring-1 ring-slate-200">
                           <div class="grid grid-cols-2 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                            <div class="px-4 py-2">Fascia età</div>
-                            <div class="px-4 py-2 text-right">Prezzo</div>
+                            <div class="px-4 py-2">{content.ageColumnLabel}</div>
+                            <div class="px-4 py-2 text-right">{content.priceColumnLabel}</div>
                           </div>
                           {section.rows.map((row) => (
                             <div class="grid grid-cols-2 border-t border-slate-100 text-sm">
@@ -192,7 +193,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                                 )}
                                 {!section.allows_umbrella_booking && (
                                   <span class="text-slate-500 font-normal">
-                                    (ombrellone non prenotabile)
+                                    {content.noUmbrellaNote}
                                   </span>
                                 )}
                               </div>
@@ -210,7 +211,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                     ))
                   ) : (
                     <div class="rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200">
-                      Nessun abbonamento disponibile al momento.
+                      {content.emptyPasses}
                     </div>
                   )}
                 </div>
@@ -221,8 +222,8 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
               code={FALLBACK_COPY.pricing.badge}
               title={FALLBACK_COPY.pricing.title}
               description={FALLBACK_COPY.pricing.description}
-              ctaHref="#regolamento"
-              ctaLabel="Vai al regolamento"
+              ctaHref={fallbackCta?.href}
+              ctaLabel={fallbackCta?.label}
             />
           )
         }

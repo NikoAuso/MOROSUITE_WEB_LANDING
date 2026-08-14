@@ -1,15 +1,19 @@
 ---
 import type { SitePayload, OpeningHoursPayload } from '@/lib/dto';
+import type { HoursContent, FallbackCta } from '@/lib/sections';
 import ErrorState from '@/components/ErrorState.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
 import { formatSeasonDate } from '@/lib/format';
 
 interface Props {
+  id: string;
   hours: OpeningHoursPayload | null;
   site: SitePayload;
+  content: HoursContent;
+  fallbackCta?: FallbackCta;
 }
 
-const { hours, site } = Astro.props;
+const { id, hours, site, content, fallbackCta } = Astro.props;
 
 const seasonCards = [
   { label: 'Inizio stagione', value: formatSeasonDate(site.season.start_date) },
@@ -31,12 +35,12 @@ if (hours) {
 
 {
   hours ? (
-    <section id="orari" class="bg-white">
+    <section id={id} class="bg-white">
       <div class="mx-auto max-w-7xl px-4 py-25 sm:px-6 lg:px-8">
         <div class="text-center">
-          <div class="text-xs font-semibold tracking-widest text-sky-700">QUANDO VISITARCI</div>
+          <div class="text-xs font-semibold tracking-widest text-sky-700">{content.eyebrow}</div>
           <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
-            Orari di apertura
+            {content.title}
           </h2>
         </div>
 
@@ -116,13 +120,13 @@ if (hours) {
       </div>
     </section>
   ) : (
-    <section id="orari">
+    <section id={id}>
       <ErrorState
         code={FALLBACK_COPY.hours.badge}
         title={FALLBACK_COPY.hours.title}
         description={FALLBACK_COPY.hours.description}
-        ctaHref="#prezzi"
-        ctaLabel="Vai ai prezzi"
+        ctaHref={fallbackCta?.href}
+        ctaLabel={fallbackCta?.label}
       />
     </section>
   )
