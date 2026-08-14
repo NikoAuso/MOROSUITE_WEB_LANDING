@@ -26,6 +26,7 @@ template's CI, by design). Update `dto.ts` first, then this file.
 | `GET /site`               | [`SitePayload`](#get-site)                      | `null` ⇒ entire page returns 503                                                                                       |
 | `GET /site/opening-hours` | [`OpeningHoursPayload`](#get-siteopening-hours) | `daily_hours: null` ⇒ section hidden                                                                                   |
 | `GET /site/pricing`       | [`PricingPayload`](#get-sitepricing)            | `has_prices: false` ⇒ "non disponibile"                                                                                |
+| `GET /site/content`       | [`SiteContent`](#get-sitecontent)               | **Optional.** 404 or unusable payload ⇒ the template renders its committed `site.content.ts` instead                   |
 | `GET /up`                 | any 2xx                                         | Liveness probe, **no auth**, at the host root (not under the facility slug). Used by `/health` to report `backend_up`. |
 
 ---
@@ -165,6 +166,49 @@ Active price list. The template renders two tabs: single entrances and passes/se
 | `is_free` | `boolean`        | Marks the pass "Gratis" regardless of `value`.      |
 
 ---
+
+## `GET /site/content`
+
+**Optional endpoint — the page structure itself.** When implemented, the backend composes the entire homepage: which
+sections appear, in what order, whether each one is in the menu, and every string they render. Structure and copy
+changes then go live within the cache TTL, with no template redeploy. When not implemented (404), the template renders
+the committed `site.content.ts`; the missing endpoint is never an error.
+
+The shape is `SiteContent` from [`src/lib/sections.ts`](src/lib/sections.ts) — the single authoritative definition,
+shared with the committed default; it is deliberately not duplicated field-by-field here. In outline:
+
+```jsonc
+{
+  "meta": {
+    "titleSuffix": "Prenota ingresso e ombrellone", // after the venue name in <title>
+    "siteNameFallback": "Piscina", // when /site has neither name nor short_name
+    "descriptionTemplate": "Scopri %s.", // %s = venue name
+  },
+  "sections": [
+    // ordered; each entry: { type, id, navLabel?, enabled, data }
+    { "type": "hero", "enabled": true, "data": {/* HeroContent */} },
+    {
+      "type": "hours",
+      "id": "orari",
+      "navLabel": "Orari",
+      "enabled": true,
+      "data": {/* HoursContent */},
+    },
+  ],
+}
+```
+
+Rules the template enforces at runtime (`normalizeSiteContent`):
+
+- `type` MUST be one of the component catalog: `hero`, `features`, `hours`, `pricing`, `services`, `rules`,
+  `highlight`. **Unknown types are silently dropped** — an older template survives a newer backend.
+- Every non-`hero` section MUST have a string `id` (it becomes the `#anchor`) and a boolean `enabled`; `navLabel` is
+  optional (omit to keep the section out of the menu). `data` MUST be an object matching the section's `*Content` type.
+- A payload with unusable `meta` or zero valid sections is rejected wholesale ⇒ committed fallback.
+- Inside `data`, the shapes in `sections.ts` are the contract; drift there is the backend's bug, same as every other
+  endpoint.
+
+The header/mobile menu is derived from the enabled sections' `navLabel`s — there is no separate menu payload.
 
 ## Error envelope
 

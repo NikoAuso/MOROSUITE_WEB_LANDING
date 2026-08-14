@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { enabledSections, primaryNav, resolveFallbackCta } from './sections';
-import type { Section } from './sections';
+import { enabledSections, primaryNav, resolveFallbackCta, normalizeSiteContent } from './sections';
+import type { Section, SiteContent } from './sections';
 
 const hero = { type: 'hero', enabled: true, data: {} } as unknown as Section;
 
@@ -67,5 +67,57 @@ describe('resolveFallbackCta', () => {
 
   it('returns undefined when there is no link to resolve', () => {
     expect(resolveFallbackCta(undefined, sections)).toBeUndefined();
+  });
+});
+
+describe('normalizeSiteContent', () => {
+  const meta = { titleSuffix: 'x', siteNameFallback: 'y', descriptionTemplate: '%s' };
+  const validSection = { type: 'features', id: 'a', enabled: true, data: {} };
+  const asContent = (raw: unknown): SiteContent => raw as SiteContent;
+
+  it('accepts a well-formed payload untouched', () => {
+    const raw = asContent({ meta, sections: [validSection] });
+    expect(normalizeSiteContent(raw)).toEqual(raw);
+  });
+
+  it('rejects non-objects and payloads without usable meta', () => {
+    expect(normalizeSiteContent(asContent(null))).toBeNull();
+    expect(normalizeSiteContent(asContent('garbage'))).toBeNull();
+    expect(normalizeSiteContent(asContent({ sections: [validSection] }))).toBeNull();
+    expect(
+      normalizeSiteContent(asContent({ meta: { titleSuffix: 1 }, sections: [validSection] })),
+    ).toBeNull();
+  });
+
+  it('drops unknown section types so an older template survives a newer backend', () => {
+    const raw = asContent({
+      meta,
+      sections: [validSection, { type: 'carousel', id: 'z', enabled: true, data: {} }],
+    });
+    expect(normalizeSiteContent(raw)?.sections).toEqual([validSection]);
+  });
+
+  it('drops sections whose skeleton would crash the renderer', () => {
+    const raw = asContent({
+      meta,
+      sections: [
+        validSection,
+        { type: 'features', id: 'b', enabled: true }, // no data
+        { type: 'features', enabled: true, data: {} }, // anchored without id
+        'not-a-section',
+        null,
+      ],
+    });
+    expect(normalizeSiteContent(raw)?.sections).toEqual([validSection]);
+  });
+
+  it('a hero needs no id', () => {
+    const hero = { type: 'hero', enabled: true, data: {} };
+    expect(normalizeSiteContent(asContent({ meta, sections: [hero] }))?.sections).toEqual([hero]);
+  });
+
+  it('returns null when nothing valid remains, so the caller falls back', () => {
+    expect(normalizeSiteContent(asContent({ meta, sections: [] }))).toBeNull();
+    expect(normalizeSiteContent(asContent({ meta, sections: ['junk'] }))).toBeNull();
   });
 });

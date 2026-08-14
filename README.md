@@ -15,7 +15,11 @@ drive it. Editorial copy is not in the components either: the homepage is assemb
 one file.
 
 Two files own everything per-deploy: **`site.config.ts`** (identity and branding) and **`site.content.ts`** (which
-sections exist and what they say). The backend owns the live data.
+sections exist and what they say). The backend owns the live data — and can optionally own the page structure too:
+implement `GET /site/content` (same shape as `site.content.ts`, see
+[`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md#get-sitecontent)) and the backend composes the homepage out of the
+template's section components, changing structure and copy without a redeploy. Without that endpoint the committed
+file renders, so it is an upgrade, never a requirement.
 
 Want to see it running without writing a backend? Set `DEMO_MODE=true` and it serves bundled sample data. See
 [Running the demo](#running-the-demo).

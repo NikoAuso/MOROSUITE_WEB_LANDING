@@ -11,6 +11,15 @@
  *   GET /site                  → SitePayload
  *   GET /site/opening-hours    → OpeningHoursPayload
  *   GET /site/pricing          → PricingPayload
+ *   GET /site/content          → SiteContent (OPTIONAL — see below)
+ *
+ * `/site/content` lets the backend own the page structure itself: the full
+ * ordered list of homepage sections and every string they render. Its shape is
+ * `SiteContent` from `src/lib/sections.ts` (single source of truth — the same
+ * type the committed `site.content.ts` satisfies; it is not duplicated here).
+ * The endpoint is optional by design: a backend that does not implement it
+ * responds 404 and the template renders the committed default instead, so
+ * shipping the endpoint is an upgrade, never a requirement.
  *
  * Responses MUST be `application/json`. On failure the server SHOULD
  * return an `ApiError` payload with an HTTP status >= 400; the template

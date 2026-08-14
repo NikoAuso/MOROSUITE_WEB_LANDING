@@ -1,6 +1,7 @@
 ---
 import { config } from '@/lib/config';
-import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
+import { FOOTER_NAV } from '@/lib/navigation';
+import type { NavEntry } from '@/lib/sections';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
@@ -9,9 +10,10 @@ import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
+  nav: readonly NavEntry[];
 }
 
-const { site } = Astro.props;
+const { site, nav } = Astro.props;
 const manager = site.links?.manager ?? null;
 
 // The backend-curated pin is canonical; only synthesize a locality+region
@@ -48,10 +50,7 @@ const tiktok = safeHref(site.social?.tiktok);
           </div>
           <div class="text-lg font-extrabold text-white">{site.short_name ?? site.name}</div>
         </div>
-        <p class="mt-4 text-sm text-white/70">
-          La destinazione perfetta per il tuo relax estivo. Tuffati in un mondo di freschezza e
-          divertimento.
-        </p>
+        {site.tagline && <p class="mt-4 text-sm text-white/70">{site.tagline}</p>}
 
         <div class="mt-6 flex gap-3">
           {
@@ -101,7 +100,7 @@ const tiktok = safeHref(site.social?.tiktok);
         <div class="text-sm font-extrabold text-white">Link Rapidi</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
           {
-            PRIMARY_NAV.map((link) => (
+            nav.map((link) => (
               <li>
                 <a
                   href={link.href}

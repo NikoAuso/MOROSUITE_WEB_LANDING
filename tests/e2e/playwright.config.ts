@@ -10,7 +10,17 @@ export default defineConfig({
   testDir: '.',
   testIgnore:
     MODE === 'empty'
-      ? ['cta.spec.ts', 'homepage.spec.ts', 'legal.spec.ts', 'public.spec.ts', 'degraded.spec.ts']
+      ? [
+          'cta.spec.ts',
+          'homepage.spec.ts',
+          'legal.spec.ts',
+          'public.spec.ts',
+          'degraded.spec.ts',
+          // In empty mode the mock 404s /site/content on purpose (the fallback
+          // is under test in empty.spec.ts); the backend-driven assertions
+          // only hold in ok mode.
+          'content.spec.ts',
+        ]
       : ['empty.spec.ts', 'degraded.spec.ts'],
   fullyParallel: false,
   reporter: 'list',

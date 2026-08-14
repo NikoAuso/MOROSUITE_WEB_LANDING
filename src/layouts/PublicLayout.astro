@@ -1,5 +1,7 @@
 ---
 import { config } from '@/lib/config';
+import { resolveSiteContent } from '@/lib/content';
+import { primaryNav } from '@/lib/sections';
 import type { SitePayload } from '@/lib/dto';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
@@ -34,6 +36,12 @@ const {
   siteName = title,
   noindex = false,
 } = Astro.props;
+
+// The menu is derived from the resolved content (backend or committed default)
+// so it always matches the sections the home actually renders. The layout
+// resolves it itself — the in-process cache + single-flight make this free on
+// pages that already resolved content for the body.
+const nav = primaryNav((await resolveSiteContent()).sections);
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
 // OG requires an absolute URL; brand.ogImageUrl may be either an absolute URL
@@ -139,11 +147,11 @@ const ogImageUrl = ogImage ?? toAbsoluteUrl(config.brand.ogImageUrl, config.site
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:shadow-lg">
       Salta al contenuto
     </a>
-    <Header site={site} showNav={showNav} />
+    <Header site={site} nav={nav} showNav={showNav} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <Footer site={site} />
+    <Footer site={site} nav={nav} />
     <CookieBanner />
   </body>
 </html>

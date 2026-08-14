@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { SITE, HOURS, PRICING } from './payloads.mjs';
+import { SITE, HOURS, PRICING, CONTENT } from './payloads.mjs';
 
 const PORT = Number(process.env.MOCK_BACKEND_PORT) || 18000;
 const REQUIRE_AUTH = process.env.MOCK_BACKEND_REQUIRE_AUTH === 'true';
@@ -14,6 +14,9 @@ const FACILITY_ROUTE = /^\/api\/public\/v1\/([^/]+)(\/.+)$/;
 
 const HANDLERS = {
   '/site': () => SITE,
+  // Served only in 'ok' mode; 'empty' answers 404 like a backend that never
+  // implemented the optional endpoint, pinning the committed-default fallback.
+  ...(MODE === 'ok' ? { '/site/content': () => CONTENT } : {}),
   '/site/opening-hours': () =>
     MODE === 'empty' ? { timezone: 'Europe/Rome', daily_hours: null } : HOURS,
   '/site/pricing': () =>
