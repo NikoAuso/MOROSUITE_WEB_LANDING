@@ -6,6 +6,12 @@ export const siteConfig = {
   // Fallback `<html lang>`: the backend's default_locale wins when present.
   defaultLocale: 'it' as const,
 
+  // Colours are NOT configured here: the theming surface is the semantic
+  // token block in src/styles/tokens.css (brand-*/cta-*/accent-* + hero
+  // glows); per-vertical presets will override those custom properties
+  // (docs/VISIONE.md, fase C). The removed primaryColor/accentColor fields
+  // were dead knobs nothing read.
+  //
   // Each *Url below accepts either an absolute URL to an externally hosted
   // asset or a root-relative path served out of public/. The defaults are
   // local placeholders so a fresh clone reaches no third-party host; replace
@@ -14,8 +20,6 @@ export const siteConfig = {
   // render SVG previews, so an SVG here means no preview at all. Keep any
   // replacement a raster (PNG/JPG) at 1200x630.
   brand: {
-    primaryColor: '#0c4a6e',
-    accentColor: '#facc15',
     logoUrl: '/brand/logo.svg',
     faviconUrl: '/brand/favicon.svg',
     ogImageUrl: '/brand/og.png',

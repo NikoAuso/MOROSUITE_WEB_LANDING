@@ -147,6 +147,13 @@ nothing instead of failing the build. The exhaustiveness fix is scheduled (VISIO
 - **CTAs to external apps** come from `SitePayload.links` (`booking` / `login` / `manager` / `hotel`). Customer `login`
   renders in the header, back-office `manager` in the footer. Always `<CtaButton />` — never a raw `<a>` or a
   hardcoded URL. `tests/e2e/cta.spec.ts` fails if a login/prenota href resolves to `http://localhost:4321/...`.
+- **Theming goes through semantic tokens, never raw hues.** `src/styles/tokens.css` defines the `brand-*`, `cta-*`
+  and `accent-*` scales (plus `--hero-glow-a/b`); components use only those utilities for visual identity. Neutral
+  `slate` and the semantic status colours in RuleGroups' `TONES` map are the sanctioned literals. Enforced by
+  `src/lib/theme-tokens.test.ts`. Presets (VISIONE fase C) re-theme by overriding the custom properties. There are
+  NO colour fields in `site.config.ts` — the former `primaryColor`/`accentColor` were dead knobs and are gone.
+- **The hero photo comes from the content** (`HeroContent.image`, root-relative path under `public/`, optional —
+  the gradient alone carries the hero without it). `public/` assets are served as-is: ship pre-sized files (~1920w).
 - **`brand.*Url` accepts two forms**: an absolute URL to a hosted asset, or a root-relative path served from
   `public/`. Header/Footer/favicon use the raw value; og:image and the schema.org logo go through `toAbsoluteUrl`.
   Defaults are the local placeholders in `public/brand/`. Note `og.png` is a raster while the logo and favicon are

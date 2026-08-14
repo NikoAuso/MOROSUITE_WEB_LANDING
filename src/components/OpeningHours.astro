@@ -38,7 +38,7 @@ if (hours) {
     <section id={id} class="bg-white">
       <div class="mx-auto max-w-7xl px-4 py-25 sm:px-6 lg:px-8">
         <div class="text-center">
-          <div class="text-xs font-semibold tracking-widest text-sky-700">{content.eyebrow}</div>
+          <div class="text-xs font-semibold tracking-widest text-brand-700">{content.eyebrow}</div>
           <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
             {content.title}
           </h2>
@@ -47,8 +47,8 @@ if (hours) {
         {seasonCards.length > 0 && (
           <div class="mt-8 grid gap-4 sm:grid-cols-2">
             {seasonCards.map((card) => (
-              <div class="rounded-2xl bg-sky-50 p-5 text-center shadow-sm ring-1 ring-sky-200">
-                <div class="text-xs font-semibold uppercase tracking-widest text-sky-700">
+              <div class="rounded-2xl bg-brand-50 p-5 text-center shadow-sm ring-1 ring-brand-200">
+                <div class="text-xs font-semibold uppercase tracking-widest text-brand-700">
                   {card.label}
                 </div>
                 <div class="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
@@ -66,7 +66,7 @@ if (hours) {
               <div class="relative pt-3">
                 {isToday && (
                   <div class="absolute left-0 right-0 top-0 flex justify-center">
-                    <span class="rounded-full bg-sky-700 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    <span class="rounded-full bg-brand-700 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
                       Oggi
                     </span>
                   </div>
@@ -76,14 +76,14 @@ if (hours) {
                   class:list={[
                     'flex flex-col items-center rounded-2xl p-5 text-center ring-1 transition-shadow',
                     isToday
-                      ? 'bg-sky-100 ring-2 ring-sky-500 shadow-md'
+                      ? 'bg-brand-100 ring-2 ring-brand-500 shadow-md'
                       : 'bg-slate-50 ring-slate-200',
                   ]}
                 >
                   <div
                     class:list={[
                       'text-xs font-semibold uppercase tracking-widest',
-                      isToday ? 'text-sky-700' : 'text-slate-500',
+                      isToday ? 'text-brand-700' : 'text-slate-500',
                     ]}
                   >
                     {day.label}
@@ -98,7 +98,7 @@ if (hours) {
                           class:list={[
                             'rounded-xl px-3 py-2 text-sm font-bold ring-1',
                             isToday
-                              ? 'bg-white/80 text-sky-900 ring-sky-200'
+                              ? 'bg-white/80 text-brand-900 ring-brand-200'
                               : 'bg-white text-slate-800 ring-slate-200',
                           ]}
                         >

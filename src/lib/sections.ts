@@ -37,6 +37,12 @@ export type StatItem = {
 export type FallbackCta = { href: string; label: string };
 
 export type HeroContent = {
+  /**
+   * Background photo behind the gradient, as a root-relative path served from
+   * public/. Optional: without it the gradient alone carries the hero. Ship a
+   * pre-sized file (~1920w) — public/ assets are served as-is, not optimized.
+   */
+  image?: { src: string };
   title: string;
   /** Second line, rendered in the accent colour. */
   highlight: string;

@@ -1,5 +1,4 @@
 ---
-import type { getImage } from 'astro:assets';
 import type { SitePayload } from '@/lib/dto';
 import type { HeroContent } from '@/lib/sections';
 import CtaButton from '@/components/CtaButton.astro';
@@ -8,11 +7,10 @@ import { FALLBACK_COPY } from '@/lib/copy';
 
 interface Props {
   site: SitePayload;
-  hero: Awaited<ReturnType<typeof getImage>>;
   content: HeroContent;
 }
 
-const { site, hero, content } = Astro.props;
+const { site, content } = Astro.props;
 const { title, highlight, lead, secondaryCta, howItWorks } = content;
 const booking = site.links?.booking ?? null;
 ---
@@ -20,19 +18,22 @@ const booking = site.links?.booking ?? null;
 <!-- Hero -->
 <section class="relative overflow-hidden min-h-[calc(100vh-64px)]">
   <div class="absolute inset-0">
-    <div class="h-full w-full bg-linear-to-b from-sky-950 via-sky-900 to-sky-800"></div>
+    <div class="h-full w-full bg-linear-to-b from-brand-950 via-brand-900 to-brand-800"></div>
     <div
-      class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(62,188,255,0.55),transparent_55%),radial-gradient(circle_at_80%_15%,rgba(255,186,45,0.45),transparent_50%)]"
+      class="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,var(--hero-glow-a),transparent_55%),radial-gradient(circle_at_80%_15%,var(--hero-glow-b),transparent_50%)]"
     >
     </div>
-    <img
-      src={hero.src}
-      srcset={hero.srcSet.attribute}
-      alt=""
-      class="absolute inset-0 h-full w-full object-cover opacity-40"
-      fetchpriority="high"
-      decoding="async"
-    />
+    {
+      content.image && (
+        <img
+          src={content.image.src}
+          alt=""
+          class="absolute inset-0 h-full w-full object-cover opacity-40"
+          fetchpriority="high"
+          decoding="async"
+        />
+      )
+    }
   </div>
 
   <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full">
@@ -40,7 +41,7 @@ const booking = site.links?.booking ?? null;
       <div class="lg:col-span-8">
         <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
           {title}
-          <span class="block text-sky-200 text-shadow-lg">{highlight}</span>
+          <span class="block text-brand-200 text-shadow-lg">{highlight}</span>
         </h1>
         <p class="mt-4 max-w-2xl text-base text-white sm:text-lg">
           {lead}
@@ -50,7 +51,7 @@ const booking = site.links?.booking ?? null;
           <CtaButton
             link={booking}
             fallbackLabel={FALLBACK_COPY.cta.booking}
-            class="inline-flex items-center justify-center rounded-2xl bg-green-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-green-800 transition"
+            class="inline-flex items-center justify-center rounded-2xl bg-cta-700 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-cta-800 transition"
           />
           {
             secondaryCta && (
@@ -67,7 +68,7 @@ const booking = site.links?.booking ?? null;
 
       <!-- Right card -->
       <div class="lg:col-span-4 py-14">
-        <div class="rounded-3xl bg-yellow-50/95 p-6 shadow-xl border-2 border-amber-200">
+        <div class="rounded-3xl bg-accent-50/95 p-6 shadow-xl border-2 border-accent-200">
           <div class="flex items-center justify-center gap-4">
             <div>
               <h2 class="text-lg font-bold">{howItWorks.title}</h2>
@@ -80,12 +81,12 @@ const booking = site.links?.booking ?? null;
               howItWorks.steps.map((step, index) => (
                 <>
                   {index > 0 && (
-                    <div class="flex justify-center text-yellow-500">
+                    <div class="flex justify-center text-accent-500">
                       <Icon name="fa6-solid:angle-down" class="animate-bounce" />
                     </div>
                   )}
-                  <div class="flex gap-4 rounded-2xl border border-amber-200 bg-white p-4">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-400 font-bold text-gray-900">
+                  <div class="flex gap-4 rounded-2xl border border-accent-200 bg-white p-4">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-400 font-bold text-gray-900">
                       {index + 1}
                     </div>
                     <div>

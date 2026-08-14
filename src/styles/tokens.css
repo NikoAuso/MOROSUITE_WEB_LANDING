@@ -11,6 +11,35 @@
 }
 
 @theme {
+  /* Palette semantica del tema. Questi token sono LA superficie di theming:
+     per l'identità visiva i componenti usano solo le utility brand-, cta- e
+     accent- (i neutri slate e i colori semantici ok/vietato restano
+     letterali). I default sono il tema "piscina" (= sky/green/yellow di
+     Tailwind, valori oklch copiati identici). VINCOLO (verificato sulla CSS
+     generata): le utility con modificatore di opacità, es. bg-brand-900/90,
+     compilano a colore letterale, non a var() — quindi la palette di un
+     preset va applicata AL BUILD sostituendo questi valori @theme (fase C:
+     alias verso il tokens del preset), non con un override runtime di :root. */
+  --color-brand-50: oklch(97.7% 0.013 236.62);
+  --color-brand-100: oklch(95.1% 0.026 236.824);
+  --color-brand-200: oklch(90.1% 0.058 230.902);
+  --color-brand-300: oklch(82.8% 0.111 230.318);
+  --color-brand-500: oklch(68.5% 0.169 237.323);
+  --color-brand-700: oklch(50% 0.134 242.749);
+  --color-brand-800: oklch(44.3% 0.11 240.79);
+  --color-brand-900: oklch(39.1% 0.09 240.876);
+  --color-brand-950: oklch(29.3% 0.066 243.157);
+
+  --color-cta-50: oklch(98.2% 0.018 155.826);
+  --color-cta-600: oklch(62.7% 0.194 149.214);
+  --color-cta-700: oklch(52.7% 0.154 150.069);
+  --color-cta-800: oklch(44.8% 0.119 151.328);
+
+  --color-accent-50: oklch(98.7% 0.026 102.212);
+  --color-accent-200: oklch(92.4% 0.12 95.746);
+  --color-accent-400: oklch(85.2% 0.199 91.936);
+  --color-accent-500: oklch(79.5% 0.184 86.047);
+
   --font-display:
     'Instrument Sans', 'Instrument Fallback', system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
@@ -21,6 +50,9 @@
 
 :root {
   color-scheme: light;
+  /* Bagliori radiali dell'hero (ciano + ambra nel tema default). */
+  --hero-glow-a: rgba(62, 188, 255, 0.55);
+  --hero-glow-b: rgba(255, 186, 45, 0.45);
 }
 
 html {

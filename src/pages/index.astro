@@ -1,5 +1,4 @@
 ---
-import { getImage } from 'astro:assets';
 import PublicLayout from '@/layouts/PublicLayout.astro';
 import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
 import { api } from '@/lib/api';
@@ -15,7 +14,6 @@ import PricingTables from '@/components/PricingTables.astro';
 import ServiceList from '@/components/ServiceList.astro';
 import RuleGroups from '@/components/RuleGroups.astro';
 import HighlightPanel from '@/components/HighlightPanel.astro';
-import heroSrc from '@/assets/hero.jpg';
 
 const sections = enabledSections(siteContent.sections);
 const needsHours = sections.some((section) => section.type === 'hours');
@@ -52,11 +50,10 @@ const jsonLd = site
     )
   : null;
 
-// Resolved once here (not inside Hero) so the <head> preload href and the
-// <img> src emitted by Hero are guaranteed to be the exact same URL.
-const heroImage = site
-  ? await getImage({ src: heroSrc, width: 1920, height: 1080, format: 'avif' })
-  : null;
+// The hero photo comes from the content (public/ path, served as-is); the
+// <head> preload uses the same string, so the two cannot diverge.
+const heroSection = sections.find((section) => section.type === 'hero');
+const heroImageSrc = heroSection?.type === 'hero' ? heroSection.data.image?.src : undefined;
 ---
 
 {
@@ -67,12 +64,12 @@ const heroImage = site
       site={site}
       siteName={siteName}
       jsonLd={jsonLd}
-      preloadHeroImage={heroImage?.src}
+      preloadHeroImage={heroImageSrc}
     >
       {sections.map((section) => {
         switch (section.type) {
           case 'hero':
-            return <Hero site={site} hero={heroImage!} content={section.data} />;
+            return <Hero site={site} content={section.data} />;
           case 'features':
             return <FeatureGrid id={section.id} content={section.data} />;
           case 'hours':

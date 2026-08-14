@@ -25,6 +25,7 @@ export const siteContent: SiteContent = {
       type: 'hero',
       enabled: true,
       data: {
+        image: { src: '/placeholder/hero.jpg' },
         title: 'Prenota la tua postazione in piscina',
         highlight: 'in pochi semplici step',
         lead: "Scegli la data, indica i componenti e seleziona gli ombrelloni dalla mappa. Al termine ricevi il QR Code per l'accesso.",
