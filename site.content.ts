@@ -1,15 +1,10 @@
 import type { SiteContent } from '@/lib/sections';
 
 /**
- * The committed homepage structure: which sections appear, in what order, and
- * every string they render. The components under `src/components/` stay
- * untouched when re-theming.
- *
- * This file is the DEFAULT, not the only source. A backend that implements
- * `GET /site/content` (same `SiteContent` shape) takes over completely and can
- * restructure the page without a redeploy; this file then only renders when
- * that endpoint is missing, unusable, or the site runs in demo mode. Deploys
- * whose backend owns the content can leave this file as-is.
+ * The homepage structure: which sections appear, in what order, and every
+ * string they render. The components under `src/components/` stay untouched
+ * when re-theming — this file (and, in the upcoming preset model, a file under
+ * `presets/`) is the only source of structure. Type-checked at build time.
  *
  * Flip `enabled` to drop a section from the page, its anchor and the menu in
  * one edit. Reorder the array to reorder the page. `id` is the anchor target;

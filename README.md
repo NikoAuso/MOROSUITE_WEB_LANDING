@@ -4,12 +4,13 @@
 > backend leggibile, contributing, security policy, template issue/PR) sono stati rimossi e verranno
 > ricreati a refactor concluso. Il piano completo è in `docs/VISIONE.md` (locale, non tracciato).
 
-Template Astro 7 SSR white-label: un codebase, N deploy, contenuti e struttura della pagina
-pilotati via HTTP dal backend del deploy. Licenza [MIT](./LICENSE).
+Template Astro 7 SSR white-label multi-verticale: un catalogo di componenti e (in arrivo) un
+preset per tema, customizzabile via file di config; i dati live (orari, listino, identità) arrivano
+opzionalmente via HTTP dal gestionale. Licenza [MIT](./LICENSE).
 
-**Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint e payload, JSDoc per
-campo) + [`src/lib/sections.ts`](src/lib/sections.ts) (shape di `GET /site/content` e catalogo
-sezioni). Ogni drift fra backend e questi tipi è un errore di build, by design.
+**Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint dati live, JSDoc per
+campo) + [`src/lib/sections.ts`](src/lib/sections.ts) (catalogo sezioni e shape della struttura in
+`site.content.ts`). Ogni drift è un errore di build, by design.
 
 ## Quickstart (demo, zero backend)
 
@@ -28,7 +29,7 @@ npm run dev            # http://localhost:4321
 | `npm test`                  | Unit (Vitest)                                      |
 | `npm run test:e2e`          | E2E, mock backend ok                               |
 | `npm run test:e2e:degraded` | E2E, backend irraggiungibile                       |
-| `npm run test:e2e:empty`    | E2E, payload vuoti + fallback `/site/content`      |
+| `npm run test:e2e:empty`    | E2E, payload vuoti                                 |
 | `npm run build` / `preview` | Build SSR / esecuzione locale del build con `.env` |
 
 Architettura e convenzioni per lo sviluppo: [`CLAUDE.md`](CLAUDE.md).

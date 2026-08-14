@@ -7,11 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 An **Astro 7 SSR site template** (one site per deploy) with a strict three-way split of ownership. Know which side a
 change belongs on before making it:
 
-| Owner                          | Holds                                                                                                                                                  |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Backend** (external service) | Live data (identity, contacts, GDPR entities, opening hours, pricing, CTA links) **and, optionally, the whole page structure** via `GET /site/content` |
-| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                                                   |
-| **`site.content.ts`**          | The committed page structure — sections, order, copy. The **default** when the backend does not serve `/site/content`, and the demo-mode content       |
+| Owner                          | Holds                                                                                                                                               |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Backend** (external service) | Live data only: identity, contacts, GDPR entities, opening hours, pricing, CTA links                                                                |
+| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                                                |
+| **`site.content.ts`**          | The page structure — sections, order, copy. Committed and type-checked; per-vertical presets under `presets/` are planned (docs/VISIONE.md, fase C) |
 
 Nothing under `src/` carries business copy. If you find yourself typing a user-visible sentence into a component,
 it belongs in `site.content.ts` (page copy) or `src/lib/copy.ts` (degraded-state copy) instead.
@@ -47,8 +47,7 @@ Vitest for unit tests, Playwright for E2E, Lighthouse config (`lighthouserc.json
 | `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9). Manual, not a CI gate.                                 |
 
 Run a single E2E spec: `npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/homepage.spec.ts`. Add
-`--ui` for UI mode. Specs: `content` (backend-driven structure, ok mode only), `cookie`, `cta`, `degraded`, `empty`
-(includes the /site/content-missing fallback), `homepage`, `legal`, `public`.
+`--ui` for UI mode. Specs: `cookie`, `cta`, `degraded`, `empty`, `homepage`, `legal`, `public`.
 
 CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:check** → unit) and `e2e` (all three suites).
 
@@ -59,10 +58,9 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
    `FACILITY_SLUG` env var alone; `normalizeSite` warns if `SitePayload.slug` disagrees with it. Does NOT
    hold per-environment URLs (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
    `src/lib/config.ts`.
-2. **`src/lib/sections.ts` + `src/lib/content.ts` + `site.content.ts`** — the homepage itself. `sections.ts` has the
-   types, the runtime normalizer and three helpers; `content.ts` exposes `resolveSiteContent()` (backend
-   `/site/content` first, committed `site.content.ts` as fallback); `site.content.ts` is the committed default. See
-   "Sections" below.
+2. **`src/lib/sections.ts` + `site.content.ts`** — the homepage itself. `sections.ts` has the types and three
+   helpers; `site.content.ts` is the structure. Committed files only — there is no runtime content source and no
+   runtime validation layer: a malformed structure is a compile error. See "Sections" below.
 3. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
    `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`, `DEMO_MODE`.
    Composes `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site` etc.
@@ -76,12 +74,10 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 - **Bearer auth** on every call except `/up` (called without auth by the health endpoint).
 - **`T | null`, never throws**: network errors, non-2xx, timeouts and "empty in a meaningful way" payloads all cache
   and return `null`. Callers never see exceptions.
-- Wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`, `api.content()`, each with its own `normalize*`
-  guard. `/site/content` is the only _optional_ endpoint: `null` there means "use the committed default", never an
-  error state.
+- Wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`, each with its own `normalize*` guard.
 
 5. **`src/lib/dto.ts`** — the API contract: types with JSDoc per field, plus the canonical endpoint map (`/site`,
-   `/site/opening-hours`, `/site/pricing`, optional `/site/content` whose shape lives in `sections.ts`). **Intentional contract**: any drift between backend responses and these
+   `/site/opening-hours`, `/site/pricing`). **Intentional contract**: any drift between backend responses and these
    types is a type error here. Change this file first, then propagate. The human-readable mirror
    (BACKEND_CONTRACT.md) is removed during the docs freeze — `dto.ts` + `sections.ts` ARE the contract until it is
    recreated at the end of the refactor; do not resurrect it piecemeal.
@@ -95,9 +91,7 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 9. **`src/pages/index.astro`** — awaits `/site` **first and alone**; hours+pricing only fire if it succeeded _and_ an
    enabled section consumes them. If `site === null`: status 503 + `Retry-After: 60` + `<ServiceUnavailable />`.
    Otherwise it walks the enabled sections and mounts one component each.
-10. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` (does not fetch it), but DOES resolve the
-    site content itself to derive the menu (`primaryNav`) for Header/Footer — the cache + single-flight make that free
-    on pages that already resolved it. Renders `<head>`
+10. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` (does not fetch anything). Renders `<head>`
     (canonical, OG/Twitter, `LocalBusiness` JSON-LD with `<` escaped against script breakout, GA4 consent-mode v2
     bootstrap, Bunny Fonts + preloaded 700 weight, optional `noindex`) + skip-link + `<Header>` / `<Footer>` /
     `<CookieBanner>`. Icons are inline SVG via `astro-icon`, no CDN.
@@ -120,11 +114,9 @@ timestamp }` and `Cache-Control: no-store`. `backend_up` probes `${API_BASE_URL 
 
 ## Sections: how the homepage is assembled
 
-The structure is a `SiteContent`: `meta` plus an ordered array of `{ type, id, navLabel, enabled, data }`.
-`resolveSiteContent()` picks the source — the backend's `GET /site/content` when it returns a payload that survives
-`normalizeSiteContent` (shallow skeleton check: known `type`, boolean `enabled`, object `data`, string `id` on
-anchored sections; unknown types dropped, unusable payloads rejected wholesale), the committed `site.content.ts`
-otherwise. `index.astro` walks the enabled sections and switches on `type`. The component catalog:
+The structure is a `SiteContent`: `meta` plus an ordered array of `{ type, id, navLabel, enabled, data }`, defined
+in `site.content.ts` and type-checked at build. `index.astro` walks the enabled sections and switches on `type`.
+The component catalog:
 
 | `type`      | Component              | Backend data                |
 | ----------- | ---------------------- | --------------------------- |
@@ -139,15 +131,16 @@ otherwise. `index.astro` walks the enabled sections and switches on `type`. The 
 Three helpers in `src/lib/sections.ts`, all unit-tested:
 
 - `enabledSections()` — filters, preserving declaration order.
-- `primaryNav()` — **derives** the header/mobile menu from the _resolved_ content (PublicLayout passes it to
-  Header/Footer as a `nav` prop), so a disabled section — whether disabled in the backend or in the file — cannot
-  leave a menu entry pointing at a missing anchor. `src/lib/navigation.ts` only keeps `FOOTER_NAV` (legal routes).
+- `primaryNav()` — **derives** the header/mobile menu; `src/lib/navigation.ts` exports the module-scope
+  `PRIMARY_NAV` built from it, so a disabled section cannot leave a menu entry pointing at a missing anchor.
 - `resolveFallbackCta()` — drops a cross-section link (the "vai ai prezzi" on the hours error state, and vice versa)
   when its target section is disabled. Always route such links through it; do not trust the config.
 
 **Adding a section type** means: a `*Content` type + a `Section` union member in `sections.ts`, a component taking
-`{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. The switch is exhaustive, so a new
-union member without a `case` is a type error.
+`{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. **Caveat (audit 14/08/2026)**: the
+switch is currently NOT enforced exhaustive — it sits in a `.map` callback, so a missing `case` silently renders
+nothing instead of failing the build. The exhaustiveness fix is scheduled (VISIONE, fase E); until then, adding the
+`case` is on you.
 
 ## Conventions & gotchas
 

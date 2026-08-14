@@ -1,7 +1,5 @@
 import { config } from './config';
 import { DEMO_DATA } from './demo-data';
-import { normalizeSiteContent } from './sections';
-import type { SiteContent } from './sections';
 import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
 
 type CacheEntry<T> = { value: T | null; timestamp: number };
@@ -147,8 +145,4 @@ export const api = {
   site: () => fetchJson<SitePayload>('/site', normalizeSite),
   openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
   pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
-  // Optional endpoint: a backend that does not implement it (404) simply makes
-  // resolveSiteContent() fall back to the committed site.content.ts. Demo mode
-  // has no '/site/content' entry in DEMO_DATA for the same reason.
-  content: () => fetchJson<SiteContent>('/site/content', normalizeSiteContent),
 };

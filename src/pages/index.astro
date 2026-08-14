@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
 import { config } from '@/lib/config';
 import { toAbsoluteUrl } from '@/lib/format';
-import { resolveSiteContent } from '@/lib/content';
+import { siteContent } from '@content';
 import { enabledSections, resolveFallbackCta } from '@/lib/sections';
 import Hero from '@/components/Hero.astro';
 import FeatureGrid from '@/components/FeatureGrid.astro';
@@ -17,10 +17,6 @@ import RuleGroups from '@/components/RuleGroups.astro';
 import HighlightPanel from '@/components/HighlightPanel.astro';
 import heroSrc from '@/assets/hero.jpg';
 
-// Backend-served structure when GET /site/content is implemented, committed
-// site.content.ts otherwise. Resolved before /site on purpose: it decides
-// which of the other calls are even needed.
-const siteContent = await resolveSiteContent();
 const sections = enabledSections(siteContent.sections);
 const needsHours = sections.some((section) => section.type === 'hours');
 const needsPricing = sections.some((section) => section.type === 'pricing');

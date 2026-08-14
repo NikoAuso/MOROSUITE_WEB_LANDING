@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { SITE, HOURS, PRICING, CONTENT } from './payloads.mjs';
+import { SITE, HOURS, PRICING } from './payloads.mjs';
 
 const PORT = Number(process.env.MOCK_BACKEND_PORT) || 18000;
 const REQUIRE_AUTH = process.env.MOCK_BACKEND_REQUIRE_AUTH === 'true';
@@ -16,9 +16,6 @@ const HANDLERS = {
   // Empty mode nulls default_locale so empty.spec can pin the <html lang>
   // fallback branch (ok mode serves 'en' to pin the backend-driven branch).
   '/site': () => (MODE === 'empty' ? { ...SITE, default_locale: null } : SITE),
-  // Served only in 'ok' mode; 'empty' answers 404 like a backend that never
-  // implemented the optional endpoint, pinning the committed-default fallback.
-  ...(MODE === 'ok' ? { '/site/content': () => CONTENT } : {}),
   '/site/opening-hours': () =>
     MODE === 'empty' ? { timezone: 'Europe/Rome', daily_hours: null } : HOURS,
   '/site/pricing': () =>

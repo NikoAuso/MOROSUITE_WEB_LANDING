@@ -1,6 +1,6 @@
 ---
 import { config } from '@/lib/config';
-import type { NavEntry } from '@/lib/sections';
+import { PRIMARY_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
@@ -9,11 +9,10 @@ import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
-  nav: readonly NavEntry[];
   showNav?: boolean;
 }
 
-const { site, nav, showNav = true } = Astro.props;
+const { site, showNav = true } = Astro.props;
 const hotel = site.links?.hotel ?? null;
 const login = site.links?.login ?? null;
 const hotelHref = hotel ? safeHref(hotel.url) : null;
@@ -45,7 +44,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
             aria-label="Principale"
             class="hidden md:flex items-center gap-6 text-md font-semibold text-white/80"
           >
-            {nav.map((link) => (
+            {PRIMARY_NAV.map((link) => (
               <a
                 href={link.href}
                 class="hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
@@ -101,7 +100,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
       >
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <nav aria-label="Menu mobile" class="grid gap-2 text-sm font-semibold text-white">
-            {nav.map((link) => (
+            {PRIMARY_NAV.map((link) => (
               <a
                 href={link.href}
                 data-mobile-menu-link

@@ -2,20 +2,14 @@
  * Shape of the homepage: which sections exist, in what order, and the copy
  * each one renders.
  *
- * Two sources can provide a `SiteContent`, resolved by `@/lib/content`:
+ * `SiteContent` is provided by committed files only — today `site.content.ts`,
+ * with per-vertical presets planned under `presets/` (see docs/VISIONE.md).
+ * Everything is type-checked at build time, so there is no runtime validation
+ * layer: a malformed structure is a compile error, not a fallback.
  *
- * 1. **The backend**, via `GET /site/content` — the authoritative source when
- *    present. The backend composes the whole page out of the component catalog
- *    below (`Section['type']` is the catalog index) and can change structure
- *    and copy without a redeploy.
- * 2. **`site.content.ts`** — the committed default, used when the backend does
- *    not serve the endpoint (or serves something unusable). It doubles as the
- *    worked example and the demo-mode content.
- *
- * `src/pages/index.astro` walks the resolved `sections` in order and mounts one
+ * `src/pages/index.astro` walks the enabled `sections` in order and mounts one
  * component per entry, so disabling a section removes it from the page, from
- * the navigation and from the anchor targets in one edit — whether that edit
- * happens in the backend or in the committed file.
+ * the navigation and from the anchor targets in one edit.
  */
 
 /** An entry in the header/footer menu, derived from the enabled sections. */
@@ -158,53 +152,6 @@ export type SiteContent = {
   meta: HomeMeta;
   sections: readonly Section[];
 };
-
-const SECTION_TYPES = new Set([
-  'hero',
-  'features',
-  'hours',
-  'pricing',
-  'services',
-  'rules',
-  'highlight',
-]);
-
-/**
- * Shallow structural check on a backend-supplied content payload.
- *
- * Deliberately NOT a deep validator: like the other endpoints, the shapes in
- * this file are an intentional contract and drift inside `data` is the
- * backend's bug to fix (see the preamble in `src/lib/dto.ts`). What this guards
- * against is the failure mode specific to *structure* being remote: a payload
- * whose skeleton is broken enough that walking it would crash SSR. Unknown
- * section types are dropped (an older template must survive a newer backend);
- * a payload with no usable meta or no valid section resolves to `null`, which
- * makes the caller fall back to the committed default.
- */
-export function normalizeSiteContent(raw: SiteContent): SiteContent | null {
-  if (typeof raw !== 'object' || raw === null) return null;
-  const { meta, sections } = raw;
-  if (
-    typeof meta?.titleSuffix !== 'string' ||
-    typeof meta?.siteNameFallback !== 'string' ||
-    typeof meta?.descriptionTemplate !== 'string'
-  ) {
-    return null;
-  }
-  if (!Array.isArray(sections)) return null;
-  const valid = sections.filter(
-    (section) =>
-      typeof section === 'object' &&
-      section !== null &&
-      SECTION_TYPES.has(section.type) &&
-      typeof section.enabled === 'boolean' &&
-      typeof section.data === 'object' &&
-      section.data !== null &&
-      (section.type === 'hero' || typeof (section as { id?: unknown }).id === 'string'),
-  );
-  if (valid.length === 0) return null;
-  return { meta, sections: valid };
-}
 
 /** Sections to render, in declaration order. */
 export function enabledSections(sections: readonly Section[]): Section[] {
