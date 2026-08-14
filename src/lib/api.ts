@@ -108,11 +108,12 @@ async function fetchJson<T>(
 }
 
 function normalizeSite(p: SitePayload): SitePayload | null {
-  // The components dereference these required objects without optional chaining
-  // (footer address/gdpr, opening-hours season). A 200 that omits any of them
-  // violates the dto contract; treat it as null so the page degrades to 503
-  // instead of throwing during SSR render.
-  if (!p.address || !p.gdpr || !p.season) return null;
+  // The components dereference these required objects without optional
+  // chaining (footer address/gdpr). A 200 that omits either violates the dto
+  // contract; treat it as null so the page degrades to 503 instead of
+  // throwing during SSR render. `season` is deliberately NOT here: a missing
+  // season only hides the season cards, it must never cost the whole page.
+  if (!p.address || !p.gdpr) return null;
 
   // Integrity check, warning-only: the backend echoes which site it thinks it
   // is serving; a mismatch with the facility this deploy asked for means the

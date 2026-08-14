@@ -33,6 +33,14 @@ export const siteConfig = {
     ogImageUrl: '/brand/og.png',
   },
 
+  // Number/date formatting for backend-driven values (prices, season dates,
+  // animated counters). Per-deploy: a deploy in another market changes these
+  // two, not the components.
+  formatting: {
+    locale: 'it-IT',
+    currency: '€',
+  },
+
   analytics: {
     ga4MeasurementId: '' as string, // override via env per deploy
     consentDefault: 'denied' as 'denied' | 'granted',

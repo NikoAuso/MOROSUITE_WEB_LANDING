@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { visiblePricingSections, formatPrice, countRows } from './pricing';
 
+const FMT = { locale: 'it-IT', currency: '€', freeLabel: 'Gratis' };
+
 describe('visiblePricingSections', () => {
   it('drops sections that have no rows', () => {
     const sections = [
@@ -32,16 +34,16 @@ describe('visiblePricingSections', () => {
 
 describe('formatPrice', () => {
   it('shows "Gratis" for a free row even when the value is null', () => {
-    expect(formatPrice(null, true)).toBe('Gratis');
-    expect(formatPrice(0, true)).toBe('Gratis');
+    expect(formatPrice(null, true, FMT)).toBe('Gratis');
+    expect(formatPrice(0, true, FMT)).toBe('Gratis');
   });
 
   it('shows the em-dash only for a non-free null value', () => {
-    expect(formatPrice(null, false)).toBe('—');
+    expect(formatPrice(null, false, FMT)).toBe('—');
   });
 
   it('formats a numeric value as euros', () => {
-    expect(formatPrice(10, false)).toBe('€ 10,00');
+    expect(formatPrice(10, false, FMT)).toBe('€ 10,00');
   });
 });
 

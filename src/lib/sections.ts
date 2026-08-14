@@ -77,6 +77,15 @@ export type HoursContent = {
   source?: SectionDataSource;
   eyebrow: string;
   title: string;
+  /** Badge on the current weekday (e.g. "Oggi"). */
+  todayLabel: string;
+  /** Shown on days with no intervals (e.g. "Chiuso"). */
+  closedLabel: string;
+  /**
+   * Labels for the season cards. The cards render only when BOTH these labels
+   * and the payload's season dates exist — omit for year-round venues.
+   */
+  seasonLabels?: { start: string; end: string };
   /** Shown when the backend returns no schedule. */
   fallbackCta?: FallbackCta;
 };
@@ -84,6 +93,10 @@ export type HoursContent = {
 export type PricingContent = {
   /** Overrides the deploy-level data source for this section only. */
   source?: SectionDataSource;
+  /** Iconify name shown beside the price-list title (e.g. "fa6-solid:ticket"). */
+  icon: string;
+  /** Label for rows flagged free by the backend (e.g. "Gratis"). */
+  freeLabel: string;
   eyebrow: string;
   title: string;
   lead: string;

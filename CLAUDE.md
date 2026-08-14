@@ -25,9 +25,10 @@ path, the site is fully self-contained. The `hours`/`pricing` sections can overr
 via `data.source`. `DEMO_MODE=true` forces static serving everywhere (even over an explicit per-section
 `'backend'`), using whatever `STATIC_DATA` holds — by default the active preset's demo payloads.
 
-**The DTO is still domain-shaped**, and that is the one place the pool origin still shows: `season`,
-`entrance_sections`/`pass_sections`, `allows_umbrella_booking`. A deploy for a
-different kind of venue reuses the shapes or extends the contract; it cannot ignore them.
+**The DTO keeps a pool-shaped corner**, now softened for other verticals: `season` is nullable and never fails the
+page (a missing season only hides the season cards), `allows_umbrella_booking` is optional (the fine-print renders
+only on an explicit `false`), and `entrance_sections`/`pass_sections` remain admission-shaped — non-pool verticals
+use the `menu` section instead of pricing.
 
 Stack: Astro 7 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
 Vitest for unit tests, Playwright for E2E, Lighthouse config (`lighthouserc.json`) for manual audits. Node **22+**.
@@ -49,7 +50,10 @@ Vitest for unit tests, Playwright for E2E, Lighthouse config (`lighthouserc.json
 | `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9). Manual, not a CI gate.                                 |
 
 Run a single E2E spec: `npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/homepage.spec.ts`. Add
-`--ui` for UI mode. Specs: `cookie`, `cta`, `degraded`, `empty`, `homepage`, `legal`, `public`.
+`--ui` for UI mode. Specs: `cookie`, `cta`, `degraded`, `empty`, `homepage`, `legal`, `public`. **The homepage and
+empty specs derive their expectations from the committed `site.content.ts`** (anchor ids, section presence, fallback
+copy from `FALLBACK_COPY`): re-theming the deploy — the product's founding operation — skips what no longer exists
+instead of failing. Never hardcode deploy copy or anchors in a spec.
 
 CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:check** → unit) and `e2e` (all three suites).
 
@@ -171,6 +175,11 @@ content.
   source). Components use only the semantic utilities; neutral `slate` and RuleGroups' `TONES` map are the
   sanctioned literals. All three invariants are enforced by `src/lib/theme-tokens.test.ts`, on every preset. There
   are NO colour fields in `site.config.ts`.
+- **UI labels rendered around backend data live in the content, not in components**: `todayLabel`/`closedLabel`/
+  `seasonLabels` on `HoursContent` (season cards render only when both the labels AND the payload dates exist),
+  `icon`/`freeLabel` on `PricingContent`. Number/date formatting for backend values follows
+  `site.config.ts formatting.{locale,currency}`; the count-up client script receives the locale via a data attribute
+  because importing `@/lib/config` in a client script would leak server-only values into the browser bundle.
 - **The hero photo comes from the content** (`HeroContent.image`, root-relative path under `public/`, optional —
   the gradient alone carries the hero without it). `public/` assets are served as-is: ship pre-sized files (~1920w).
 - **`brand.*Url` accepts two forms**: an absolute URL to a hosted asset, or a root-relative path served from

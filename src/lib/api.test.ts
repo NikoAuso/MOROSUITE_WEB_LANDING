@@ -163,7 +163,6 @@ describe('api.site malformed-payload normalization', () => {
   it.each([
     ['address', { ...SITE_OK, address: undefined }],
     ['gdpr', { ...SITE_OK, gdpr: undefined }],
-    ['season', { ...SITE_OK, season: undefined }],
   ])(
     'returns null when the required %s object is missing (so the page degrades to 503)',
     async (_label, payload) => {
@@ -177,6 +176,12 @@ describe('api.site malformed-payload normalization', () => {
     fetchSpy.mockResolvedValue(jsonResponse(SITE_OK));
     const { api } = await import('./api');
     expect(await api.site()).toEqual(SITE_OK);
+  });
+
+  it('a missing season is NOT fatal — the cards hide, the page renders', async () => {
+    fetchSpy.mockResolvedValue(jsonResponse({ ...SITE_OK, season: null }));
+    const { api } = await import('./api');
+    expect(await api.site()).not.toBeNull();
   });
 });
 

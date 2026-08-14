@@ -71,6 +71,8 @@ export const content: SiteContent = {
       navLabel: 'Orari',
       enabled: true,
       data: {
+        todayLabel: 'Oggi',
+        closedLabel: 'Chiuso',
         eyebrow: 'QUANDO PASSARE',
         title: 'Orari di apertura',
         fallbackCta: { href: '#drink', label: 'Vai alla drink list' },

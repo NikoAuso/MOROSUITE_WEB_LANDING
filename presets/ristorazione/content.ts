@@ -79,6 +79,8 @@ export const content: SiteContent = {
       navLabel: 'Orari',
       enabled: true,
       data: {
+        todayLabel: 'Oggi',
+        closedLabel: 'Chiuso',
         eyebrow: 'QUANDO TROVARCI',
         title: 'Orari di servizio',
         fallbackCta: { href: '#menu', label: 'Vai al menu' },

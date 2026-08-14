@@ -78,6 +78,9 @@ export const content: SiteContent = {
       navLabel: 'Orari',
       enabled: true,
       data: {
+        todayLabel: 'Oggi',
+        closedLabel: 'Chiuso',
+        seasonLabels: { start: 'Inizio stagione', end: 'Fine stagione' },
         eyebrow: 'QUANDO VISITARCI',
         title: 'Orari di apertura',
         fallbackCta: { href: '#prezzi', label: 'Vai ai prezzi' },
@@ -89,6 +92,8 @@ export const content: SiteContent = {
       navLabel: 'Prezzi',
       enabled: true,
       data: {
+        icon: 'fa6-solid:ticket',
+        freeLabel: 'Gratis',
         eyebrow: 'PREZZI ATTIVI',
         title: 'Tariffe aggiornate in tempo reale',
         lead: 'I prezzi variano in base a data, fascia oraria e tipologia di ingresso. Trovi sempre il listino attivo durante la prenotazione.',

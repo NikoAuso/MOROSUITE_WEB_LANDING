@@ -104,11 +104,15 @@ export type SitePayload = {
     tiktok?: string | null;
   };
 
-  /** Coarse seasonal window (ISO-8601 dates) used by structured data and seasonal copy. */
+  /**
+   * Coarse seasonal window (ISO-8601 dates). `null` for year-round venues —
+   * unlike address/gdpr, a missing season never fails the page: the season
+   * cards simply do not render.
+   */
   season: {
     start_date: string | null;
     end_date: string | null;
-  };
+  } | null;
 
   /**
    * Contextual links surfaced in the UI. Each entry is a `{ label, url }` pair
@@ -213,8 +217,12 @@ export type PricingPayload = {
   /** Passes/season tickets, grouped by section. */
   pass_sections: Array<{
     label: string;
-    /** Whether this pass type allows umbrella booking on the companion app. Drives a fine-print note in the UI. */
-    allows_umbrella_booking: boolean;
+    /**
+     * Whether this pass type allows umbrella booking on the companion app.
+     * OPTIONAL and pool-specific: the fine-print note renders only on an
+     * explicit `false`, so backends of other verticals just omit it.
+     */
+    allows_umbrella_booking?: boolean;
     rows: Array<{
       label: string;
       range: string | null;

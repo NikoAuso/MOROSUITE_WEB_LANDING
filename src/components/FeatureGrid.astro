@@ -1,4 +1,5 @@
 ---
+import { config } from '@/lib/config';
 import Icon from '@/components/Icon.astro';
 import type { FeaturesContent } from '@/lib/sections';
 
@@ -36,7 +37,11 @@ const { eyebrow, title, lead, items: features, stats } = content;
       }
     </div>
 
-    <div class="mt-14 grid gap-8 text-center md:grid-cols-4" id={`${id}-stats`}>
+    <div
+      class="mt-14 grid gap-8 text-center md:grid-cols-4"
+      id={`${id}-stats`}
+      data-count-locale={config.formatting.locale}
+    >
       {
         stats.map((s) => (
           <div>
@@ -63,11 +68,15 @@ const { eyebrow, title, lead, items: features, stats } = content;
 <script>
   const els = document.querySelectorAll<HTMLElement>('[data-count-up]');
   if (els.length > 0 && 'IntersectionObserver' in window) {
+    // The locale travels via data attribute: importing @/lib/config in a
+    // client script would pull server-only values into the browser bundle.
+    const locale =
+      document.querySelector<HTMLElement>('[data-count-locale]')?.dataset.countLocale || undefined;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const formatNumber = (value: number, decimals: number): string =>
       decimals === 0
-        ? Math.round(value).toLocaleString('it-IT')
-        : value.toLocaleString('it-IT', {
+        ? Math.round(value).toLocaleString(locale)
+        : value.toLocaleString(locale, {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals,
           });

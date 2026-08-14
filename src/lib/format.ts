@@ -6,11 +6,11 @@
  * render as the previous day in negative-offset timezones. Returns `null` for
  * `null`/empty input so callers can hide the field.
  */
-export function formatSeasonDate(iso: string | null): string | null {
+export function formatSeasonDate(iso: string | null, locale: string): string | null {
   if (!iso) return null;
   const date = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString('it-IT', {
+  return date.toLocaleDateString(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

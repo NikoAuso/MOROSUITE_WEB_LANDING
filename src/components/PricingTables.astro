@@ -4,6 +4,7 @@ import type { PricingContent, FallbackCta } from '@/lib/sections';
 import ErrorState from '@/components/ErrorState.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
+import { config } from '@/lib/config';
 import { FALLBACK_COPY } from '@/lib/copy';
 import { visiblePricingSections, formatPrice, countRows } from '@/lib/pricing';
 import { whatsappUrl } from '@/lib/format';
@@ -23,6 +24,7 @@ const entranceCount = countRows(entranceSections);
 const passCount = countRows(passSections);
 const booking = site.links?.booking ?? null;
 const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
+const priceFormat = { ...config.formatting, freeLabel: content.freeLabel };
 ---
 
 <section id={id} class="bg-slate-50">
@@ -71,7 +73,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div class="flex items-center gap-3">
                 <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
-                  <Icon name="fa6-solid:ticket" />
+                  <Icon name={content.icon} />
                 </div>
                 <div>
                   <div class="text-lg font-extrabold text-slate-900">
@@ -144,14 +146,14 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                                 {row.weekday_value === null && !row.weekday_is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
-                                  formatPrice(row.weekday_value, row.weekday_is_free)
+                                  formatPrice(row.weekday_value, row.weekday_is_free, priceFormat)
                                 )}
                               </div>
                               <div class="px-4 py-3 text-right font-extrabold text-slate-900 flex items-center justify-end">
                                 {row.weekend_value === null && !row.weekend_is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
-                                  formatPrice(row.weekend_value, row.weekend_is_free)
+                                  formatPrice(row.weekend_value, row.weekend_is_free, priceFormat)
                                 )}
                               </div>
                             </div>
@@ -191,7 +193,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                                 {row.range && (
                                   <div class="text-xs font-normal text-slate-500">{row.range}</div>
                                 )}
-                                {!section.allows_umbrella_booking && (
+                                {section.allows_umbrella_booking === false && (
                                   <span class="text-slate-500 font-normal">
                                     {content.noUmbrellaNote}
                                   </span>
@@ -201,7 +203,7 @@ const whatsappLink = whatsappUrl(site.contacts?.whatsapp);
                                 {row.value === null && !row.is_free ? (
                                   <span class="text-slate-400">—</span>
                                 ) : (
-                                  formatPrice(row.value, row.is_free)
+                                  formatPrice(row.value, row.is_free, priceFormat)
                                 )}
                               </div>
                             </div>

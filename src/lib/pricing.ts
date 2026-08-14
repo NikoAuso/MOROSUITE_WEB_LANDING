@@ -11,15 +11,24 @@ export function visiblePricingSections<T extends { rows: readonly unknown[] }>(
   return sections.filter((section) => section.rows.length > 0);
 }
 
+export type PriceFormat = {
+  /** BCP-47 locale for the number (site.config.ts `formatting.locale`). */
+  locale: string;
+  /** Currency symbol/prefix (site.config.ts `formatting.currency`). */
+  currency: string;
+  /** Copy for backend-flagged free rows (PricingContent.freeLabel). */
+  freeLabel: string;
+};
+
 /**
- * Render a price cell. `isFree` wins over a `null` value: the backend marks a
- * row "Gratis" regardless of the numeric value, so a free row with no price
- * must read "Gratis", not the em-dash that signals "unavailable".
+ * Render a price cell. `isFree` wins over a `null` value: the backend flags a
+ * row free regardless of the numeric value, so a free row with no price must
+ * read the free label, not the em-dash that signals "unavailable".
  */
-export function formatPrice(value: number | null, isFree: boolean): string {
-  if (isFree) return 'Gratis';
+export function formatPrice(value: number | null, isFree: boolean, format: PriceFormat): string {
+  if (isFree) return format.freeLabel;
   if (value === null) return '—';
-  return `€ ${value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${format.currency} ${value.toLocaleString(format.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 /** Total rendered rows across already-filtered sections — drives the tab badges so they match the list. */
