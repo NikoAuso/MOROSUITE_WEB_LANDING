@@ -20,3 +20,14 @@ test('robots.txt is reachable and points at the sitemap', async ({ request }) =>
   expect(res.ok()).toBe(true);
   expect(await res.text()).toMatch(/Sitemap:\s*https?:\/\//i);
 });
+
+// 404.astro never sets Astro.response.status itself — the Node adapter maps the
+// route to a 404. That is invisible in the source, so pin it here: a regression
+// would silently serve "Pagina non trovata" as a 200 and get it indexed.
+test('unknown route returns 404, noindex and a titled error page', async ({ page }) => {
+  const res = await page.goto('/questa-pagina-non-esiste');
+
+  expect(res?.status()).toBe(404);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(page.locator('h1')).toHaveText('Pagina non trovata');
+});
