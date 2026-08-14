@@ -30,7 +30,7 @@ const facilitySlug = env.FACILITY_SLUG || DEMO_FACILITY_SLUG;
 
 export const config = {
   ...base,
-  // When true, src/lib/api.ts serves bundled data from src/lib/demo-data.ts
+  // When true, src/lib/api.ts serves bundled data from the active preset (presets/*/demo-data.ts)
   // instead of fetching from the backend. Toggled by the DEMO_MODE env var.
   demoMode: env.DEMO_MODE === 'true',
   // Exposed so normalizeSite can cross-check SitePayload.slug against the

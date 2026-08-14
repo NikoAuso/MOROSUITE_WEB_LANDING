@@ -7,11 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 An **Astro 7 SSR site template** (one site per deploy) with a strict three-way split of ownership. Know which side a
 change belongs on before making it:
 
-| Owner                          | Holds                                                                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Backend** (external service) | Live data only: identity, contacts, GDPR entities, opening hours, pricing, CTA links                                                                |
-| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                                                |
-| **`site.content.ts`**          | The page structure — sections, order, copy. Committed and type-checked; per-vertical presets under `presets/` are planned (docs/VISIONE.md, fase C) |
+| Owner                          | Holds                                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Backend** (external service) | Live data only: identity, contacts, GDPR entities, opening hours, pricing, CTA links                                      |
+| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                      |
+| **`presets/<tema>/`**          | The vertical: `content.ts` (structure+copy), `theme.css` (palette), `demo-data.ts`, assets under `public/presets/<tema>/` |
+| **`site.content.ts`**          | The DEPLOY file: imports the chosen preset's content and applies per-section overrides                                    |
 
 Nothing under `src/` carries business copy. If you find yourself typing a user-visible sentence into a component,
 it belongs in `site.content.ts` (page copy) or `src/lib/copy.ts` (degraded-state copy) instead.
@@ -58,9 +59,13 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
    `FACILITY_SLUG` env var alone; `normalizeSite` warns if `SitePayload.slug` disagrees with it. Does NOT
    hold per-environment URLs (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
    `src/lib/config.ts`.
-2. **`src/lib/sections.ts` + `site.content.ts`** — the homepage itself. `sections.ts` has the types and three
-   helpers; `site.content.ts` is the structure. Committed files only — there is no runtime content source and no
-   runtime validation layer: a malformed structure is a compile error. See "Sections" below.
+2. **`src/lib/sections.ts` + `presets/` + `site.content.ts`** — the homepage itself. `sections.ts` has the types
+   and three helpers; a preset (`presets/<tema>/content.ts`) is the structure; `site.content.ts` is the deploy file
+   that imports it and applies overrides (explicit per-section replacement, no deep-merge). Committed files only —
+   no runtime content source, no runtime validation: a malformed structure is a compile error. **Preset selection is
+   TWO imports that must agree**: the content import in `site.content.ts` and the theme `@import` in
+   `src/styles/tokens.css`. There is deliberately no `preset` field in `site.config.ts` — it would be a third
+   declaration free to lie about the two that actually bind. See "Sections" below.
 3. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
    `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`, `DEMO_MODE`.
    Composes `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site` etc.
@@ -147,11 +152,13 @@ nothing instead of failing the build. The exhaustiveness fix is scheduled (VISIO
 - **CTAs to external apps** come from `SitePayload.links` (`booking` / `login` / `manager` / `hotel`). Customer `login`
   renders in the header, back-office `manager` in the footer. Always `<CtaButton />` — never a raw `<a>` or a
   hardcoded URL. `tests/e2e/cta.spec.ts` fails if a login/prenota href resolves to `http://localhost:4321/...`.
-- **Theming goes through semantic tokens, never raw hues.** `src/styles/tokens.css` defines the `brand-*`, `cta-*`
-  and `accent-*` scales (plus `--hero-glow-a/b`); components use only those utilities for visual identity. Neutral
-  `slate` and the semantic status colours in RuleGroups' `TONES` map are the sanctioned literals. Enforced by
-  `src/lib/theme-tokens.test.ts`. Presets (VISIONE fase C) re-theme by overriding the custom properties. There are
-  NO colour fields in `site.config.ts` — the former `primaryColor`/`accentColor` were dead knobs and are gone.
+- **Theming goes through semantic tokens, never raw hues.** The scales (`brand-*`, `cta-*`, `accent-*`, plus
+  `--hero-glow-a/b`) are VALUED by the active preset's `theme.css`, `@import`ed by `src/styles/tokens.css` inside
+  the Tailwind graph — that placement is load-bearing: opacity-modified utilities inline the resolved colour at
+  build, so the palette must be present at build time, and `tokens.css` itself holds NO colour tokens (single
+  source). Components use only the semantic utilities; neutral `slate` and RuleGroups' `TONES` map are the
+  sanctioned literals. All three invariants are enforced by `src/lib/theme-tokens.test.ts`, on every preset. There
+  are NO colour fields in `site.config.ts`.
 - **The hero photo comes from the content** (`HeroContent.image`, root-relative path under `public/`, optional —
   the gradient alone carries the hero without it). `public/` assets are served as-is: ship pre-sized files (~1920w).
 - **`brand.*Url` accepts two forms**: an absolute URL to a hosted asset, or a root-relative path served from
@@ -188,9 +195,10 @@ nothing instead of failing the build. The exhaustiveness fix is scheduled (VISIO
 
 ## White-labeling a new deploy
 
-(The README walkthrough is trimmed during the docs freeze; this is the authoritative summary.) Fork, then edit
-`site.config.ts` (identity/branding), `site.content.ts` (sections and copy), `public/brand/` + `public/placeholder/`
-(assets), `src/content/legal/` (documents), and set the env vars:
+(The README walkthrough is trimmed during the docs freeze; this is the authoritative summary.) Fork, then: pick the
+preset (the two imports — content in `site.content.ts`, theme in `src/styles/tokens.css`), apply copy overrides in
+`site.content.ts`, edit `site.config.ts` (identity/branding), replace `public/brand/` assets (the
+`public/presets/<tema>/` ones are the preset's demo assets), rewrite `src/content/legal/`, and set the env vars:
 
 | Var                         | Required in prod? | Default                               | Use                                                                       |
 | --------------------------- | ----------------- | ------------------------------------- | ------------------------------------------------------------------------- |

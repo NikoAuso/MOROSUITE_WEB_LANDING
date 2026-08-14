@@ -32,7 +32,7 @@ function healthResponse(body: Record<string, unknown>): Response {
 
 export const GET: APIRoute = async () => {
   // In demo mode there is no external backend: data is served from
-  // src/lib/demo-data.ts, so the app is healthy by definition. Skip the /up
+  // the active preset (presets/*/demo-data.ts), so the app is healthy by definition. Skip the /up
   // probe (it would always fail and report a misleading "degraded").
   if (config.demoMode) {
     return healthResponse({

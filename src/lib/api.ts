@@ -1,5 +1,5 @@
 import { config } from './config';
-import { DEMO_DATA } from './demo-data';
+import { DEMO_DATA } from '@content';
 import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
 
 type CacheEntry<T> = { value: T | null; timestamp: number };

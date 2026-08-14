@@ -4,9 +4,11 @@
 > backend leggibile, contributing, security policy, template issue/PR) sono stati rimossi e verranno
 > ricreati a refactor concluso. Il piano completo è in `docs/VISIONE.md` (locale, non tracciato).
 
-Template Astro 7 SSR white-label multi-verticale: un catalogo di componenti e (in arrivo) un
-preset per tema, customizzabile via file di config; i dati live (orari, listino, identità) arrivano
-opzionalmente via HTTP dal gestionale. Licenza [MIT](./LICENSE).
+Template Astro 7 SSR white-label multi-verticale: un catalogo di componenti e un preset per tema
+in `presets/` (oggi: `piscina`; ristorazione/bar/hotel in arrivo), customizzabile via file di
+config; i dati live (orari, listino, identità) arrivano opzionalmente via HTTP dal gestionale. Il
+preset si sceglie con due import: contenuto in `site.content.ts`, tema in `src/styles/tokens.css`.
+Licenza [MIT](./LICENSE).
 
 **Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint dati live, JSDoc per
 campo) + [`src/lib/sections.ts`](src/lib/sections.ts) (catalogo sezioni e shape della struttura in

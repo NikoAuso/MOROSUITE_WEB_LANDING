@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DEMO_DATA } from './demo-data';
+import { DEMO_DATA } from '@content';
 
 // Mock applies to this whole file only: api.test.ts is unaffected.
 vi.mock('@/lib/config', () => ({

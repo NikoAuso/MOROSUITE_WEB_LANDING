@@ -1,4 +1,4 @@
-import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
+import type { SitePayload, OpeningHoursPayload, PricingPayload } from '@/lib/dto';
 
 /**
  * Bundled demo payloads served when DEMO_MODE is enabled (see src/lib/config.ts

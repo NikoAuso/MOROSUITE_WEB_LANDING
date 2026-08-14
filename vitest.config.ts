@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src'),
       '@config': resolve(__dirname, 'site.config.ts'),
+      '@content': resolve(__dirname, 'site.content.ts'),
     },
   },
   test: {
