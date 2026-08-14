@@ -16,6 +16,11 @@ export default defineConfig({
       reuseExistingServer: false,
       ignoreHTTPSErrors: true,
       env: {
+        // Same guard as playwright.config.ts: a developer's .env with
+        // DEMO_MODE=true is inlined into the build and would make this server
+        // run in demo mode — which reports /health ok and defeats the point
+        // of the degraded suite.
+        DEMO_MODE: 'false',
         HOST: '127.0.0.1',
         PORT: '14322',
         API_BASE_URL: 'http://127.0.0.1:9/api/public/v1',

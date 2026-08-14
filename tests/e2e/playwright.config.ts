@@ -43,6 +43,11 @@ export default defineConfig({
       url: BASE_URL,
       reuseExistingServer: false,
       env: {
+        // Explicit override: a developer's .env with DEMO_MODE=true gets
+        // inlined into the build by Vite, and config.ts falls back to that
+        // inlined value when the runtime env is silent. Without this line the
+        // E2E server would run in demo mode on any machine that has that .env.
+        DEMO_MODE: 'false',
         HOST: '127.0.0.1',
         PORT: '14321',
         API_BASE_URL: MOCK_URL,
