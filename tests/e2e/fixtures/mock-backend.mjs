@@ -13,7 +13,9 @@ const MODE = process.env.MOCK_BACKEND_MODE || 'ok'; // 'ok' | 'empty'
 const FACILITY_ROUTE = /^\/api\/public\/v1\/([^/]+)(\/.+)$/;
 
 const HANDLERS = {
-  '/site': () => SITE,
+  // Empty mode nulls default_locale so empty.spec can pin the <html lang>
+  // fallback branch (ok mode serves 'en' to pin the backend-driven branch).
+  '/site': () => (MODE === 'empty' ? { ...SITE, default_locale: null } : SITE),
   // Served only in 'ok' mode; 'empty' answers 404 like a backend that never
   // implemented the optional endpoint, pinning the committed-default fallback.
   ...(MODE === 'ok' ? { '/site/content': () => CONTENT } : {}),

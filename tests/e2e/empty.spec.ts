@@ -12,6 +12,13 @@ test.describe('empty — backend up, payloads vuoti', () => {
     await expect(page.getByText('Listino non disponibile')).toBeVisible();
   });
 
+  test('html lang falls back to the committed defaultLocale when the backend sends null', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'it');
+  });
+
   // In empty mode the mock answers 404 on /site/content, like a backend that
   // never implemented the optional endpoint: the committed site.content.ts
   // must render, and the missing endpoint must never be the reason for a 503.

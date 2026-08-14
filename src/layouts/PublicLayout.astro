@@ -43,6 +43,15 @@ const {
 // pages that already resolved content for the body.
 const nav = primaryNav((await resolveSiteContent()).sections);
 
+// One resolved locale drives both <html lang> and og:locale, so the two can
+// never contradict each other. og:locale wants language_TERRITORY; for bare
+// ISO-639-1 codes we map the ones this template realistically serves and
+// omit the tag otherwise (it is optional in the OG protocol — omitting beats
+// inventing a territory).
+const lang = site.default_locale || config.defaultLocale;
+const OG_LOCALES: Record<string, string> = { it: 'it_IT', en: 'en_US', de: 'de_DE', fr: 'fr_FR' };
+const ogLocale = lang.includes('_') ? lang : OG_LOCALES[lang];
+
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
 // OG requires an absolute URL; brand.ogImageUrl may be either an absolute URL
 // or a root-relative path served from public/.
@@ -50,7 +59,9 @@ const ogImageUrl = ogImage ?? toAbsoluteUrl(config.brand.ogImageUrl, config.site
 ---
 
 <!doctype html>
-<html lang={config.defaultLocale}>
+{/* The backend declares the locale; the committed config is only the fallback
+    (and the ServiceUnavailable page, which has no payload, uses it directly). */}
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -69,7 +80,7 @@ const ogImageUrl = ogImage ?? toAbsoluteUrl(config.brand.ogImageUrl, config.site
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:site_name" content={siteName} />
-    <meta property="og:locale" content="it_IT" />
+    {ogLocale && <meta property="og:locale" content={ogLocale} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

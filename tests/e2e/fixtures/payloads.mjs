@@ -1,12 +1,10 @@
 export const SITE = {
-  slug: 'demo',
+  slug: 'test-facility',
   name: 'Piscina Demo',
   short_name: 'Demo',
   tagline: 'Sito di anteprima.',
-  languages: ['it'],
-  default_locale: 'it',
+  default_locale: 'en',
   online_bookings_enabled: true,
-  customer_can_book_any_weekday: true,
   contacts: {
     email: 'info@example.com',
     phone: '+39 000 000 0000',
@@ -28,7 +26,6 @@ export const SITE = {
   },
   social: { instagram: 'https://instagram.com/demo', facebook: null, tiktok: null },
   season: { start_date: '2026-06-01', end_date: '2026-09-15' },
-  season_dates: [{ label: 'Stagione estiva', value: '01/06 – 15/09' }],
   links: {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
     login: { label: 'Accedi', url: 'https://app.example.com/login' },

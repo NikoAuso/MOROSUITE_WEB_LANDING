@@ -47,7 +47,12 @@
  * GDPR mentions, social links and season metadata.
  */
 export type SitePayload = {
-  /** Stable slug used to identify the site against the backend. MUST match the value of `siteSlug` in `site.config.ts`. */
+  /**
+   * Stable slug identifying the site. MUST match the `FACILITY_SLUG` the deploy
+   * is configured with (the same value composed into the request URL) — the
+   * template logs a warning on mismatch, since it means the deploy is pointed
+   * at the wrong backend or slug.
+   */
   slug: string | null;
 
   /** Full commercial name (used as default page title fallback and OG site name). */
@@ -59,17 +64,15 @@ export type SitePayload = {
   /** One-line claim used as default meta description fallback. */
   tagline: string | null;
 
-  /** ISO-639-1 language codes the site declares support for (e.g. `["it", "en"]`). */
-  languages: string[];
+  /** ISO-639-1 locale rendered as the page `<html lang>`; falls back to `defaultLocale` in `site.config.ts` when null/empty. */
+  default_locale: string | null;
 
-  /** Default ISO-639-1 locale, used for the `<html lang>` and for canonical hreflang. */
-  default_locale: string;
-
-  /** Whether the customer-facing booking flow on the companion app is currently enabled. */
+  /**
+   * Kill switch for the booking flow. When false the template nulls
+   * `links.booking` during normalization, so every booking CTA renders in its
+   * disabled state regardless of the link the backend sends.
+   */
   online_bookings_enabled: boolean;
-
-  /** Whether the booking flow allows arbitrary weekdays (false = restricted weekend/special-day calendar). */
-  customer_can_book_any_weekday: boolean;
 
   /** Direct contact endpoints surfaced in footer and contact CTAs. All fields optional. */
   contacts: {
@@ -115,9 +118,6 @@ export type SitePayload = {
     start_date: string | null;
     end_date: string | null;
   };
-
-  /** Optional human-formatted seasonal cards. NOT rendered by the default OpeningHours component (which shows `season.start_date`/`season.end_date`); kept for custom templates. */
-  season_dates: Array<{ label: string; value: string }> | null;
 
   /**
    * Contextual links surfaced in the UI. Each entry is a `{ label, url }` pair

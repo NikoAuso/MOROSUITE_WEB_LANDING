@@ -10,7 +10,7 @@ change belongs on before making it:
 | Owner                          | Holds                                                                                                                                                  |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Backend** (external service) | Live data (identity, contacts, GDPR entities, opening hours, pricing, CTA links) **and, optionally, the whole page structure** via `GET /site/content` |
-| **`site.config.ts`**           | Per-deploy identity: `siteSlug`, brand colours and asset URLs, analytics, fetch                                                                        |
+| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                                                   |
 | **`site.content.ts`**          | The committed page structure — sections, order, copy. The **default** when the backend does not serve `/site/content`, and the demo-mode content       |
 
 Nothing under `src/` carries business copy. If you find yourself typing a user-visible sentence into a component,
@@ -24,7 +24,7 @@ For local exploration without a backend, set `DEMO_MODE=true`: `src/lib/api.ts` 
 `src/lib/demo-data.ts` (no network, no cache).
 
 **The DTO is still domain-shaped**, and that is the one place the pool origin still shows: `season`,
-`customer_can_book_any_weekday`, `entrance_sections`/`pass_sections`, `allows_umbrella_booking`. A deploy for a
+`entrance_sections`/`pass_sections`, `allows_umbrella_booking`. A deploy for a
 different kind of venue reuses the shapes or extends the contract; it cannot ignore them.
 
 Stack: Astro 7 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
@@ -54,7 +54,9 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 
 ## Architecture: how a page renders
 
-1. **`site.config.ts`** — per-deploy identity: `siteSlug`, `brand`, `analytics`, `fetch` timeouts/retries. Does NOT
+1. **`site.config.ts`** — per-deploy identity: `brand`, `analytics`, `fetch` timeouts/retries, `defaultLocale`
+   (fallback only — the backend's `default_locale` drives `<html lang>`). Which facility a deploy serves is the
+   `FACILITY_SLUG` env var alone; `normalizeSite` warns if `SitePayload.slug` disagrees with it. Does NOT
    hold per-environment URLs (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
    `src/lib/config.ts`.
 2. **`src/lib/sections.ts` + `src/lib/content.ts` + `site.content.ts`** — the homepage itself. `sections.ts` has the

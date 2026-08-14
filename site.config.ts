@@ -1,10 +1,10 @@
 export const siteConfig = {
-  // Stable slug used to identify this deploy against the backend. Must match
-  // the value returned by GET /site (SitePayload.slug).
-  siteSlug: 'demo',
+  // Which facility this deploy serves is NOT configured here: it is the
+  // FACILITY_SLUG env var (see src/lib/config.ts), which both builds the
+  // backend URL and is cross-checked against SitePayload.slug at runtime.
 
+  // Fallback `<html lang>`: the backend's default_locale wins when present.
   defaultLocale: 'it' as const,
-  supportedLocales: ['it', 'en'] as const,
 
   // Each *Url below accepts either an absolute URL to an externally hosted
   // asset or a root-relative path served out of public/. The defaults are

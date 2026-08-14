@@ -187,7 +187,6 @@ Astro renders them natively at `/policy` and `/cookie`.
 1. Use this repo as a template (GitHub "Use this template") or fork it.
 2. Edit `site.config.ts` (branding + per-deploy identity only):
 
-- `siteSlug` — must match `SitePayload.slug` returned by `GET /site`.
 - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl`. Each `*Url`
   takes either an absolute URL to a hosted asset or a root-relative path served from `public/`; the defaults are the
   local placeholders in `public/brand/`. Keep the OG image a raster (PNG/JPG, 1200x630) — social crawlers do not

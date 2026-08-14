@@ -12,10 +12,8 @@ const SITE: SitePayload = {
   name: 'Struttura Demo',
   short_name: 'Demo',
   tagline: 'Sito di anteprima generato in demo mode.',
-  languages: ['it'],
   default_locale: 'it',
   online_bookings_enabled: true,
-  customer_can_book_any_weekday: true,
   contacts: {
     email: 'info@example.com',
     phone: '+39 000 000 0000',
@@ -37,7 +35,6 @@ const SITE: SitePayload = {
   },
   social: { instagram: 'https://instagram.com/demo', facebook: null, tiktok: null },
   season: { start_date: '2026-06-01', end_date: '2026-09-15' },
-  season_dates: null,
   links: {
     booking: { label: 'Prenota', url: 'https://app.example.com/prenota' },
     login: { label: 'Accedi', url: 'https://app.example.com/login' },

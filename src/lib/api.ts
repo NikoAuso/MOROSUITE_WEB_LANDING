@@ -106,6 +106,29 @@ function normalizeSite(p: SitePayload): SitePayload | null {
   // violates the dto contract; treat it as null so the page degrades to 503
   // instead of throwing during SSR render.
   if (!p.address || !p.gdpr || !p.season) return null;
+
+  // Integrity check, warning-only: the backend echoes which site it thinks it
+  // is serving; a mismatch with the facility this deploy asked for means the
+  // deploy is pointed at the wrong backend/slug. Runs once per cache fill —
+  // and not at all in demo mode, where the "backend" is a bundled fixture
+  // (normalize runs uncached on every request there, so the warn would spam,
+  // and the fixture slug proves nothing about the deploy anyway).
+  // Availability wins over strictness, so the page still renders.
+  if (!config.demoMode && p.slug && p.slug !== config.facilitySlug) {
+    console.warn(
+      `[api] /site returned slug "${p.slug}" but this deploy is configured for ` +
+        `FACILITY_SLUG "${config.facilitySlug}" — check the deploy configuration`,
+    );
+  }
+
+  // The backend's kill switch for the booking flow. Nulling the link here,
+  // at the single normalization point, downgrades every booking CTA (hero,
+  // pricing, rules, highlight) to the disabled state at once — gating at the
+  // render sites would have to be repeated and would eventually be forgotten.
+  if (!p.online_bookings_enabled && p.links?.booking) {
+    return { ...p, links: { ...p.links, booking: null } };
+  }
+
   return p;
 }
 

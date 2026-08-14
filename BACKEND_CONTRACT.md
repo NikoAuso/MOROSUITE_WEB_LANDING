@@ -35,23 +35,20 @@ template's CI, by design). Update `dto.ts` first, then this file.
 
 Identity and presentation data. Drives header/footer, hero copy, GDPR mentions, social links, JSON-LD, season metadata.
 
-| Field                           | Type                           | Description                                                                       |
-| ------------------------------- | ------------------------------ | --------------------------------------------------------------------------------- |
-| `slug`                          | `string \| null`               | Stable site slug. MUST equal `siteSlug` in `site.config.ts`.                      |
-| `name`                          | `string \| null`               | Full commercial name. Default page-title / `og:site_name` fallback.               |
-| `short_name`                    | `string \| null`               | Short name for the header logo and tight UI spots.                                |
-| `tagline`                       | `string \| null`               | One-line claim. Default meta-description fallback.                                |
-| `languages`                     | `string[]`                     | ISO-639-1 codes the site declares (e.g. `["it","en"]`).                           |
-| `default_locale`                | `string`                       | ISO-639-1 locale for `<html lang>` and canonical hreflang.                        |
-| `online_bookings_enabled`       | `boolean`                      | Whether the companion-app booking flow is currently enabled.                      |
-| `customer_can_book_any_weekday` | `boolean`                      | `false` = restricted weekend/special-day calendar.                                |
-| `contacts`                      | object (below)                 | Contact endpoints for footer/contact CTAs.                                        |
-| `address`                       | object (below)                 | Postal address (footer + schema.org).                                             |
-| `gdpr`                          | object (below)                 | Data-controller identity, shown verbatim in footer and legal pages.               |
-| `social`                        | object (below)                 | Public profile links; `null` entries hide their icon.                             |
-| `season`                        | object (below)                 | Coarse seasonal window (ISO-8601).                                                |
-| `season_dates`                  | `Array<{label,value}> \| null` | Optional formatted cards. **Not** rendered by the default OpeningHours component. |
-| `links`                         | object (below)                 | Contextual CTAs. Each entry is `{ label, url }` or `null`.                        |
+| Field                     | Type             | Description                                                                                                            |
+| ------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `slug`                    | `string \| null` | Stable site slug. MUST equal the deploy's `FACILITY_SLUG`; the template logs a warning on mismatch.                    |
+| `name`                    | `string \| null` | Full commercial name. Default page-title / `og:site_name` fallback.                                                    |
+| `short_name`              | `string \| null` | Short name for the header logo and tight UI spots.                                                                     |
+| `tagline`                 | `string \| null` | One-line claim. Default meta-description fallback.                                                                     |
+| `default_locale`          | `string`         | ISO-639-1 locale rendered as `<html lang>` (template config is only the fallback).                                     |
+| `online_bookings_enabled` | `boolean`        | Kill switch: `false` makes the template null `links.booking`, disabling every booking CTA regardless of the link sent. |
+| `contacts`                | object (below)   | Contact endpoints for footer/contact CTAs.                                                                             |
+| `address`                 | object (below)   | Postal address (footer + schema.org).                                                                                  |
+| `gdpr`                    | object (below)   | Data-controller identity, shown verbatim in footer and legal pages.                                                    |
+| `social`                  | object (below)   | Public profile links; `null` entries hide their icon.                                                                  |
+| `season`                  | object (below)   | Coarse seasonal window (ISO-8601).                                                                                     |
+| `links`                   | object (below)   | Contextual CTAs. Each entry is `{ label, url }` or `null`.                                                             |
 
 **`contacts`** — all fields optional, `string \| null`:
 

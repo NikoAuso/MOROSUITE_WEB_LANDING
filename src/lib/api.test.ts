@@ -7,6 +7,8 @@ vi.mock('@/lib/config', () => ({
   config: {
     apiBaseUrl: FAKE_BASE,
     apiAuthToken: FAKE_TOKEN,
+    facilitySlug: 'demo',
+    demoMode: false,
     fetch: { retries: 0, retryDelayMs: 0, timeoutMs: 1000, cacheTtlMs: 1000 },
   },
 }));
@@ -16,16 +18,13 @@ const SITE_OK = {
   name: 'Test',
   short_name: 'Test',
   tagline: null,
-  languages: ['it'],
   default_locale: 'it',
   online_bookings_enabled: true,
-  customer_can_book_any_weekday: true,
   contacts: {},
   address: {},
   gdpr: { titolare: null, email_privacy: null, email_security: null },
   social: {},
   season: { start_date: null, end_date: null },
-  season_dates: null,
   links: { booking: null, login: null, manager: null, hotel: null },
 };
 
@@ -177,6 +176,72 @@ describe('api.site malformed-payload normalization', () => {
     fetchSpy.mockResolvedValue(jsonResponse(SITE_OK));
     const { api } = await import('./api');
     expect(await api.site()).toEqual(SITE_OK);
+  });
+});
+
+describe('api.site booking kill switch', () => {
+  const booking = { label: 'Prenota', url: 'https://app.example/prenota' };
+
+  it('nulls links.booking when online_bookings_enabled is false', async () => {
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        ...SITE_OK,
+        online_bookings_enabled: false,
+        links: { ...SITE_OK.links, booking },
+      }),
+    );
+    const { api } = await import('./api');
+    const site = await api.site();
+    expect(site?.links.booking).toBeNull();
+  });
+
+  it('leaves the other links untouched while gating booking', async () => {
+    const login = { label: 'Accedi', url: 'https://app.example/login' };
+    fetchSpy.mockResolvedValue(
+      jsonResponse({
+        ...SITE_OK,
+        online_bookings_enabled: false,
+        links: { ...SITE_OK.links, booking, login },
+      }),
+    );
+    const { api } = await import('./api');
+    const site = await api.site();
+    expect(site?.links.login).toEqual(login);
+  });
+
+  it('passes the booking link through when the flow is enabled', async () => {
+    fetchSpy.mockResolvedValue(jsonResponse({ ...SITE_OK, links: { ...SITE_OK.links, booking } }));
+    const { api } = await import('./api');
+    expect((await api.site())?.links.booking).toEqual(booking);
+  });
+});
+
+describe('api.site slug integrity check', () => {
+  it('warns on a slug mismatch but still returns the payload (availability wins)', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    fetchSpy.mockResolvedValue(jsonResponse({ ...SITE_OK, slug: 'altra-struttura' }));
+    const { api } = await import('./api');
+    const site = await api.site();
+    expect(site?.slug).toBe('altra-struttura');
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('altra-struttura'));
+    warnSpy.mockRestore();
+  });
+
+  // Both quiet branches, each killing a different mutant: `if (p.slug)` alone
+  // would warn on the matching case; `if (p.slug !== ...)` alone would warn on
+  // the null case. Asserting the payload too guards against a regression that
+  // silences the warn by nulling the whole response.
+  it.each([
+    ['matches the configured facility', 'demo'],
+    ['is null', null],
+  ])('stays quiet and returns the payload when the slug %s', async (_label, slug) => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    fetchSpy.mockResolvedValue(jsonResponse({ ...SITE_OK, slug }));
+    const { api } = await import('./api');
+    const site = await api.site();
+    expect(site).not.toBeNull();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });
 

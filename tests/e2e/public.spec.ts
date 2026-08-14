@@ -8,6 +8,13 @@ test('homepage emits canonical + og meta tags', async ({ page }) => {
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
 });
 
+// The mock's default_locale ('en') differs from the committed fallback ('it')
+// on purpose: same value would make this assertion prove nothing.
+test('html lang comes from the backend default_locale', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});
+
 test('sitemap-index.xml is reachable', async ({ request }) => {
   const res = await request.get('/sitemap-index.xml');
   expect(res.ok()).toBe(true);

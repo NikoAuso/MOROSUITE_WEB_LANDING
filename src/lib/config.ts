@@ -33,6 +33,9 @@ export const config = {
   // When true, src/lib/api.ts serves bundled data from src/lib/demo-data.ts
   // instead of fetching from the backend. Toggled by the DEMO_MODE env var.
   demoMode: env.DEMO_MODE === 'true',
+  // Exposed so normalizeSite can cross-check SitePayload.slug against the
+  // facility this deploy is actually pointed at.
+  facilitySlug,
   apiBaseUrl: `${apiRoot}/${facilitySlug}`,
   apiAuthToken: env.API_AUTH_TOKEN || '',
   siteUrl: env.PUBLIC_SITE_URL || DEMO_SITE_URL,
