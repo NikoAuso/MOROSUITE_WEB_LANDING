@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering a contribution! This is a white-label Astro 6 SSR template; the goal is to keep it generic,
+Thanks for considering a contribution! This is a white-label Astro 7 SSR template; the goal is to keep it generic,
 backend-agnostic, and easy to fork per deploy.
 
 ## Setup

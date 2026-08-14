@@ -1,6 +1,6 @@
 {
   "name": "morosuite-web-landing",
-  "description": "White-label Astro 6 SSR template for a backend-driven marketing site. Plug in any HTTP backend that implements the contract in src/lib/dto.ts, or run the bundled demo with DEMO_MODE=true.",
+  "description": "White-label Astro 7 SSR template for a backend-driven marketing site. Plug in any HTTP backend that implements the contract in src/lib/dto.ts, or run the bundled demo with DEMO_MODE=true.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
     "test:lh": "lhci autorun"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.0",
     "@astrojs/node": "^11.0.0",
     "@astrojs/sitemap": "^3.7.3",
     "@iconify-json/fa6-brands": "^1.2.6",
@@ -59,9 +58,7 @@
     "vitest": "^4.1.9"
   },
   "overrides": {
-    "vite": "^8.0.13",
     "uuid": "^11.1.1",
-    "tmp": "^0.2.4",
-    "yaml": "^2.8.3"
+    "tmp": "^0.2.7"
   }
 }

@@ -19,11 +19,6 @@ export const siteConfig = {
     consentDefault: 'denied' as 'denied' | 'granted',
   },
 
-  features: {
-    showLiveAvailability: false,
-    showPricingFilters: true,
-  },
-
   // Network behaviour for backend calls. Tuned for "fail fast under SSR":
   // if the backend doesn't answer quickly, the cache populates a null for
   // CACHE_TTL_SECONDS and pages render the explicit "non disponibile" state

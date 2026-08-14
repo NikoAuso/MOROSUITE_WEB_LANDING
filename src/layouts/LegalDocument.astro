@@ -43,7 +43,7 @@ const formattedEffective = effective_date
             </span>
             {formattedEffective && <span>Data di efficacia: {formattedEffective}</span>}
           </div>
-          <div class="prose prose-neutral max-w-none">
+          <div class="prose max-w-none">
             <Content />
           </div>
         </div>
@@ -53,7 +53,10 @@ const formattedEffective = effective_date
 </PublicLayout>
 
 <style is:global>
-  /* Tipografia Markdown per i documenti legali. */
+  /* Tipografia Markdown per i documenti legali. Scritta a mano di proposito:
+     @tailwindcss/typography non è una dipendenza del progetto, quindi le
+     utility `prose-*` di Tailwind qui non esistono. `.prose` resta il selettore
+     su cui si aggancia tests/e2e/legal.spec.ts. */
   .prose h1 {
     font-size: 2rem;
     font-weight: 700;
