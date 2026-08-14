@@ -5,7 +5,7 @@
 > ricreati a refactor concluso. Il piano completo è in `docs/VISIONE.md` (locale, non tracciato).
 
 Template Astro 7 SSR white-label multi-verticale: un catalogo di componenti e un preset per tema
-in `presets/` (oggi: `piscina`; ristorazione/bar/hotel in arrivo), customizzabile via file di
+in `presets/` (piscina, ristorazione, bar, hotel), customizzabile via file di
 config; i dati live (orari, listino, identità) arrivano opzionalmente via HTTP dal gestionale. Il
 preset si sceglie con due import: contenuto in `site.content.ts`, tema in `src/styles/tokens.css`.
 Licenza [MIT](./LICENSE).

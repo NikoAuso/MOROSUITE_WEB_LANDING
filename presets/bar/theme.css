@@ -1,0 +1,31 @@
+/* Tema "bar": espresso (stone scuro), CTA arancio, accento ambra. Stesse regole del tema piscina
+   (vedi presets/piscina/theme.css): importato dal Tailwind entry, i valori
+   partecipano alla generazione delle utility AL BUILD. La guardia in
+   src/lib/theme-tokens.test.ts verifica che ogni scala sia completa. */
+
+@theme {
+  --color-brand-50: oklch(98.5% 0.001 106.423);
+  --color-brand-100: oklch(97% 0.001 106.424);
+  --color-brand-200: oklch(92.3% 0.003 48.717);
+  --color-brand-300: oklch(86.9% 0.005 56.366);
+  --color-brand-500: oklch(55.3% 0.013 58.071);
+  --color-brand-700: oklch(37.4% 0.01 67.558);
+  --color-brand-800: oklch(26.8% 0.007 34.298);
+  --color-brand-900: oklch(21.6% 0.006 56.043);
+  --color-brand-950: oklch(14.7% 0.004 49.25);
+
+  --color-cta-50: oklch(98% 0.016 73.684);
+  --color-cta-600: oklch(64.6% 0.222 41.116);
+  --color-cta-700: oklch(55.3% 0.195 38.402);
+  --color-cta-800: oklch(47% 0.157 37.304);
+
+  --color-accent-50: oklch(98.7% 0.022 95.277);
+  --color-accent-200: oklch(92.4% 0.12 95.746);
+  --color-accent-400: oklch(82.8% 0.189 84.429);
+  --color-accent-500: oklch(76.9% 0.188 70.08);
+}
+
+:root {
+  --hero-glow-a: rgba(255, 190, 110, 0.45);
+  --hero-glow-b: rgba(120, 80, 50, 0.5);
+}
