@@ -142,15 +142,17 @@ union member without a `case` is a type error.
   hardcoded URL. `tests/e2e/cta.spec.ts` fails if a login/prenota href resolves to `http://localhost:4321/...`.
 - **`brand.*Url` accepts two forms**: an absolute URL to a hosted asset, or a root-relative path served from
   `public/`. Header/Footer/favicon use the raw value; og:image and the schema.org logo go through `toAbsoluteUrl`.
-  Defaults are the local placeholders in `public/brand/` — **`og.svg` must become a raster before a real deploy**,
-  social crawlers do not render SVG.
+  Defaults are the local placeholders in `public/brand/`. Note `og.png` is a raster while the logo and favicon are
+  SVG: social crawlers do not render SVG previews, so any replacement OG image must stay a PNG or JPG at 1200x630.
 - **CSP `img-src` is `'self' data:`** — every shipped image is self-hosted. Widen it if a deploy points `brand.*Url`
   at an external CDN.
 - **Tailwind 4 CSS-first**: tokens in `src/styles/tokens.css` via `@theme`. No `tailwind.config.ts`.
 - **Path aliases** (`tsconfig.json`): `@/*` → `src/*`, `@config` → `./site.config.ts`, `@content` → `./site.content.ts`.
 - **Cookie consent**: `PublicLayout` injects GA4 with `gtag('consent', 'default', ...)` from `analytics.consentDefault`
   (default `denied`). `CookieBanner.astro` persists the choice in `localStorage` under `cookie_consent` with a 6-month
-  TTL (Garante 10/06/2021). There is no "edit preferences" affordance — the banner returns only when the TTL expires.
+  TTL (Garante 10/06/2021). A "Preferenze cookie" button in the footer (`[data-cookie-preferences]`) reopens the
+  banner before the TTL expires; it ships `hidden` and the banner script unhides it, so it is never a dead control
+  with JS off. Any new trigger just needs that data attribute.
 - **Trailing slashes**: `trailingSlash: 'never'`. Keep internal hrefs bare.
 - **Sitemap**: `@astrojs/sitemap` filters routes containing `/_`; `robots.txt` comes from `astro-robots-txt`.
   `/health` is excluded via its own response headers, not the filter.

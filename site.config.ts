@@ -10,14 +10,15 @@ export const siteConfig = {
   // asset or a root-relative path served out of public/. The defaults are
   // local placeholders so a fresh clone reaches no third-party host; replace
   // the files in public/brand/ (or point these at your CDN) per deploy.
-  // ogImageUrl must end up a raster (PNG/JPG) on a real deploy: the social
-  // crawlers do not render SVG previews.
+  // ogImageUrl is a PNG, not an SVG like the other two: social crawlers do not
+  // render SVG previews, so an SVG here means no preview at all. Keep any
+  // replacement a raster (PNG/JPG) at 1200x630.
   brand: {
     primaryColor: '#0c4a6e',
     accentColor: '#facc15',
     logoUrl: '/brand/logo.svg',
     faviconUrl: '/brand/favicon.svg',
-    ogImageUrl: '/brand/og.svg',
+    ogImageUrl: '/brand/og.png',
   },
 
   analytics: {

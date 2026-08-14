@@ -131,6 +131,20 @@ const tiktok = safeHref(site.social?.tiktok);
               </li>
             ))
           }
+          <li>
+            {
+              /* Reopens the consent banner. Hidden until the banner's script
+                claims it, so it never renders as a dead control with JS off. */
+            }
+            <button
+              type="button"
+              data-cookie-preferences
+              hidden
+              class="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:ring-offset-slate-900"
+            >
+              Preferenze cookie
+            </button>
+          </li>
         </ul>
       </div>
 

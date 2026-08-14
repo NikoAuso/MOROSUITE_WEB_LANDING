@@ -186,7 +186,8 @@ Astro renders them natively at `/policy` and `/cookie`.
 - `siteSlug` — must match `SitePayload.slug` returned by `GET /site`.
 - `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl`. Each `*Url`
   takes either an absolute URL to a hosted asset or a root-relative path served from `public/`; the defaults are the
-  local placeholders in `public/brand/`. Replace `og.svg` with a PNG or JPG — social crawlers do not render SVG.
+  local placeholders in `public/brand/`. Keep the OG image a raster (PNG/JPG, 1200x630) — social crawlers do not
+  render SVG previews.
 
 3. Rewrite `site.content.ts` for the new business. It holds `meta` (homepage title/description) and `sections`, an
    ordered list of `{ type, id, navLabel, enabled, data }`:

@@ -89,10 +89,14 @@
     localStorage.setItem(storageKey, JSON.stringify({ value, timestamp: Date.now() }));
   };
 
-  const saved = readConsent();
-  if (!saved) {
+  const showBanner = (): void => {
     banner?.classList.remove('hidden');
     requestAnimationFrame(() => banner?.classList.remove('translate-y-6', 'opacity-0'));
+  };
+
+  const saved = readConsent();
+  if (!saved) {
+    showBanner();
   } else {
     applyConsent(saved);
   }
@@ -106,4 +110,12 @@
 
   acceptBtn?.addEventListener('click', () => setConsent('accepted'));
   rejectBtn?.addEventListener('click', () => setConsent('rejected'));
+
+  // Let visitors revisit a choice before the 6-month TTL expires. The trigger
+  // lives in the footer and stays hidden until this script wires it up, so it
+  // is never a dead button when JS is unavailable.
+  document.querySelectorAll<HTMLElement>('[data-cookie-preferences]').forEach((trigger) => {
+    trigger.removeAttribute('hidden');
+    trigger.addEventListener('click', showBanner);
+  });
 </script>
