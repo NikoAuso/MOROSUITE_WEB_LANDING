@@ -49,3 +49,22 @@ export function safeHref(url: string | null | undefined): string | null {
     return null;
   }
 }
+
+/**
+ * Resolve a brand asset reference to an absolute URL.
+ *
+ * `site.config.ts` accepts either form for `brand.logoUrl`/`faviconUrl`/
+ * `ogImageUrl`: an absolute URL to an externally hosted asset, or a
+ * root-relative path served out of `public/`. Browsers resolve both in `<img>`
+ * and `<link>`, but Open Graph and schema.org require an absolute URL, so those
+ * two consumers must go through here. Passing an already-absolute URL returns
+ * it untouched — the previous unconditional `${siteUrl}${value}` concatenation
+ * produced `https://example.comhttps://cdn/og.png` for that case.
+ */
+export function toAbsoluteUrl(value: string, siteUrl: string): string {
+  try {
+    return new URL(value, siteUrl).href;
+  } catch {
+    return value;
+  }
+}

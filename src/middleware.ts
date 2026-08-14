@@ -6,7 +6,9 @@ const CSP = [
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
   "font-src 'self' https://fonts.bunny.net",
-  "img-src 'self' data: https:",
+  // Every image the template ships is self-hosted (public/, src/assets/).
+  // Widen this only if a deploy points brand.*Url at an external CDN.
+  "img-src 'self' data:",
   "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

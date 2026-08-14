@@ -1,11 +1,7 @@
 {
-  "name": "morosuite-web-landing",
+  "name": "site-landing-template",
   "description": "White-label Astro 7 SSR template for a backend-driven marketing site. Plug in any HTTP backend that implements the contract in src/lib/dto.ts, or run the bundled demo with DEMO_MODE=true.",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NikoAuso/MOROSUITE_WEB_LANDING.git"
-  },
   "version": "0.1.0",
   "type": "module",
   "private": true,

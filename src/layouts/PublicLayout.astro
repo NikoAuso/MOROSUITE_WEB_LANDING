@@ -4,6 +4,7 @@ import type { SitePayload } from '@/lib/dto';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CookieBanner from '@/components/CookieBanner.astro';
+import { toAbsoluteUrl } from '@/lib/format';
 import '@/styles/tokens.css';
 
 interface Props {
@@ -35,7 +36,9 @@ const {
 } = Astro.props;
 
 const canonicalUrl = canonical ?? `${config.siteUrl}${Astro.url.pathname}`;
-const ogImageUrl = ogImage ?? `${config.siteUrl}${config.brand.ogImageUrl}`;
+// OG requires an absolute URL; brand.ogImageUrl may be either an absolute URL
+// or a root-relative path served from public/.
+const ogImageUrl = ogImage ?? toAbsoluteUrl(config.brand.ogImageUrl, config.siteUrl);
 ---
 
 <!doctype html>

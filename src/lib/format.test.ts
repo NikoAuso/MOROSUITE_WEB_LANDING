@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatSeasonDate, whatsappUrl, safeHref } from './format';
+import { formatSeasonDate, whatsappUrl, safeHref, toAbsoluteUrl } from './format';
 
 describe('formatSeasonDate', () => {
   it('returns null for null input', () => {
@@ -59,5 +59,29 @@ describe('safeHref', () => {
     expect(safeHref('tel:+390001234567')).toBe('tel:+390001234567');
     expect(safeHref('/policy')).toBe('/policy');
     expect(safeHref('#orari')).toBe('#orari');
+  });
+});
+
+describe('toAbsoluteUrl', () => {
+  const site = 'https://example.com';
+
+  it('resolves a root-relative path against the site URL', () => {
+    expect(toAbsoluteUrl('/brand/og.svg', site)).toBe('https://example.com/brand/og.svg');
+  });
+
+  it('leaves an already-absolute URL untouched', () => {
+    // The regression this guards: the old `${siteUrl}${value}` concatenation
+    // produced "https://example.comhttps://cdn.example/og.png" here.
+    expect(toAbsoluteUrl('https://cdn.example/og.png', site)).toBe('https://cdn.example/og.png');
+  });
+
+  it('does not double the origin when the site URL has a trailing slash', () => {
+    expect(toAbsoluteUrl('/brand/og.svg', 'https://example.com/')).toBe(
+      'https://example.com/brand/og.svg',
+    );
+  });
+
+  it('returns the input unchanged when no absolute URL can be built', () => {
+    expect(toAbsoluteUrl('/brand/og.svg', 'not-a-url')).toBe('/brand/og.svg');
   });
 });

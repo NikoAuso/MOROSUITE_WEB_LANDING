@@ -15,6 +15,33 @@ const { title, version, effective_date } = entry.data;
 
 const description = `${title} — versione ${version}.`;
 
+// Identity of the data controller comes from the backend, never from the
+// Markdown: the same document text is reused across deploys, only the
+// `site.gdpr` block differs. Rows with no value are dropped rather than
+// rendered empty — an incomplete privacy notice is worse than a short one.
+const postalAddress = [
+  site.address?.street,
+  [site.address?.postal_code, site.address?.locality].filter(Boolean).join(' '),
+  site.address?.region,
+]
+  .filter((part) => part && part.length > 0)
+  .join(', ');
+
+const controllerRows = [
+  { label: 'Titolare del trattamento', value: site.gdpr.titolare, href: null },
+  { label: 'Sede', value: postalAddress || null, href: null },
+  {
+    label: 'Richieste privacy (art. 15-22 GDPR)',
+    value: site.gdpr.email_privacy,
+    href: site.gdpr.email_privacy ? `mailto:${site.gdpr.email_privacy}` : null,
+  },
+  {
+    label: 'Segnalazioni di sicurezza',
+    value: site.gdpr.email_security,
+    href: site.gdpr.email_security ? `mailto:${site.gdpr.email_security}` : null,
+  },
+].filter((row): row is { label: string; value: string; href: string | null } => Boolean(row.value));
+
 const formattedEffective = effective_date
   ? effective_date.toLocaleDateString('it-IT', {
       day: '2-digit',
@@ -43,6 +70,29 @@ const formattedEffective = effective_date
             </span>
             {formattedEffective && <span>Data di efficacia: {formattedEffective}</span>}
           </div>
+          {
+            controllerRows.length > 0 && (
+              <dl class="mb-8 grid gap-4 rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200 sm:grid-cols-2">
+                {controllerRows.map((row) => (
+                  <div>
+                    <dt class="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                      {row.label}
+                    </dt>
+                    <dd class="mt-1 text-sm font-medium text-slate-900">
+                      {row.href ? (
+                        <a href={row.href} class="text-sky-700 underline hover:text-sky-900">
+                          {row.value}
+                        </a>
+                      ) : (
+                        row.value
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )
+          }
+
           <div class="prose max-w-none">
             <Content />
           </div>

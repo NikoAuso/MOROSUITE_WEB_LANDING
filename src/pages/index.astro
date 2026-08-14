@@ -5,6 +5,7 @@ import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
 import { api } from '@/lib/api';
 import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
 import { config } from '@/lib/config';
+import { toAbsoluteUrl } from '@/lib/format';
 import Hero from '@/components/Hero.astro';
 import PoolFeatures from '@/components/PoolFeatures.astro';
 import OpeningHours from '@/components/OpeningHours.astro';
@@ -30,8 +31,14 @@ if (!site) {
 const siteName = site?.name ?? site?.short_name ?? 'Piscina';
 const title = `${siteName} | Prenota ingresso e ombrellone`;
 const description = site?.tagline ?? `Scopri ${siteName} e prenota la tua giornata di relax.`;
+// schema.org wants an absolute logo URL, same as OG.
 const jsonLd = site
-  ? buildLocalBusinessJsonLd(site, hours, config.siteUrl, config.brand.logoUrl)
+  ? buildLocalBusinessJsonLd(
+      site,
+      hours,
+      config.siteUrl,
+      toAbsoluteUrl(config.brand.logoUrl, config.siteUrl),
+    )
   : null;
 
 // Resolved once here (not inside Hero) so the <head> preload href and the

@@ -8,5 +8,6 @@ https://www.contributor-covenant.org/version/2/1/code_of_conduct/
 
 ## Reporting
 
-To report unacceptable behavior, contact the project maintainers at **niko.ausili@gmail.com**. All reports will be
-reviewed and handled confidentially.
+To report unacceptable behavior, open a private report through the repository's **Security** tab
+(**Report a vulnerability**), or contact the maintainers at the address this fork publishes in its README. All reports
+will be reviewed and handled confidentially.

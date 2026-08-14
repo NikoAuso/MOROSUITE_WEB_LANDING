@@ -1,4 +1,4 @@
-# MoroSuite Web Landing
+# Site Landing Template
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -179,7 +179,9 @@ Astro renders them natively at `/policy` and `/cookie`.
 2. Edit `site.config.ts` (branding + per-deploy identity only):
 
 - `siteSlug` — must match `SitePayload.slug` returned by `GET /site`.
-- `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl` (absolute URLs).
+- `brand.primaryColor`, `brand.accentColor`, `brand.logoUrl`, `brand.faviconUrl`, `brand.ogImageUrl`. Each `*Url`
+  takes either an absolute URL to a hosted asset or a root-relative path served from `public/`; the defaults are the
+  local placeholders in `public/brand/`. Replace `og.svg` with a PNG or JPG — social crawlers do not render SVG.
 
 3. Set env vars (table above). In prod: `DEMO_MODE=false`, `API_BASE_URL`, `FACILITY_SLUG`, `API_AUTH_TOKEN`,
    `PUBLIC_SITE_URL`.

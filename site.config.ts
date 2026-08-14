@@ -6,12 +6,18 @@ export const siteConfig = {
   defaultLocale: 'it' as const,
   supportedLocales: ['it', 'en'] as const,
 
+  // Each *Url below accepts either an absolute URL to an externally hosted
+  // asset or a root-relative path served out of public/. The defaults are
+  // local placeholders so a fresh clone reaches no third-party host; replace
+  // the files in public/brand/ (or point these at your CDN) per deploy.
+  // ogImageUrl must end up a raster (PNG/JPG) on a real deploy: the social
+  // crawlers do not render SVG previews.
   brand: {
     primaryColor: '#0c4a6e',
     accentColor: '#facc15',
-    logoUrl: 'https://placehold.co/200x200/3291a8/ffffff/png?text=D',
-    faviconUrl: 'https://placehold.co/64x64/3291a8/ffffff/png?text=D',
-    ogImageUrl: 'https://placehold.co/1200x630/3291a8/ffffff/png?text=D',
+    logoUrl: '/brand/logo.svg',
+    faviconUrl: '/brand/favicon.svg',
+    ogImageUrl: '/brand/og.svg',
   },
 
   analytics: {
