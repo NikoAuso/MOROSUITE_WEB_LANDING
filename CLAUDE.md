@@ -82,8 +82,9 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 
 5. **`src/lib/dto.ts`** — the API contract: types with JSDoc per field, plus the canonical endpoint map (`/site`,
    `/site/opening-hours`, `/site/pricing`, optional `/site/content` whose shape lives in `sections.ts`). **Intentional contract**: any drift between backend responses and these
-   types is a type error here. Change this file first, then propagate. [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md) is
-   the human-readable mirror — keep the two in sync.
+   types is a type error here. Change this file first, then propagate. The human-readable mirror
+   (BACKEND_CONTRACT.md) is removed during the docs freeze — `dto.ts` + `sections.ts` ARE the contract until it is
+   recreated at the end of the refactor; do not resurrect it piecemeal.
 6. **`src/lib/copy.ts`** — degraded-state strings only (`FALLBACK_COPY.service`, `.hours`, `.pricing`, `.cta.*`). Page
    copy lives in `site.content.ts`.
 7. **`src/lib/format.ts`** — `formatSeasonDate` (explicit `T00:00:00` to avoid UTC day-shift), `whatsappUrl` (gates on
@@ -187,9 +188,9 @@ union member without a `case` is a type error.
 
 ## White-labeling a new deploy
 
-Full walkthrough in [`README.md`](README.md#white-labeling-a-deploy). In short: fork, then edit `site.config.ts`
-(identity/branding), `site.content.ts` (sections and copy), `public/brand/` + `public/placeholder/` (assets),
-`src/content/legal/` (documents), and set the env vars:
+(The README walkthrough is trimmed during the docs freeze; this is the authoritative summary.) Fork, then edit
+`site.config.ts` (identity/branding), `site.content.ts` (sections and copy), `public/brand/` + `public/placeholder/`
+(assets), `src/content/legal/` (documents), and set the env vars:
 
 | Var                         | Required in prod? | Default                               | Use                                                                       |
 | --------------------------- | ----------------- | ------------------------------------- | ------------------------------------------------------------------------- |
