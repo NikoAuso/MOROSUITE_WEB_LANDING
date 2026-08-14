@@ -17,12 +17,13 @@ change belongs on before making it:
 Nothing under `src/` carries business copy. If you find yourself typing a user-visible sentence into a component,
 it belongs in `site.content.ts` (page copy) or `src/lib/copy.ts` (degraded-state copy) instead.
 
-Dynamic content is fetched **at request time** from a read-only HTTP backend implementing
-[`src/lib/dto.ts`](src/lib/dto.ts), rooted at `API_BASE_URL`, with a Bearer token from `API_AUTH_TOKEN`. The backend is
-fully external; the template hosts no part of it. Results are cached in-process (default TTL 300 s, `CACHE_TTL_SECONDS`).
-
-For local exploration without a backend, set `DEMO_MODE=true`: `src/lib/api.ts` serves bundled fixtures from
-`src/lib/demo-data.ts` (no network, no cache).
+Live data has a **per-deploy source**: with `dataSource: 'backend'` (site.config.ts) identity/hours/pricing are
+fetched at request time from a read-only HTTP backend implementing [`src/lib/dto.ts`](src/lib/dto.ts) (rooted at
+`API_BASE_URL`, Bearer token from `API_AUTH_TOKEN`, cached in-process with TTL `CACHE_TTL_SECONDS`); with
+`'static'` they come from the committed `STATIC_DATA` exported by `site.content.ts` — no network, no cache, no 503
+path, the site is fully self-contained. The `hours`/`pricing` sections can override the deploy default individually
+via `data.source`. `DEMO_MODE=true` forces static serving everywhere (even over an explicit per-section
+`'backend'`), using whatever `STATIC_DATA` holds — by default the active preset's demo payloads.
 
 **The DTO is still domain-shaped**, and that is the one place the pool origin still shows: `season`,
 `entrance_sections`/`pass_sections`, `allows_umbrella_booking`. A deploy for a
@@ -54,7 +55,8 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 
 ## Architecture: how a page renders
 
-1. **`site.config.ts`** — per-deploy identity: `brand`, `analytics`, `fetch` timeouts/retries, `defaultLocale`
+1. **`site.config.ts`** — per-deploy identity: `dataSource` (`'backend' | 'static'`, the deploy-level data source),
+   `brand`, `analytics`, `fetch` timeouts/retries, `defaultLocale`
    (fallback only — the backend's `default_locale` drives `<html lang>`). Which facility a deploy serves is the
    `FACILITY_SLUG` env var alone; `normalizeSite` warns if `SitePayload.slug` disagrees with it. Does NOT
    hold per-environment URLs (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
@@ -73,13 +75,16 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
    inlined values. **Always import `@/lib/config` from runtime code, not `@config` directly.**
 4. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
 
-- **Demo short-circuit**: when `config.demoMode` is on, returns `normalize(DEMO_DATA[path])`, skipping network + cache.
+- **Static serving**: when the resolved source is `'static'` (deploy default, per-section override, or DEMO_MODE
+  which force-overrides everything), returns `normalize(STATIC_DATA[path])`, skipping network + cache.
 - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
 - **Single-flight**: concurrent requests for an expired key attach to the same in-flight `Promise`.
 - **Bearer auth** on every call except `/up` (called without auth by the health endpoint).
 - **`T | null`, never throws**: network errors, non-2xx, timeouts and "empty in a meaningful way" payloads all cache
   and return `null`. Callers never see exceptions.
-- Wrappers: `api.site()`, `api.openingHours()`, `api.pricing()`, each with its own `normalize*` guard.
+- Wrappers: `api.site()` (always deploy-level source — identity has no owning section), `api.openingHours(source?)`
+  and `api.pricing(source?)` (per-section override), each with its own `normalize*` guard. The slug-integrity
+  warning fires only when the deploy-level source is `'backend'`.
 
 5. **`src/lib/dto.ts`** — the API contract: types with JSDoc per field, plus the canonical endpoint map (`/site`,
    `/site/opening-hours`, `/site/pricing`). **Intentional contract**: any drift between backend responses and these
@@ -108,9 +113,12 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
     the link exists **and** `safeHref` accepts its URL; nothing if `link === null` and `hideWhenMissing`; otherwise a
     disabled `<button>`. An unsafe URL degrades to the disabled button, not a broken link.
 13. **`src/pages/health.ts`** — `GET /health`, always 200 with `{ status, backend_reachable, backend_up, demo,
-timestamp }` and `Cache-Control: no-store`. `backend_up` probes `${API_BASE_URL host root}/up` without auth (2 s,
-    no cache); `backend_reachable` is `api.site() !== null`; `status` is `'ok'` only when both hold. **In demo mode**
-    the probe is skipped and it reports everything healthy.
+data_source, timestamp }` and `Cache-Control: no-store`. `data_source` is `'backend' | 'static' | 'demo' |
+'mixed'` and the verdict follows what the deploy ACTUALLY depends on: fully static (or demo) short-circuits to
+    `ok` with no probe; a backend deploy — or a static one where any enabled section overrides to `'backend'`
+    (`'mixed'`) — probes `${API_BASE_URL host root}/up` (2 s, no auth, no cache) and checks `api.site()`, reporting
+    `degraded` when either fails. Unit-covered in `src/pages/health.test.ts`; the backend branch also by
+    `degraded.spec.ts`.
 14. **`src/pages/404.astro`** — uses `<ErrorState>`, does not depend on `SitePayload`. It never sets a status itself;
     the Node adapter maps it to 404, pinned by `tests/e2e/public.spec.ts`.
 15. **`src/middleware.ts`** — security headers on every HTML response: CSP (GA4 inline bootstrap +

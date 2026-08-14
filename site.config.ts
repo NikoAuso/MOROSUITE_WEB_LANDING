@@ -1,4 +1,12 @@
 export const siteConfig = {
+  // Where the data-driven parts (identity, opening hours, pricing) come from:
+  // 'backend' fetches live from the gestionale; 'static' serves the committed
+  // STATIC_DATA exported by site.content.ts — the site is then fully
+  // self-contained (no backend, no 503 path). Sections can override this
+  // individually via `data.source` in the content. DEMO_MODE=true forces
+  // static serving regardless, using whatever STATIC_DATA currently holds.
+  dataSource: 'backend' as 'backend' | 'static',
+
   // Which facility this deploy serves is NOT configured here: it is the
   // FACILITY_SLUG env var (see src/lib/config.ts), which both builds the
   // backend URL and is cross-checked against SitePayload.slug at runtime.

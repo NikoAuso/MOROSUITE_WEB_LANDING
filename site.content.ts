@@ -23,5 +23,14 @@ import { content as presetContent } from './presets/piscina';
  */
 export const siteContent = presetContent;
 
-/** Dati demo del preset attivo (serviti da src/lib/api.ts con DEMO_MODE=true). */
-export { DEMO_DATA } from './presets/piscina';
+/**
+ * I payload serviti quando una sezione (o l'intero deploy) è in modalità
+ * statica, e in DEMO_MODE. Il default sono i dati demo del preset; un deploy
+ * statico li sostituisce con i propri dati reali, ad esempio:
+ *
+ *   import type { OpeningHoursPayload } from '@/lib/dto';
+ *   import { DEMO_DATA } from './presets/piscina';
+ *   const REAL_HOURS: OpeningHoursPayload = { timezone: 'Europe/Rome', daily_hours: [...] };
+ *   export const STATIC_DATA = { ...DEMO_DATA, '/site/opening-hours': REAL_HOURS };
+ */
+export { DEMO_DATA as STATIC_DATA } from './presets/piscina';

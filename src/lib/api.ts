@@ -1,6 +1,7 @@
 import { config } from './config';
-import { DEMO_DATA } from '@content';
+import { STATIC_DATA } from '@content';
 import type { SitePayload, OpeningHoursPayload, PricingPayload } from './dto';
+import type { SectionDataSource } from './sections';
 
 type CacheEntry<T> = { value: T | null; timestamp: number };
 
@@ -64,9 +65,17 @@ async function rawFetch<T>(url: string): Promise<T | null> {
 async function fetchJson<T>(
   path: string,
   normalize: (data: T) => T | null = (d) => d,
+  source: SectionDataSource = config.dataSource,
 ): Promise<T | null> {
-  if (config.demoMode) {
-    const raw = DEMO_DATA[path] as T | undefined;
+  // DEMO_MODE overrides even an explicit per-section 'backend': the demo
+  // promise is "renders with zero backend", and a preset shipping a backend
+  // override must not break it.
+  const effective = config.demoMode ? 'static' : source;
+  // Static serving: the committed STATIC_DATA from site.content.ts, no
+  // network and no cache. The payloads are type-checked at build, so this
+  // path cannot 503 a page the way an unreachable backend can.
+  if (effective === 'static') {
+    const raw = STATIC_DATA[path] as T | undefined;
     return raw === undefined ? null : normalize(raw);
   }
 
@@ -108,11 +117,11 @@ function normalizeSite(p: SitePayload): SitePayload | null {
   // Integrity check, warning-only: the backend echoes which site it thinks it
   // is serving; a mismatch with the facility this deploy asked for means the
   // deploy is pointed at the wrong backend/slug. Runs once per cache fill —
-  // and not at all in demo mode, where the "backend" is a bundled fixture
-  // (normalize runs uncached on every request there, so the warn would spam,
-  // and the fixture slug proves nothing about the deploy anyway).
+  // and only when the payload actually came from a backend: static/demo
+  // serving reads committed fixtures uncached on every request (the warn
+  // would spam) and their slug proves nothing about the deploy anyway.
   // Availability wins over strictness, so the page still renders.
-  if (!config.demoMode && p.slug && p.slug !== config.facilitySlug) {
+  if (config.dataSource === 'backend' && p.slug && p.slug !== config.facilitySlug) {
     console.warn(
       `[api] /site returned slug "${p.slug}" but this deploy is configured for ` +
         `FACILITY_SLUG "${config.facilitySlug}" — check the deploy configuration`,
@@ -142,7 +151,11 @@ function normalizePricing(p: PricingPayload): PricingPayload | null {
 }
 
 export const api = {
+  /** Identity always follows the deploy-level source: it has no owning section. */
   site: () => fetchJson<SitePayload>('/site', normalizeSite),
-  openingHours: () => fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours),
-  pricing: () => fetchJson<PricingPayload>('/site/pricing', normalizePricing),
+  /** `source` lets the hours/pricing sections override the deploy default. */
+  openingHours: (source?: SectionDataSource) =>
+    fetchJson<OpeningHoursPayload>('/site/opening-hours', normalizeOpeningHours, source),
+  pricing: (source?: SectionDataSource) =>
+    fetchJson<PricingPayload>('/site/pricing', normalizePricing, source),
 };

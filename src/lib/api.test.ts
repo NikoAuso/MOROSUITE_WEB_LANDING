@@ -9,6 +9,7 @@ vi.mock('@/lib/config', () => ({
     apiAuthToken: FAKE_TOKEN,
     facilitySlug: 'demo',
     demoMode: false,
+    dataSource: 'backend',
     fetch: { retries: 0, retryDelayMs: 0, timeoutMs: 1000, cacheTtlMs: 1000 },
   },
 }));
@@ -300,5 +301,23 @@ describe('api.pricing empty normalization', () => {
     fetchSpy.mockResolvedValue(jsonResponse(PRICING_OK));
     const { api } = await import('./api');
     expect(await api.pricing()).toEqual(PRICING_OK);
+  });
+});
+
+describe('per-section source override', () => {
+  it('openingHours("static") serves STATIC_DATA without touching the network', async () => {
+    const { api } = await import('./api');
+    const { STATIC_DATA } = await import('@content');
+    const hours = await api.openingHours('static');
+    expect(hours).toEqual(STATIC_DATA['/site/opening-hours']);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('pricing("static") serves STATIC_DATA without touching the network', async () => {
+    const { api } = await import('./api');
+    const { STATIC_DATA } = await import('@content');
+    const pricing = await api.pricing('static');
+    expect(pricing).toEqual(STATIC_DATA['/site/pricing']);
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

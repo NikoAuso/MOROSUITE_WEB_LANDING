@@ -18,18 +18,28 @@ import MenuCourses from '@/components/MenuCourses.astro';
 import GalleryGrid from '@/components/GalleryGrid.astro';
 
 const sections = enabledSections(siteContent.sections);
-const needsHours = sections.some((section) => section.type === 'hours');
-const needsPricing = sections.some((section) => section.type === 'pricing');
+// Single fetch, single payload: with (contrived) duplicate hours/pricing
+// sections, the FIRST one's `source` decides the fetch and every duplicate
+// renders that same payload. Duplicates also collide on anchor ids — don't.
+const hoursSection = sections.find((section) => section.type === 'hours');
+const pricingSection = sections.find((section) => section.type === 'pricing');
 
 // Fetch /site first: when it is null the page renders <ServiceUnavailable> and
 // the hours/pricing payloads are discarded, so issuing them during an outage
 // only wastes two retry/backoff round-trips per request. The two follow-ups
 // are also skipped outright when no enabled section consumes them.
 const site = await api.site();
+// Each data-driven section resolves its own source (section override first,
+// deploy default otherwise) — a static section costs no network even when the
+// rest of the deploy is backend-driven, and vice versa.
 const [hours, pricing] = site
   ? await Promise.all([
-      needsHours ? api.openingHours() : Promise.resolve(null),
-      needsPricing ? api.pricing() : Promise.resolve(null),
+      hoursSection?.type === 'hours'
+        ? api.openingHours(hoursSection.data.source)
+        : Promise.resolve(null),
+      pricingSection?.type === 'pricing'
+        ? api.pricing(pricingSection.data.source)
+        : Promise.resolve(null),
     ])
   : [null, null];
 

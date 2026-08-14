@@ -65,7 +65,16 @@ export type FeaturesContent = {
   stats: StatItem[];
 };
 
+/**
+ * Where a data-driven section gets its payload. Omit to inherit the deploy
+ * default (`dataSource` in site.config.ts): 'backend' fetches live from the
+ * gestionale, 'static' serves the committed STATIC_DATA from site.content.ts.
+ */
+export type SectionDataSource = 'backend' | 'static';
+
 export type HoursContent = {
+  /** Overrides the deploy-level data source for this section only. */
+  source?: SectionDataSource;
   eyebrow: string;
   title: string;
   /** Shown when the backend returns no schedule. */
@@ -73,6 +82,8 @@ export type HoursContent = {
 };
 
 export type PricingContent = {
+  /** Overrides the deploy-level data source for this section only. */
+  source?: SectionDataSource;
   eyebrow: string;
   title: string;
   lead: string;

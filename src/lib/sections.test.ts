@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { enabledSections, primaryNav, resolveFallbackCta } from './sections';
 import type { Section } from './sections';
 
@@ -67,5 +68,19 @@ describe('resolveFallbackCta', () => {
 
   it('returns undefined when there is no link to resolve', () => {
     expect(resolveFallbackCta(undefined, sections)).toBeUndefined();
+  });
+});
+
+describe('index.astro source wiring (file guard)', () => {
+  // Vitest cannot execute .astro frontmatter, and no committed preset sets a
+  // per-section source, so the only production consumer of the `source`
+  // parameter is unreachable by behavioural tests: a mutant that drops the
+  // argument (api.openingHours() bare) survived every suite (review
+  // 14/08/2026). This tripwire pins the plumbing textually until the wiring
+  // becomes executable by tests.
+  it('index.astro forwards each section override to its api call', () => {
+    const src = readFileSync('src/pages/index.astro', 'utf8');
+    expect(src).toContain('api.openingHours(hoursSection.data.source)');
+    expect(src).toContain('api.pricing(pricingSection.data.source)');
   });
 });

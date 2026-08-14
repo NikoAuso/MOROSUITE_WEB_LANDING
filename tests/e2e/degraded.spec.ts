@@ -27,5 +27,6 @@ test.describe('degraded — backend unreachable', () => {
     expect(json.status).toBe('degraded');
     expect(json.backend_reachable).toBe(false);
     expect(json.backend_up).toBe(false);
+    expect(json.data_source).toBe('backend');
   });
 });

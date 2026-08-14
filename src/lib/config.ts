@@ -33,6 +33,9 @@ export const config = {
   // When true, src/lib/api.ts serves bundled data from the active preset (presets/*/demo-data.ts)
   // instead of fetching from the backend. Toggled by the DEMO_MODE env var.
   demoMode: env.DEMO_MODE === 'true',
+  // Effective deploy-level source: DEMO_MODE wins (it IS static serving, with
+  // the preset's demo payloads unless the deploy overrode STATIC_DATA).
+  dataSource: env.DEMO_MODE === 'true' ? ('static' as const) : base.dataSource,
   // Exposed so normalizeSite can cross-check SitePayload.slug against the
   // facility this deploy is actually pointed at.
   facilitySlug,
