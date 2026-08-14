@@ -47,9 +47,10 @@ export type HeroContent = {
   /** Second line, rendered in the accent colour. */
   highlight: string;
   lead: string;
-  /** Anchor button beside the booking CTA. */
-  secondaryCta: NavEntry;
-  howItWorks: {
+  /** Anchor button beside the booking CTA. Omit to show the CTA alone. */
+  secondaryCta?: NavEntry;
+  /** The step-by-step card beside the copy. Omit it and the hero is copy-only. */
+  howItWorks?: {
     title: string;
     subtitle: string;
     steps: Array<{ title: string; text: string }>;
@@ -117,6 +118,31 @@ export type RulesContent = {
   }>;
 };
 
+/**
+ * A menu of courses and dishes (ristorazione/bar). Prices are free-form
+ * strings rendered verbatim ("€ 12", "12,50", "da 8"): the author owns
+ * currency and formatting, so the component needs no locale machinery.
+ */
+export type MenuContent = {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** Fine print under the courses (allergeni, coperto, ...). */
+  footnote?: string;
+  courses: Array<{
+    label: string;
+    dishes: Array<{ name: string; description?: string; price?: string }>;
+  }>;
+};
+
+/** A photo-driven grid. Text is optional by design: images can carry it alone. */
+export type GalleryContent = {
+  eyebrow?: string;
+  title?: string;
+  lead?: string;
+  images: Array<{ src: string; alt: string; caption?: string; wide?: boolean }>;
+};
+
 export type HighlightContent = {
   title: string;
   lead: string;
@@ -129,17 +155,38 @@ type Anchored = {
   id: string;
   /** Omit to keep the section on the page but out of the menu. */
   navLabel?: string;
-  enabled: boolean;
 };
 
-export type Section =
-  | ({ type: 'hero'; enabled: boolean } & { data: HeroContent })
+/**
+ * A section that renders. `data` is required here and only here: the renderer
+ * receives `EnabledSection`, so every component gets its content guaranteed.
+ */
+export type EnabledSection = { enabled: true } & (
+  | { type: 'hero'; data: HeroContent }
   | ({ type: 'features' } & Anchored & { data: FeaturesContent })
   | ({ type: 'hours' } & Anchored & { data: HoursContent })
   | ({ type: 'pricing' } & Anchored & { data: PricingContent })
   | ({ type: 'services' } & Anchored & { data: ServicesContent })
   | ({ type: 'rules' } & Anchored & { data: RulesContent })
-  | ({ type: 'highlight' } & Anchored & { data: HighlightContent });
+  | ({ type: 'highlight' } & Anchored & { data: HighlightContent })
+  | ({ type: 'menu' } & Anchored & { data: MenuContent })
+  | ({ type: 'gallery' } & Anchored & { data: GalleryContent })
+);
+
+/**
+ * A switched-off section: everything but `type` is optional, so disabling a
+ * section never requires a dummy `data` object — flip `enabled` and delete
+ * the rest, or keep it around for a later re-enable.
+ */
+export type DisabledSection = {
+  type: EnabledSection['type'];
+  enabled: false;
+  id?: string;
+  navLabel?: string;
+  data?: unknown;
+};
+
+export type Section = EnabledSection | DisabledSection;
 
 /**
  * Homepage `<head>` copy. The backend supplies the venue name and tagline;
@@ -160,14 +207,14 @@ export type SiteContent = {
 };
 
 /** Sections to render, in declaration order. */
-export function enabledSections(sections: readonly Section[]): Section[] {
-  return sections.filter((section) => section.enabled);
+export function enabledSections(sections: readonly Section[]): EnabledSection[] {
+  return sections.filter((section): section is EnabledSection => section.enabled);
 }
 
 /** Header/mobile menu entries: enabled, anchored sections that opted into a label. */
 export function primaryNav(sections: readonly Section[]): NavEntry[] {
   return enabledSections(sections)
-    .filter((section): section is Extract<Section, { id: string }> => 'id' in section)
+    .filter((section): section is Extract<EnabledSection, { id: string }> => 'id' in section)
     .filter((section) => Boolean(section.navLabel))
     .map((section) => ({ href: `/#${section.id}`, label: section.navLabel! }));
 }

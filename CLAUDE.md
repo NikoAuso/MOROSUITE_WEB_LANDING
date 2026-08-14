@@ -119,19 +119,22 @@ timestamp }` and `Cache-Control: no-store`. `backend_up` probes `${API_BASE_URL 
 
 ## Sections: how the homepage is assembled
 
-The structure is a `SiteContent`: `meta` plus an ordered array of `{ type, id, navLabel, enabled, data }`, defined
-in `site.content.ts` and type-checked at build. `index.astro` walks the enabled sections and switches on `type`.
+The structure is a `SiteContent`: `meta` plus an ordered array of sections (`EnabledSection` requires `data`;
+`DisabledSection` is just `{ type, enabled: false }`), defined by the preset + deploy overrides and type-checked at
+build. `index.astro` walks the enabled sections and switches on `type`.
 The component catalog:
 
-| `type`      | Component              | Backend data                |
-| ----------- | ---------------------- | --------------------------- |
-| `hero`      | `Hero.astro`           | — (no anchor, no nav entry) |
-| `features`  | `FeatureGrid.astro`    | —                           |
-| `hours`     | `OpeningHours.astro`   | `/site/opening-hours`       |
-| `pricing`   | `PricingTables.astro`  | `/site/pricing`             |
-| `services`  | `ServiceList.astro`    | —                           |
-| `rules`     | `RuleGroups.astro`     | —                           |
-| `highlight` | `HighlightPanel.astro` | —                           |
+| `type`      | Component              | Backend data                                   |
+| ----------- | ---------------------- | ---------------------------------------------- |
+| `hero`      | `Hero.astro`           | — (no anchor, no nav entry)                    |
+| `features`  | `FeatureGrid.astro`    | —                                              |
+| `hours`     | `OpeningHours.astro`   | `/site/opening-hours`                          |
+| `pricing`   | `PricingTables.astro`  | `/site/pricing`                                |
+| `services`  | `ServiceList.astro`    | —                                              |
+| `rules`     | `RuleGroups.astro`     | —                                              |
+| `highlight` | `HighlightPanel.astro` | —                                              |
+| `menu`      | `MenuCourses.astro`    | — (prices are free-form strings, author-owned) |
+| `gallery`   | `GalleryGrid.astro`    | — (text optional: photo-driven by design)      |
 
 Three helpers in `src/lib/sections.ts`, all unit-tested:
 
@@ -141,11 +144,12 @@ Three helpers in `src/lib/sections.ts`, all unit-tested:
 - `resolveFallbackCta()` — drops a cross-section link (the "vai ai prezzi" on the hours error state, and vice versa)
   when its target section is disabled. Always route such links through it; do not trust the config.
 
-**Adding a section type** means: a `*Content` type + a `Section` union member in `sections.ts`, a component taking
-`{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. **Caveat (audit 14/08/2026)**: the
-switch is currently NOT enforced exhaustive — it sits in a `.map` callback, so a missing `case` silently renders
-nothing instead of failing the build. The exhaustiveness fix is scheduled (VISIONE, fase E); until then, adding the
-`case` is on you.
+**Adding a section type** means: a `*Content` type + an `EnabledSection` union member in `sections.ts`, a component
+taking `{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. The switch's `default`
+returns `section satisfies never`, so a union member without a `case` is a hard build error naming the forgotten
+type (mutation-checked). Disabling a section never needs a dummy `data`: `DisabledSection` only requires
+`{ type, enabled: false }`. `enabledSections()` narrows to `EnabledSection`, so components always receive their
+content.
 
 ## Conventions & gotchas
 

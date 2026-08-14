@@ -66,40 +66,42 @@ const booking = site.links?.booking ?? null;
         </div>
       </div>
 
-      <!-- Right card -->
-      <div class="lg:col-span-4 py-14">
-        <div class="rounded-3xl bg-accent-50/95 p-6 shadow-xl border-2 border-accent-200">
-          <div class="flex items-center justify-center gap-4">
-            <div>
-              <h2 class="text-lg font-bold">{howItWorks.title}</h2>
-              <p class="mt-1 text-sm text-slate-600">{howItWorks.subtitle}</p>
+      <!-- Right card (optional: omit howItWorks for a copy-only hero) -->
+      {
+        howItWorks && (
+          <div class="lg:col-span-4 py-14">
+            <div class="rounded-3xl bg-accent-50/95 p-6 shadow-xl border-2 border-accent-200">
+              <div class="flex items-center justify-center gap-4">
+                <div>
+                  <h2 class="text-lg font-bold">{howItWorks.title}</h2>
+                  <p class="mt-1 text-sm text-slate-600">{howItWorks.subtitle}</p>
+                </div>
+              </div>
+
+              <div class="mt-6 grid gap-3">
+                {howItWorks.steps.map((step, index) => (
+                  <>
+                    {index > 0 && (
+                      <div class="flex justify-center text-accent-500">
+                        <Icon name="fa6-solid:angle-down" class="animate-bounce" />
+                      </div>
+                    )}
+                    <div class="flex gap-4 rounded-2xl border border-accent-200 bg-white p-4">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-400 font-bold text-gray-900">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div class="font-semibold">{step.title}</div>
+                        <div class="text-sm text-slate-600">{step.text}</div>
+                      </div>
+                    </div>
+                  </>
+                ))}
+              </div>
             </div>
           </div>
-
-          <div class="mt-6 grid gap-3">
-            {
-              howItWorks.steps.map((step, index) => (
-                <>
-                  {index > 0 && (
-                    <div class="flex justify-center text-accent-500">
-                      <Icon name="fa6-solid:angle-down" class="animate-bounce" />
-                    </div>
-                  )}
-                  <div class="flex gap-4 rounded-2xl border border-accent-200 bg-white p-4">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-400 font-bold text-gray-900">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div class="font-semibold">{step.title}</div>
-                      <div class="text-sm text-slate-600">{step.text}</div>
-                    </div>
-                  </div>
-                </>
-              ))
-            }
-          </div>
-        </div>
-      </div>
+        )
+      }
     </div>
   </div>
 </section>

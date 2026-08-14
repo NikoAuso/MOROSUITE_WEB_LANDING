@@ -14,6 +14,8 @@ import PricingTables from '@/components/PricingTables.astro';
 import ServiceList from '@/components/ServiceList.astro';
 import RuleGroups from '@/components/RuleGroups.astro';
 import HighlightPanel from '@/components/HighlightPanel.astro';
+import MenuCourses from '@/components/MenuCourses.astro';
+import GalleryGrid from '@/components/GalleryGrid.astro';
 
 const sections = enabledSections(siteContent.sections);
 const needsHours = sections.some((section) => section.type === 'hours');
@@ -98,6 +100,14 @@ const heroImageSrc = heroSection?.type === 'hero' ? heroSection.data.image?.src 
             return <RuleGroups id={section.id} site={site} content={section.data} />;
           case 'highlight':
             return <HighlightPanel id={section.id} site={site} content={section.data} />;
+          case 'menu':
+            return <MenuCourses id={section.id} content={section.data} />;
+          case 'gallery':
+            return <GalleryGrid id={section.id} content={section.data} />;
+          default:
+            // Exhaustiveness gate: a new Section type without a case here is a
+            // build error, not a silently blank section (audit 14/08/2026).
+            return section satisfies never;
         }
       })}
     </PublicLayout>
