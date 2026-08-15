@@ -235,12 +235,16 @@ export function enabledSections(sections: readonly Section[]): EnabledSection[] 
   return sections.filter((section): section is EnabledSection => section.enabled);
 }
 
-/** Header/mobile menu entries: enabled, anchored sections that opted into a label. */
-export function primaryNav(sections: readonly Section[]): NavEntry[] {
+/**
+ * Header/mobile menu entries: enabled, anchored sections that opted into a label.
+ * `basePath` is the page hosting the anchors — `/` for the deploy homepage,
+ * `/demo/<preset>` for the preset showcase.
+ */
+export function primaryNav(sections: readonly Section[], basePath = '/'): NavEntry[] {
   return enabledSections(sections)
     .filter((section): section is Extract<EnabledSection, { id: string }> => 'id' in section)
     .filter((section) => Boolean(section.navLabel))
-    .map((section) => ({ href: `/#${section.id}`, label: section.navLabel! }));
+    .map((section) => ({ href: `${basePath}#${section.id}`, label: section.navLabel! }));
 }
 
 /**

@@ -1,0 +1,112 @@
+---
+import PublicLayout from '@/layouts/PublicLayout.astro';
+import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
+import { config } from '@/lib/config';
+import { toAbsoluteUrl } from '@/lib/format';
+import type { OpeningHoursPayload, PricingPayload, SitePayload } from '@/lib/dto';
+import type { NavEntry, SiteContent } from '@/lib/sections';
+import { enabledSections, resolveFallbackCta } from '@/lib/sections';
+import Hero from '@/components/Hero.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import OpeningHours from '@/components/OpeningHours.astro';
+import PricingTables from '@/components/PricingTables.astro';
+import ServiceList from '@/components/ServiceList.astro';
+import RuleGroups from '@/components/RuleGroups.astro';
+import HighlightPanel from '@/components/HighlightPanel.astro';
+import MenuCourses from '@/components/MenuCourses.astro';
+import GalleryGrid from '@/components/GalleryGrid.astro';
+
+/**
+ * The landing itself: walks the enabled sections of a SiteContent and mounts
+ * one component each. Payloads are resolved by the caller (index.astro fetches
+ * per the deploy's data sources; the /demo/<preset> showcase feeds the preset
+ * fixtures), so this component never touches the network.
+ */
+interface Props {
+  content: SiteContent;
+  site: SitePayload;
+  hours: OpeningHoursPayload | null;
+  pricing: PricingPayload | null;
+  nav?: readonly NavEntry[];
+  extraCss?: string;
+  noindex?: boolean;
+}
+
+const { content, site, hours, pricing, nav, extraCss, noindex } = Astro.props;
+const sections = enabledSections(content.sections);
+
+const { meta } = content;
+const siteName = site.name ?? site.short_name ?? meta.siteNameFallback;
+const title = `${siteName} | ${meta.titleSuffix}`;
+const description = site.tagline ?? meta.descriptionTemplate.replace('%s', siteName);
+// schema.org wants an absolute logo URL, same as OG.
+const jsonLd = buildLocalBusinessJsonLd(
+  site,
+  hours,
+  config.siteUrl,
+  toAbsoluteUrl(config.brand.logoUrl, config.siteUrl),
+);
+
+// The hero photo comes from the content (public/ path, served as-is); the
+// <head> preload uses the same string, so the two cannot diverge.
+const heroSection = sections.find((section) => section.type === 'hero');
+const heroImageSrc = heroSection?.type === 'hero' ? heroSection.data.image?.src : undefined;
+---
+
+<PublicLayout
+  title={title}
+  description={description}
+  site={site}
+  siteName={siteName}
+  jsonLd={jsonLd}
+  preloadHeroImage={heroImageSrc}
+  nav={nav}
+  extraCss={extraCss}
+  noindex={noindex}
+>
+  <slot name="before" />
+  {
+    sections.map((section) => {
+      switch (section.type) {
+        case 'hero':
+          return <Hero site={site} content={section.data} />;
+        case 'features':
+          return <FeatureGrid id={section.id} content={section.data} />;
+        case 'hours':
+          return (
+            <OpeningHours
+              id={section.id}
+              hours={hours}
+              site={site}
+              content={section.data}
+              fallbackCta={resolveFallbackCta(section.data.fallbackCta, content.sections)}
+            />
+          );
+        case 'pricing':
+          return (
+            <PricingTables
+              id={section.id}
+              pricing={pricing}
+              site={site}
+              content={section.data}
+              fallbackCta={resolveFallbackCta(section.data.fallbackCta, content.sections)}
+            />
+          );
+        case 'services':
+          return <ServiceList id={section.id} content={section.data} />;
+        case 'rules':
+          return <RuleGroups id={section.id} site={site} content={section.data} />;
+        case 'highlight':
+          return <HighlightPanel id={section.id} site={site} content={section.data} />;
+        case 'menu':
+          return <MenuCourses id={section.id} content={section.data} />;
+        case 'gallery':
+          return <GalleryGrid id={section.id} content={section.data} />;
+        default:
+          // Exhaustiveness gate: a new Section type without a case here is a
+          // build error, not a silently blank section (audit 14/08/2026).
+          return section satisfies never;
+      }
+    })
+  }
+</PublicLayout>

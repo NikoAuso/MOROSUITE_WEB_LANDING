@@ -1,21 +1,9 @@
 ---
-import PublicLayout from '@/layouts/PublicLayout.astro';
+import LandingPage from '@/components/LandingPage.astro';
 import ServiceUnavailable from '@/components/ServiceUnavailable.astro';
 import { api } from '@/lib/api';
-import { buildLocalBusinessJsonLd } from '@/lib/structured-data';
-import { config } from '@/lib/config';
-import { toAbsoluteUrl } from '@/lib/format';
 import { siteContent } from '@content';
-import { enabledSections, resolveFallbackCta } from '@/lib/sections';
-import Hero from '@/components/Hero.astro';
-import FeatureGrid from '@/components/FeatureGrid.astro';
-import OpeningHours from '@/components/OpeningHours.astro';
-import PricingTables from '@/components/PricingTables.astro';
-import ServiceList from '@/components/ServiceList.astro';
-import RuleGroups from '@/components/RuleGroups.astro';
-import HighlightPanel from '@/components/HighlightPanel.astro';
-import MenuCourses from '@/components/MenuCourses.astro';
-import GalleryGrid from '@/components/GalleryGrid.astro';
+import { enabledSections } from '@/lib/sections';
 
 const sections = enabledSections(siteContent.sections);
 // Single fetch, single payload: with (contrived) duplicate hours/pricing
@@ -47,80 +35,11 @@ if (!site) {
   Astro.response.status = 503;
   Astro.response.headers.set('Retry-After', '60');
 }
-
-const { meta } = siteContent;
-const siteName = site?.name ?? site?.short_name ?? meta.siteNameFallback;
-const title = `${siteName} | ${meta.titleSuffix}`;
-const description = site?.tagline ?? meta.descriptionTemplate.replace('%s', siteName);
-// schema.org wants an absolute logo URL, same as OG.
-const jsonLd = site
-  ? buildLocalBusinessJsonLd(
-      site,
-      hours,
-      config.siteUrl,
-      toAbsoluteUrl(config.brand.logoUrl, config.siteUrl),
-    )
-  : null;
-
-// The hero photo comes from the content (public/ path, served as-is); the
-// <head> preload uses the same string, so the two cannot diverge.
-const heroSection = sections.find((section) => section.type === 'hero');
-const heroImageSrc = heroSection?.type === 'hero' ? heroSection.data.image?.src : undefined;
 ---
 
 {
   site ? (
-    <PublicLayout
-      title={title}
-      description={description}
-      site={site}
-      siteName={siteName}
-      jsonLd={jsonLd}
-      preloadHeroImage={heroImageSrc}
-    >
-      {sections.map((section) => {
-        switch (section.type) {
-          case 'hero':
-            return <Hero site={site} content={section.data} />;
-          case 'features':
-            return <FeatureGrid id={section.id} content={section.data} />;
-          case 'hours':
-            return (
-              <OpeningHours
-                id={section.id}
-                hours={hours}
-                site={site}
-                content={section.data}
-                fallbackCta={resolveFallbackCta(section.data.fallbackCta, siteContent.sections)}
-              />
-            );
-          case 'pricing':
-            return (
-              <PricingTables
-                id={section.id}
-                pricing={pricing}
-                site={site}
-                content={section.data}
-                fallbackCta={resolveFallbackCta(section.data.fallbackCta, siteContent.sections)}
-              />
-            );
-          case 'services':
-            return <ServiceList id={section.id} content={section.data} />;
-          case 'rules':
-            return <RuleGroups id={section.id} site={site} content={section.data} />;
-          case 'highlight':
-            return <HighlightPanel id={section.id} site={site} content={section.data} />;
-          case 'menu':
-            return <MenuCourses id={section.id} content={section.data} />;
-          case 'gallery':
-            return <GalleryGrid id={section.id} content={section.data} />;
-          default:
-            // Exhaustiveness gate: a new Section type without a case here is a
-            // build error, not a silently blank section (audit 14/08/2026).
-            return section satisfies never;
-        }
-      })}
-    </PublicLayout>
+    <LandingPage content={siteContent} site={site} hours={hours} pricing={pricing} />
   ) : (
     <ServiceUnavailable />
   )

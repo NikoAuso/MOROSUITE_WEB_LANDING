@@ -103,7 +103,11 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 8. **`src/lib/pricing.ts`** — `visiblePricingSections`, `formatPrice` (`isFree` wins over a `null` value), `countRows`.
 9. **`src/pages/index.astro`** — awaits `/site` **first and alone**; hours+pricing only fire if it succeeded _and_ an
    enabled section consumes them. If `site === null`: status 503 + `Retry-After: 60` + `<ServiceUnavailable />`.
-   Otherwise it walks the enabled sections and mounts one component each.
+   Otherwise it hands content + payloads to **`src/components/LandingPage.astro`**, which walks the enabled sections
+   and mounts one component each (no network in there). **`src/pages/demo/[preset].astro`** reuses it as the preset
+   showcase: DEMO_MODE only (404 otherwise), one route per `presets/*`, fed by the preset's `DEMO_DATA`, menu anchored
+   to its own path via `primaryNav(sections, basePath)`, palette re-valued at request time by inlining the preset's
+   `theme.css` as `html:root` (`PublicLayout` `extraCss`), `noindex`.
 10. **`src/layouts/PublicLayout.astro`** — requires `site: SitePayload` (does not fetch anything). Renders `<head>`
     (canonical, OG/Twitter, `LocalBusiness` JSON-LD with `<` escaped against script breakout, GA4 consent-mode v2
     bootstrap, Bunny Fonts + preloaded 700 weight, optional `noindex`) + skip-link + `<Header>` / `<Footer>` /

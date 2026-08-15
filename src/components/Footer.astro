@@ -2,6 +2,7 @@
 import { config } from '@/lib/config';
 import { PRIMARY_NAV, FOOTER_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
+import type { NavEntry } from '@/lib/sections';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
@@ -9,9 +10,11 @@ import { safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
+  /** Menu entries; defaults to the deploy's own. */
+  nav?: readonly NavEntry[];
 }
 
-const { site } = Astro.props;
+const { site, nav = PRIMARY_NAV } = Astro.props;
 const manager = site.links?.manager ?? null;
 
 // The backend-curated pin is canonical; only synthesize a locality+region
@@ -98,7 +101,7 @@ const tiktok = safeHref(site.social?.tiktok);
         <div class="text-sm font-extrabold text-white">Link Rapidi</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
           {
-            PRIMARY_NAV.map((link) => (
+            nav.map((link) => (
               <li>
                 <a
                   href={link.href}

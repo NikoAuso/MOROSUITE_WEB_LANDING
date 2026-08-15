@@ -23,6 +23,38 @@ npm run dev            # http://localhost:4321
 Vedrai il preset attivo (piscina) popolato dai suoi dati demo. `curl localhost:4321/health` →
 `{"status":"ok","demo":true,"data_source":"demo",...}`.
 
+### Vetrina dei preset (`/demo/<preset>`)
+
+Per vedere **tutti** i verticali senza toccare i due import, con `DEMO_MODE=true` ogni preset ha la
+sua pagina di esempio, servita dallo stesso build:
+
+```bash
+npm run dev
+open http://localhost:4321/demo/piscina       # oppure ristorazione, bar, hotel
+```
+
+| Route                | Cosa mostra                                                     |
+| -------------------- | --------------------------------------------------------------- |
+| `/demo/piscina`      | preset piscina: copy, dati demo e palette di `presets/piscina/` |
+| `/demo/ristorazione` | idem per `presets/ristorazione/`                                |
+| `/demo/bar`          | idem per `presets/bar/`                                         |
+| `/demo/hotel`        | idem per `presets/hotel/`                                       |
+
+Ogni pagina ha una barra in alto per passare da un preset all'altro; menu e ancore restano sulla
+pagina demo (`/demo/bar#orari`). Le route sono `noindex` e **fuori da DEMO_MODE rispondono 404**: un
+deploy reale serve un solo preset e non espone gli altri.
+
+Come funziona: la route legge `presets/<nome>/index.ts` (contenuto + `DEMO_DATA`) e inietta il
+`theme.css` del preset come `<style>` inline, così i token `brand-`/`cta-`/`accent-` vengono
+rivalorizzati a richiesta sopra la palette compilata. Un preset nuovo sotto `presets/` compare da
+solo. Per il build reale resta valida la regola dei due import (sotto): la vetrina è solo uno
+strumento di anteprima. Anche sul build di produzione:
+
+```bash
+npm run build && DEMO_MODE=true node ./dist/server/entry.mjs
+curl -s -o /dev/null -w '%{http_code}\n' localhost:4321/demo/hotel   # 200
+```
+
 ## Come è organizzato
 
 | Superficie        | Possiede                                                                                                              |

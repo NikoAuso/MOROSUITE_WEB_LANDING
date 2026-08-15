@@ -43,6 +43,12 @@ describe('primaryNav', () => {
     const sections = [hero, anchored('legal', { navLabel: undefined })];
     expect(primaryNav(sections)).toEqual([]);
   });
+
+  it('anchors to the given base path, so a showcase page keeps its own menu', () => {
+    expect(primaryNav([anchored('orari')], '/demo/bar').map((e) => e.href)).toEqual([
+      '/demo/bar#orari',
+    ]);
+  });
 });
 
 describe('resolveFallbackCta', () => {

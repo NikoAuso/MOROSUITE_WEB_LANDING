@@ -1,0 +1,71 @@
+---
+import LandingPage from '@/components/LandingPage.astro';
+import { config } from '@/lib/config';
+import type { OpeningHoursPayload, PricingPayload, SitePayload } from '@/lib/dto';
+import type { SiteContent } from '@/lib/sections';
+import { primaryNav } from '@/lib/sections';
+
+/**
+ * Preset showcase: /demo/<preset> renders each vertical — its copy, its demo
+ * fixtures, its palette — from the one build, so every preset can be seen
+ * without re-pointing the two imports. DEMO_MODE only: a real deploy serves
+ * one preset and never exposes the others (404 otherwise, like any unknown
+ * route). Discovered from presets/, so a new vertical shows up by itself.
+ */
+type Preset = { content: SiteContent; DEMO_DATA: Record<string, unknown> };
+const presets = import.meta.glob<Preset>('/presets/*/index.ts', { eager: true });
+const themes = import.meta.glob<string>('/presets/*/theme.css', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+const names = Object.keys(presets).map((path) => path.split('/')[2]);
+
+const name = Astro.params.preset ?? '';
+const preset = presets[`/presets/${name}/index.ts`];
+if (!config.demoMode || !preset) {
+  return new Response(null, { status: 404 });
+}
+
+// The palette is compiled from the ACTIVE preset's theme.css (see tokens.css).
+// Re-valuing the same custom properties from `html:root` outranks both the
+// bundle's @layer theme block and its unlayered :root (the hero glows) no
+// matter where Astro injects the stylesheet, and every colour utility resolves
+// through var(), so the whole page re-themes at request time.
+// ponytail: the three opacity-modified utilities keep the active preset's
+// literal colour in browsers without color-mix() — fine for a showcase.
+const extraCss = themes[`/presets/${name}/theme.css`].replace(/@theme|:root/g, 'html:root');
+
+const basePath = Astro.url.pathname;
+const site = preset.DEMO_DATA['/site'] as SitePayload;
+const hours = (preset.DEMO_DATA['/site/opening-hours'] as OpeningHoursPayload | undefined) ?? null;
+const pricing = (preset.DEMO_DATA['/site/pricing'] as PricingPayload | undefined) ?? null;
+---
+
+<LandingPage
+  content={preset.content}
+  site={site}
+  hours={hours}
+  pricing={pricing}
+  nav={primaryNav(preset.content.sections, basePath)}
+  extraCss={extraCss}
+  noindex={true}
+>
+  <nav
+    slot="before"
+    aria-label="Preset"
+    class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-slate-900 px-4 py-2 text-sm text-slate-300"
+  >
+    {
+      names.map((entry) => (
+        <a
+          href={`/demo/${entry}`}
+          aria-current={entry === name ? 'page' : undefined}
+          class="hover:text-white aria-[current=page]:font-bold aria-[current=page]:text-white"
+        >
+          {entry}
+        </a>
+      ))
+    }
+  </nav>
+</LandingPage>
