@@ -1,6 +1,6 @@
 {
-  "name": "site-landing-template",
-  "description": "White-label Astro 7 SSR template for a backend-driven marketing site. Plug in any HTTP backend that implements the contract in src/lib/dto.ts, or run the bundled demo with DEMO_MODE=true.",
+  "name": "venue-landing-kit",
+  "description": "Multi-vertical Astro SSR landing kit: a component catalogue plus ready-made presets (piscina, ristorazione, bar, hotel), themed via semantic tokens, with optional live data from an HTTP backend.",
   "license": "MIT",
   "version": "0.1.0",
   "type": "module",

@@ -1,37 +1,127 @@
-# Site Landing Template
+# Venue Landing Kit
 
-> **Documentazione congelata durante il refactor** (agosto 2026). I documenti estesi (contratto
-> backend leggibile, contributing, security policy, template issue/PR) sono stati rimossi e verranno
-> ricreati a refactor concluso. Il piano completo è in `docs/VISIONE.md` (locale, non tracciato).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-Template Astro 7 SSR white-label multi-verticale: un catalogo di componenti e un preset per tema
-in `presets/` (piscina, ristorazione, bar, hotel), customizzabile via file di
-config; i dati live (orari, listino, identità) arrivano opzionalmente via HTTP dal gestionale. Il
-preset si sceglie con due import: contenuto in `site.content.ts`, tema in `src/styles/tokens.css`.
-Licenza [MIT](./LICENSE).
+Un kit Astro SSR per landing di attività locali: un **catalogo di componenti** e un **preset pronto
+per verticale** — piscina, ristorazione, bar, hotel — customizzabile via file di config. I dati vivi
+(identità, orari, listino) possono arrivare **da un backend HTTP** o **da file committati**, sezione
+per sezione: un deploy senza gestionale è un sito statico puro.
 
-**Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint dati live, JSDoc per
-campo) + [`src/lib/sections.ts`](src/lib/sections.ts) (catalogo sezioni e shape della struttura in
-`site.content.ts`). Ogni drift è un errore di build, by design.
+**Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint dati live) e
+[`src/lib/sections.ts`](src/lib/sections.ts) (catalogo sezioni e shape della struttura). Lo specchio
+leggibile del contratto backend è [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md).
 
 ## Quickstart (demo, zero backend)
 
 ```bash
+git clone <questo-repo> && cd <cartella>
 npm install
 cp .env.example .env   # contiene DEMO_MODE=true
 npm run dev            # http://localhost:4321
 ```
 
+Vedrai il preset attivo (piscina) popolato dai suoi dati demo. `curl localhost:4321/health` →
+`{"status":"ok","demo":true,"data_source":"demo",...}`.
+
+## Come è organizzato
+
+| Superficie        | Possiede                                                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `presets/<tema>/` | il verticale: `content.ts` (struttura+copy), `theme.css` (palette), `demo-data.ts`, asset in `public/presets/<tema>/` |
+| `site.content.ts` | il file del **deploy**: importa il preset scelto e applica override per sezione; esporta `STATIC_DATA`                |
+| `site.config.ts`  | identità per-deploy: `dataSource`, brand asset, `formatting.{locale,currency}`, analytics, fetch                      |
+| `src/`            | componenti, degradazione, sicurezza — mai copy di business, mai palette cablata                                       |
+
+### Scegliere il preset
+
+La selezione sono **due import che devono puntare allo stesso verticale** (non esiste un campo
+`preset` in config, di proposito: sarebbe una terza dichiarazione libera di divergere dalle due che
+fanno fede):
+
+1. il contenuto, in `site.content.ts`:
+   ```ts
+   import { content as presetContent } from './presets/ristorazione';
+   ```
+2. il tema, in `src/styles/tokens.css`:
+   ```css
+   @import '../../presets/ristorazione/theme.css';
+   ```
+
+Il tema DEVE stare in quel `@import` (dentro il grafo Tailwind): le utility con opacità inlineano
+il colore al build, quindi la palette non è sostituibile a runtime.
+
+### La struttura a sezioni
+
+`site.content.ts` (via preset) è un `SiteContent`: `meta` + un array ordinato di sezioni. Riordinare
+l'array riordina la pagina; `{ type, enabled: false }` spegne una sezione (menu e ancore compresi)
+senza richiedere altro. Il catalogo:
+
+| `type`      | Componente     | Dati backend                                |
+| ----------- | -------------- | ------------------------------------------- |
+| `hero`      | Hero           | —                                           |
+| `features`  | FeatureGrid    | —                                           |
+| `hours`     | OpeningHours   | `/site/opening-hours` (o statici)           |
+| `pricing`   | PricingTables  | `/site/pricing` (o statici)                 |
+| `services`  | ServiceList    | —                                           |
+| `rules`     | RuleGroups     | —                                           |
+| `highlight` | HighlightPanel | —                                           |
+| `menu`      | MenuCourses    | — (prezzi come stringhe libere dell'autore) |
+| `gallery`   | GalleryGrid    | — (testo tutto opzionale)                   |
+
+### Fonte dati: backend, statica, o mista
+
+`site.config.ts` dichiara `dataSource: 'backend' | 'static'`; le sezioni `hours`/`pricing` possono
+fare override con `data.source`. In modalità statica i payload arrivano da `STATIC_DATA`
+(esportata da `site.content.ts`, default: i dati demo del preset — sostituiscili coi dati reali) e
+**non esiste il percorso 503**: il sito è self-contained. `DEMO_MODE=true` forza static ovunque.
+`/health` riporta `data_source: 'backend' | 'static' | 'demo' | 'mixed'` e degrada solo se il
+deploy dipende davvero da un backend giù.
+
+## White-labeling di un deploy
+
+1. Fork; scegli il preset (i due import sopra).
+2. Override di copy in `site.content.ts` (sostituzione esplicita per sezione — esempio nel file).
+3. `site.config.ts`: `dataSource`, `formatting`, asset brand (`logoUrl`/`faviconUrl`/`ogImageUrl`
+   accettano URL assoluto o path da `public/`; l'OG **deve** restare raster 1200×630 — i crawler
+   social non rendono SVG).
+4. Sostituisci gli asset: `public/brand/` (identità) e le foto del preset.
+5. Riscrivi i legali in `src/content/legal/` (Markdown; il titolare arriva da `site.gdpr` quando i
+   dati sono backend) e falli validare.
+6. Env del deploy:
+
+   | Var                         | Richiesta          | Default                               | Uso                                                                   |
+   | --------------------------- | ------------------ | ------------------------------------- | --------------------------------------------------------------------- |
+   | `DEMO_MODE`                 | no                 | `false`                               | `true` = serving statico coi dati demo del preset                     |
+   | `API_BASE_URL`              | solo backend/mixed | `http://127.0.0.1:8000/api/public/v1` | root del backend; URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>` |
+   | `FACILITY_SLUG`             | solo backend/mixed | `demo`                                | struttura servita; verificato contro `SitePayload.slug` (warning)     |
+   | `API_AUTH_TOKEN`            | solo backend/mixed | —                                     | Bearer su ogni chiamata (non `/up`); server-only                      |
+   | `PUBLIC_SITE_URL`           | sì                 | `http://localhost:4321`               | canonical, sitemap, OG                                                |
+   | `CACHE_TTL_SECONDS`         | no                 | `300`                                 | TTL cache in-process                                                  |
+   | `PUBLIC_GA4_MEASUREMENT_ID` | no                 | —                                     | GA4 consent-mode v2 (vuoto = niente tag)                              |
+   | `PORT` / `HOST`             | no                 | default Astro                         | bind del server                                                       |
+
+7. Build e avvio:
+   ```bash
+   npm ci && npm run build
+   node ./dist/server/entry.mjs   # env dal process manager, non da .env
+   ```
+   PM2/systemd per i restart; Nginx/Caddy davanti per TLS e per servire `dist/client/`.
+   Smoke-test: `curl https://<sito>/health`.
+
 ## Comandi
 
-| Comando                     | Scopo                                              |
-| --------------------------- | -------------------------------------------------- |
-| `npm run check`             | `astro check` + `tsc --noEmit`                     |
-| `npm run lint` / `format`   | ESLint / Prettier (`format:check` è gate CI)       |
-| `npm test`                  | Unit (Vitest)                                      |
-| `npm run test:e2e`          | E2E, mock backend ok                               |
-| `npm run test:e2e:degraded` | E2E, backend irraggiungibile                       |
-| `npm run test:e2e:empty`    | E2E, payload vuoti                                 |
-| `npm run build` / `preview` | Build SSR / esecuzione locale del build con `.env` |
+| Comando                               | Scopo                                                          |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `npm run dev` / `build` / `preview`   | dev server · build SSR · esecuzione del build con `.env`       |
+| `npm run check`                       | `astro check` + `tsc --noEmit`                                 |
+| `npm run lint` / `format`             | ESLint · Prettier (`format:check` è gate CI)                   |
+| `npm test`                            | unit (Vitest) — include le guardie su temi, wiring e contratto |
+| `npm run test:e2e[:degraded\|:empty]` | Playwright su mock backend / backend giù / payload vuoti       |
+| `npm run test:lh`                     | Lighthouse (manuale, non gate CI)                              |
 
-Architettura e convenzioni per lo sviluppo: [`CLAUDE.md`](CLAUDE.md).
+Le suite E2E derivano le attese dalla struttura committata: il re-theme non le rompe.
+
+## Contribuire
+
+Vedi [CONTRIBUTING.md](./CONTRIBUTING.md). Sicurezza: [SECURITY.md](./SECURITY.md).
+Licenza [MIT](./LICENSE).

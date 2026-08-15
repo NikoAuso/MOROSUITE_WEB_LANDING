@@ -92,9 +92,8 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 
 5. **`src/lib/dto.ts`** — the API contract: types with JSDoc per field, plus the canonical endpoint map (`/site`,
    `/site/opening-hours`, `/site/pricing`). **Intentional contract**: any drift between backend responses and these
-   types is a type error here. Change this file first, then propagate. The human-readable mirror
-   (BACKEND_CONTRACT.md) is removed during the docs freeze — `dto.ts` + `sections.ts` ARE the contract until it is
-   recreated at the end of the refactor; do not resurrect it piecemeal.
+   types is a type error here. Change this file first, then propagate. [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md)
+   is the human-readable mirror — keep the two in sync.
 6. **`src/lib/copy.ts`** — degraded-state strings only (`FALLBACK_COPY.service`, `.hours`, `.pricing`, `.cta.*`). Page
    copy lives in `site.content.ts`.
 7. **`src/lib/format.ts`** — `formatSeasonDate` (explicit `T00:00:00` to avoid UTC day-shift), `whatsappUrl` (gates on
@@ -216,7 +215,7 @@ content.
 
 ## White-labeling a new deploy
 
-(The README walkthrough is trimmed during the docs freeze; this is the authoritative summary.) Fork, then: pick the
+Full walkthrough in [`README.md`](README.md#white-labeling-di-un-deploy). In short: fork, then: pick the
 preset (the two imports — content in `site.content.ts`, theme in `src/styles/tokens.css`), apply copy overrides in
 `site.content.ts`, edit `site.config.ts` (identity/branding), replace `public/brand/` assets (the
 `public/presets/<tema>/` ones are the preset's demo assets), rewrite `src/content/legal/`, and set the env vars:
