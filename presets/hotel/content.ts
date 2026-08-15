@@ -24,24 +24,92 @@ export const content: SiteContent = {
         highlight: 'aperto tutto l’anno',
         lead: 'Camere silenziose, colazione fino a tardi e una terrazza con vista. Prenoti online, senza intermediari: il miglior prezzo è sempre qui.',
         secondaryCta: { href: '#camere', label: 'Scopri le camere' },
-        howItWorks: {
-          title: 'Prenotare è semplice',
-          subtitle: 'In 3 passaggi.',
-          steps: [
-            { title: 'Scegli le date', text: 'Arrivo e partenza.' },
-            { title: 'Scegli la camera', text: 'Foto e dettagli reali.' },
-            { title: 'Conferma immediata', text: 'Via email, con check-in online.' },
+        card: {
+          title: 'Prenotare diretto conviene',
+          subtitle: 'Senza intermediari.',
+          items: [
+            {
+              icon: 'fa6-solid:tag',
+              title: 'Miglior prezzo garantito',
+              text: 'Se lo trovi più basso, lo pareggiamo.',
+            },
+            {
+              icon: 'fa6-solid:calendar-check',
+              title: 'Cancellazione gratuita',
+              text: 'Fino a 48 ore prima dell’arrivo.',
+            },
+            {
+              icon: 'fa6-solid:mug-saucer',
+              title: 'Colazione inclusa',
+              text: 'Buffet dolce e salato, fino alle 10:30.',
+            },
           ],
         },
       },
     },
     {
-      type: 'features',
+      type: 'menu',
       id: 'camere',
       navLabel: 'Camere',
       enabled: true,
       data: {
         eyebrow: 'LE CAMERE',
+        title: 'Camere e tariffe',
+        lead: 'Quattro tagli, tutti con colazione inclusa. Il prezzo definitivo dipende da stagione e disponibilità: lo vedi nel motore di prenotazione.',
+        footnote:
+          'Tariffe indicative per camera a notte, tasse incluse; tassa di soggiorno esclusa. Culla gratuita su richiesta.',
+        courses: [
+          {
+            label: 'Camere',
+            dishes: [
+              {
+                name: 'Singola',
+                description: '16 m², letto alla francese, vista cortile.',
+                price: 'da € 70',
+              },
+              {
+                name: 'Doppia Comfort',
+                description: '22 m², matrimoniale o twin, scrivania.',
+                price: 'da € 95',
+              },
+              {
+                name: 'Doppia Superior',
+                description: '28 m², balcone, macchina espresso.',
+                price: 'da € 125',
+              },
+              {
+                name: 'Junior Suite',
+                description: '40 m², zona living, vasca, vista terrazza.',
+                price: 'da € 180',
+              },
+            ],
+          },
+          {
+            label: 'Extra',
+            dishes: [
+              { name: 'Letto aggiunto', price: '€ 25 / notte' },
+              {
+                name: 'Garage convenzionato',
+                description: 'A 200 metri, con riconsegna auto.',
+                price: '€ 15 / notte',
+              },
+              {
+                name: 'Late check-out',
+                description: 'Fino alle 14, su disponibilità.',
+                price: '€ 25',
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      type: 'features',
+      id: 'soggiorno',
+      navLabel: 'Il soggiorno',
+      enabled: true,
+      data: {
+        eyebrow: 'IL SOGGIORNO',
         title: 'Riposare bene, davvero',
         lead: 'Sedici camere, quattro tagli, un solo standard: silenzio, luce e materassi che ricorderete.',
         items: [

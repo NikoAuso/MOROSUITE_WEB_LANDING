@@ -23,13 +23,25 @@ export const content: SiteContent = {
         highlight: 'a due passi dal centro',
         lead: 'Materie prime del territorio, pasta fresca ogni giorno e una carta dei vini curata. Prenota il tavolo online in un minuto.',
         secondaryCta: { href: '#menu', label: 'Guarda il menu' },
-        howItWorks: {
-          title: 'Prenotare è semplice',
-          subtitle: 'In 3 passaggi.',
-          steps: [
-            { title: 'Scegli data e ora', text: 'Pranzo o cena.' },
-            { title: 'Indica i coperti', text: 'E eventuali intolleranze.' },
-            { title: 'Ricevi la conferma', text: 'Via email, subito.' },
+        card: {
+          title: 'Prenotare un tavolo',
+          subtitle: 'Come preferisci.',
+          items: [
+            {
+              icon: 'fa6-solid:laptop',
+              title: 'Online in un minuto',
+              text: 'Scegli data, ora e coperti.',
+            },
+            {
+              icon: 'fa6-solid:phone',
+              title: 'Gruppi e cerimonie',
+              text: 'Chiamaci per più di 8 coperti.',
+            },
+            {
+              icon: 'fa6-solid:wheat-awn',
+              title: 'Intolleranze e allergie',
+              text: 'Segnalale in prenotazione: la cucina si organizza.',
+            },
           ],
         },
       },

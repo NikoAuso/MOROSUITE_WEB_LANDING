@@ -22,10 +22,10 @@ export const content: SiteContent = {
         highlight: 'in pochi semplici step',
         lead: "Scegli la data, indica i componenti e seleziona gli ombrelloni dalla mappa. Al termine ricevi il QR Code per l'accesso.",
         secondaryCta: { href: '#piscina', label: 'Scopri la piscina' },
-        howItWorks: {
+        card: {
           title: 'Come funziona',
           subtitle: 'In 3 semplici passaggi.',
-          steps: [
+          items: [
             { title: 'Scegli data e componenti', text: 'Adulti, bambini e neonati.' },
             { title: 'Seleziona gli ombrelloni', text: 'Dalla mappa interattiva.' },
             { title: 'Conferma e ricevi il QR', text: 'Accesso rapido in struttura.' },

@@ -1,0 +1,35 @@
+---
+import { config } from '@/lib/config';
+
+/**
+ * The brand logo from `site.config.ts brand.logoUrl`. A local SVG under
+ * public/brand/ is inlined so it can paint with the theme (`currentColor`
+ * follows the wrapper's text colour — the shipped placeholder does exactly
+ * that); anything else — a hosted URL, a raster — stays a plain <img>.
+ */
+interface Props {
+  alt: string;
+  class?: string;
+}
+
+const { alt, class: className } = Astro.props;
+const localSvgs = import.meta.glob<string>('/public/brand/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+const inline = localSvgs[`/public${config.brand.logoUrl}`];
+---
+
+{
+  inline ? (
+    <span
+      role="img"
+      aria-label={alt}
+      class:list={['[&>svg]:h-full [&>svg]:w-full', className]}
+      set:html={inline}
+    />
+  ) : (
+    <img src={config.brand.logoUrl} alt={alt} class:list={['object-contain', className]} />
+  )
+}

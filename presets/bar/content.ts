@@ -23,7 +23,27 @@ export const content: SiteContent = {
         highlight: "all'ultimo cocktail della sera",
         lead: 'Torrefazione locale, aperitivi con cucina e una drink list che cambia ogni stagione. Senza prenotazione: arriva e siediti.',
         secondaryCta: { href: '#drink', label: 'La drink list' },
-        // Niente howItWorks: hero copy-only, il caso che la fase E ha reso possibile.
+        card: {
+          title: 'Oggi al banco',
+          subtitle: 'Dal mattino a mezzanotte.',
+          items: [
+            {
+              icon: 'fa6-solid:mug-hot',
+              title: 'Colazione dalle 6',
+              text: 'Caffè, lievitati e spremute.',
+            },
+            {
+              icon: 'fa6-solid:martini-glass-citrus',
+              title: 'Aperitivo dalle 17',
+              text: 'Con cucina, in dehors.',
+            },
+            {
+              icon: 'fa6-solid:music',
+              title: 'Serate a tema',
+              text: 'Vinile, live e brunch domenicale.',
+            },
+          ],
+        },
       },
     },
     {

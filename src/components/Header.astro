@@ -3,6 +3,7 @@ import { config } from '@/lib/config';
 import { PRIMARY_NAV } from '@/lib/navigation';
 import type { SitePayload } from '@/lib/dto';
 import type { NavEntry } from '@/lib/sections';
+import BrandLogo from '@/components/BrandLogo.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
@@ -27,15 +28,9 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
       <div class="flex items-center gap-4">
         <a
           href="/"
-          class="flex items-center gap-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-slate-900"
+          class="flex items-center gap-3 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-900"
         >
-          <div class="flex size-11 items-center justify-center rounded-lg overflow-hidden">
-            <img
-              src={config.brand.logoUrl}
-              alt={site.name ?? 'Logo'}
-              class="h-full w-full object-contain"
-            />
-          </div>
+          <BrandLogo alt={site.name ?? 'Logo'} class="size-11 text-brand-500" />
           <span class="hidden text-lg font-extrabold sm:inline">{site.short_name ?? site.name}</span
           >
         </a>
@@ -50,7 +45,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
             {nav.map((link) => (
               <a
                 href={link.href}
-                class="hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-slate-900"
+                class="hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-900"
               >
                 {link.label}
               </a>
@@ -65,7 +60,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
             <button
               type="button"
               data-mobile-menu-toggle
-              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-slate-900"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition hover:bg-white/10 md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-900"
               aria-label="Apri menu di navigazione"
               aria-expanded="false"
               aria-controls="mobile-menu"
@@ -107,7 +102,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
               <a
                 href={link.href}
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-slate-900"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-900"
               >
                 {link.label}
               </a>
@@ -118,7 +113,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
                 target="_blank"
                 rel="noopener noreferrer"
                 data-mobile-menu-link
-                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-slate-900"
+                class="rounded-xl px-4 py-3 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-900"
               >
                 {hotel.label}
               </a>

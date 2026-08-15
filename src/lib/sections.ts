@@ -49,11 +49,16 @@ export type HeroContent = {
   lead: string;
   /** Anchor button beside the booking CTA. Omit to show the CTA alone. */
   secondaryCta?: NavEntry;
-  /** The step-by-step card beside the copy. Omit it and the hero is copy-only. */
-  howItWorks?: {
+  /**
+   * The card beside the copy. Omit it and the hero is copy-only. Two shapes,
+   * decided by the items: give every item an `icon` and it renders as a bullet
+   * list (perks, "what to expect"); leave the icons out and it renders as
+   * numbered steps joined by arrows (a real booking flow).
+   */
+  card?: {
     title: string;
-    subtitle: string;
-    steps: Array<{ title: string; text: string }>;
+    subtitle?: string;
+    items: Array<{ icon?: string; title: string; text: string }>;
   };
 };
 
