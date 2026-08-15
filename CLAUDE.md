@@ -48,6 +48,7 @@ Vitest for unit tests, Playwright for E2E, Lighthouse config (`lighthouserc.json
 | `npm run test:e2e:degraded` | Playwright with backend unreachable — asserts 503 for home and the legal pages, degraded `/health`.          |
 | `npm run test:e2e:empty`    | Playwright with mock backend in empty-payload mode — asserts `<ErrorState>` for hours/pricing, disabled CTA. |
 | `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9). Manual, not a CI gate.                                 |
+| `npm run screenshots`       | Rebuilds `.github/screenshots/` (README images) from the `/demo/<preset>` routes. Manual.                    |
 
 Run a single E2E spec: `npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/homepage.spec.ts`. Add
 `--ui` for UI mode. Specs: `cookie`, `cta`, `degraded`, `empty`, `homepage`, `legal`, `public`. **The homepage and
@@ -223,6 +224,10 @@ content.
   replay the retry sequence. To flush, restart the Node process.
 - **`API_AUTH_TOKEN` is server-only**: no `PUBLIC_` prefix, so Astro never bundles it client-side. Never log its value.
 - **`.idea/` and `docs/` are gitignored.** Don't track them.
+- **README screenshots are generated, not hand-shot**: `scripts/screenshots.mjs` boots the SSR server in DEMO_MODE
+  and shoots the `/demo/<preset>` routes into `.github/screenshots/` (JPEG — full-page PNGs are ~1.2 MB each). It
+  throws on a missing anchor, so a renamed section id fails the run instead of silently leaving a stale image.
+  Re-run `npm run screenshots` after any visual change and commit the result.
 
 ## Known issues
 

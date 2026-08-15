@@ -7,6 +7,22 @@ per verticale** — piscina, ristorazione, bar, hotel — customizzabile via fil
 (identità, orari, listino) possono arrivare **da un backend HTTP** o **da file committati**, sezione
 per sezione: un deploy senza gestionale è un sito statico puro.
 
+## I quattro preset
+
+<table>
+<tr>
+<td width="50%"><b>piscina</b> — ingressi, ombrelloni, regolamento · <a href=".github/screenshots/preset-piscina.jpg">pagina intera</a><br><img src=".github/screenshots/hero-piscina.jpg" alt="Preset piscina"></td>
+<td width="50%"><b>ristorazione</b> — carta, storia, galleria · <a href=".github/screenshots/preset-ristorazione.jpg">pagina intera</a><br><img src=".github/screenshots/hero-ristorazione.jpg" alt="Preset ristorazione"></td>
+</tr>
+<tr>
+<td><b>bar</b> — drink list, eventi, dehors · <a href=".github/screenshots/preset-bar.jpg">pagina intera</a><br><img src=".github/screenshots/hero-bar.jpg" alt="Preset bar"></td>
+<td><b>hotel</b> — camere e tariffe, servizi · <a href=".github/screenshots/preset-hotel.jpg">pagina intera</a><br><img src=".github/screenshots/hero-hotel.jpg" alt="Preset hotel"></td>
+</tr>
+</table>
+
+Stessa base di componenti, quattro palette e quattro strutture: cambiano solo i file sotto
+`presets/`. Le immagini sono generate dalle route `/demo/<preset>` con `npm run screenshots`.
+
 **Il contratto è il codice**: [`src/lib/dto.ts`](src/lib/dto.ts) (endpoint dati live) e
 [`src/lib/sections.ts`](src/lib/sections.ts) (catalogo sezioni e shape della struttura). Lo specchio
 leggibile del contratto backend è [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md).
@@ -105,6 +121,42 @@ senza richiedere altro. Il catalogo:
 | `story`        | Story          | —                                           |
 | `rooms`        | RoomsGrid      | — (CTA prenota da `links.booking`)          |
 
+### I componenti, uno per uno
+
+Screenshot dai preset demo. Ogni sezione prende solo `{ id, content }` (più i payload backend dove
+indicato sopra): l'aspetto è il tema attivo, il testo è il contenuto del preset.
+
+<table>
+<tr>
+<td width="50%"><b><code>hero</code></b> — titolo, CTA e card laterale: voci con icona = lista di vantaggi, senza icona = passi numerati<br><img src=".github/screenshots/hero-hotel.jpg" alt="Hero"></td>
+<td width="50%"><b><code>features</code></b> — griglia di icone + contatori animati<br><img src=".github/screenshots/section-features.jpg" alt="Features"></td>
+</tr>
+<tr>
+<td><b><code>hours</code></b> — settimana dal backend, badge sul giorno corrente, card stagione<br><img src=".github/screenshots/section-hours.jpg" alt="Orari"></td>
+<td><b><code>pricing</code></b> — listino ingressi e abbonamenti dal backend<br><img src=".github/screenshots/section-pricing.jpg" alt="Prezzi"></td>
+</tr>
+<tr>
+<td><b><code>menu</code></b> — categorie ad accordion, tab opzionali, link al menu esterno<br><img src=".github/screenshots/section-menu.jpg" alt="Menu"></td>
+<td><b><code>rooms</code></b> — card camera con dotazioni, prezzo "da" e CTA prenota<br><img src=".github/screenshots/section-rooms.jpg" alt="Camere"></td>
+</tr>
+<tr>
+<td><b><code>services</code></b> — due foto affiancate a un elenco di servizi<br><img src=".github/screenshots/section-services.jpg" alt="Servizi"></td>
+<td><b><code>rules</code></b> — regolamento in gruppi, con toni ammesso/vietato<br><img src=".github/screenshots/section-rules.jpg" alt="Regolamento"></td>
+</tr>
+<tr>
+<td><b><code>highlight</code></b> — pannello scuro per un'area o un'iniziativa<br><img src=".github/screenshots/section-highlight.jpg" alt="Highlight"></td>
+<td><b><code>gallery</code></b> — griglia foto con celle larghe, flusso denso (niente buchi)<br><img src=".github/screenshots/section-gallery.jpg" alt="Galleria"></td>
+</tr>
+<tr>
+<td><b><code>story</code></b> — foto affiancata a qualche paragrafo di racconto<br><img src=".github/screenshots/section-story.jpg" alt="Storia"></td>
+<td><b><code>testimonials</code></b> — citazioni con autore e valutazione<br><img src=".github/screenshots/section-testimonials.jpg" alt="Recensioni"></td>
+</tr>
+<tr>
+<td><b><code>faq</code></b> — domande in <code>&lt;details&gt;</code> nativi, senza JavaScript<br><img src=".github/screenshots/section-faq.jpg" alt="FAQ"></td>
+<td><b><code>location</code></b> — indirizzo e link Maps dal backend, più come arrivare<br><img src=".github/screenshots/section-location.jpg" alt="Dove siamo"></td>
+</tr>
+</table>
+
 ### Fonte dati: backend, statica, o mista
 
 `site.config.ts` dichiara `dataSource: 'backend' | 'static'`; le sezioni `hours`/`pricing` possono
@@ -155,6 +207,7 @@ deploy dipende davvero da un backend giù.
 | `npm test`                            | unit (Vitest) — include le guardie su temi, wiring e contratto |
 | `npm run test:e2e[:degraded\|:empty]` | Playwright su mock backend / backend giù / payload vuoti       |
 | `npm run test:lh`                     | Lighthouse (manuale, non gate CI)                              |
+| `npm run screenshots`                 | rigenera `.github/screenshots/` dalle route `/demo/<preset>`   |
 
 Le suite E2E derivano le attese dalla struttura committata: il re-theme non le rompe.
 
