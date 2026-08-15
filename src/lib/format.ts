@@ -1,3 +1,4 @@
+import type { SitePayload } from './dto';
 /**
  * Format an ISO `YYYY-MM-DD` date as an Italian long date (e.g. "1 giugno 2026").
  *
@@ -67,4 +68,17 @@ export function toAbsoluteUrl(value: string, siteUrl: string): string {
   } catch {
     return value;
   }
+}
+
+/**
+ * Where "come raggiungerci" points. The backend-curated pin is canonical;
+ * only synthesize a locality+region search when `google_maps_url` is absent
+ * (per the dto contract). `null` when neither yields a target.
+ */
+export function mapsUrl(address: SitePayload['address']): string | null {
+  const query = [address.locality, address.region].filter(Boolean).join(' ');
+  return (
+    safeHref(address.google_maps_url) ??
+    (query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : null)
+  );
 }

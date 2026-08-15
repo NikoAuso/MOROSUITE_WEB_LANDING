@@ -1,0 +1,48 @@
+---
+import Icon from '@/components/Icon.astro';
+import type { TestimonialsContent } from '@/lib/sections';
+
+interface Props {
+  id: string;
+  content: TestimonialsContent;
+}
+
+const { id, content } = Astro.props;
+const { eyebrow, title, lead, items } = content;
+---
+
+<section id={id} class="bg-brand-50">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-25">
+    <div class="text-center">
+      <div class="text-xs font-semibold tracking-widest text-brand-700">{eyebrow}</div>
+      <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">{title}</h2>
+      {lead && <p class="mx-auto mt-4 max-w-2xl text-slate-600">{lead}</p>}
+    </div>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-3">
+      {
+        items.map((item) => (
+          <figure class="flex flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            {item.rating && (
+              <div class="flex gap-1 text-accent-500" role="img" aria-label={`${item.rating} su 5`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <Icon
+                    name="fa6-solid:star"
+                    class:list={['size-4', i < item.rating! ? '' : 'text-slate-200']}
+                  />
+                ))}
+              </div>
+            )}
+            <blockquote class="mt-4 grow text-slate-700">
+              <p>“{item.quote}”</p>
+            </blockquote>
+            <figcaption class="mt-6 border-t border-slate-100 pt-4">
+              <div class="font-extrabold text-slate-900">{item.author}</div>
+              {item.meta && <div class="text-sm text-slate-500">{item.meta}</div>}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>

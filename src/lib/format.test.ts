@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatSeasonDate, whatsappUrl, safeHref, toAbsoluteUrl } from './format';
+import { formatSeasonDate, whatsappUrl, safeHref, toAbsoluteUrl, mapsUrl } from './format';
 
 describe('formatSeasonDate', () => {
   it('returns null for null input', () => {
@@ -83,5 +83,17 @@ describe('toAbsoluteUrl', () => {
 
   it('returns the input unchanged when no absolute URL can be built', () => {
     expect(toAbsoluteUrl('/brand/og.svg', 'not-a-url')).toBe('/brand/og.svg');
+  });
+});
+
+describe('mapsUrl', () => {
+  it('prefers the backend pin, falls back to a locality search, else null', () => {
+    expect(mapsUrl({ google_maps_url: 'https://maps.app.goo.gl/x', locality: 'Milano' })).toBe(
+      'https://maps.app.goo.gl/x',
+    );
+    expect(mapsUrl({ locality: 'Milano', region: 'MI' })).toBe(
+      'https://www.google.com/maps/search/?api=1&query=Milano%20MI',
+    );
+    expect(mapsUrl({ google_maps_url: 'javascript:alert(1)' })).toBeNull();
   });
 });

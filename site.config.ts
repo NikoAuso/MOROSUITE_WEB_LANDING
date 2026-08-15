@@ -33,6 +33,16 @@ export const siteConfig = {
     ogImageUrl: '/brand/og.png',
   },
 
+  // The two external-app buttons the template renders around the backend's
+  // links: customer login in the header, back-office in the footer bar. The
+  // URL always comes from SitePayload.links; these only decide whether the
+  // deploy shows the button at all and, optionally, override the label the
+  // backend supplies (empty string = keep the backend's).
+  headerLinks: {
+    login: { enabled: true, label: '' },
+    manager: { enabled: true, label: '' },
+  },
+
   // Number/date formatting for backend-driven values (prices, season dates,
   // animated counters). Per-deploy: a deploy in another market changes these
   // two, not the components.

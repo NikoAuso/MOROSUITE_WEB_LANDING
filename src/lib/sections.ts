@@ -158,8 +158,16 @@ export type MenuContent = {
   lead?: string;
   /** Fine print under the courses (allergeni, coperto, ...). */
   footnote?: string;
+  /** Link to the full menu elsewhere (PDF, external page). Omit for none. */
+  externalCta?: { href: string; label: string };
   courses: Array<{
     label: string;
+    /**
+     * Groups courses under a tab ("Cucina" / "Cantina", "Caffetteria" /
+     * "Cocktail"). Tabs appear in first-seen order and only when at least one
+     * course declares one; without JS every panel stays visible.
+     */
+    tab?: string;
     dishes: Array<{ name: string; description?: string; price?: string }>;
   }>;
 };
@@ -177,6 +185,72 @@ export type HighlightContent = {
   lead: string;
   items: Array<{ title: string; text: string }>;
   images: Array<{ src: string; alt: string; wide?: boolean }>;
+};
+
+export type FaqContent = {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** Rendered as native <details>/<summary>: no script, one open at a time is not enforced. */
+  items: Array<{ question: string; answer: string }>;
+};
+
+export type TestimonialsContent = {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  items: Array<{
+    quote: string;
+    author: string;
+    /** Context under the name: date, room type, "cliente dal 2019"... */
+    meta?: string;
+    /** 1–5 stars; omit to show no rating. Copy-only: never emitted as schema.org Review. */
+    rating?: 1 | 2 | 3 | 4 | 5;
+  }>;
+};
+
+/**
+ * "Come raggiungerci": the address and the Maps link come from the backend
+ * (`site.address`); the content adds the practical items (transport, parking,
+ * distances) and an optional photo or static map (a file under public/ — no
+ * third-party iframe, the CSP stays tight).
+ */
+export type LocationContent = {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  items: IconItem[];
+  /** Label of the button linking to Maps. */
+  mapsLabel: string;
+  image?: { src: string; alt: string };
+};
+
+/** A narrative split: photo beside a few paragraphs of prose. */
+export type StoryContent = {
+  eyebrow: string;
+  title: string;
+  paragraphs: string[];
+  image: { src: string; alt: string };
+  /** Which side the photo sits on desktop. Default 'left'. */
+  imageSide?: 'left' | 'right';
+};
+
+/** Room-type cards (hotel): photo, size, amenities, "da €" and the booking CTA. */
+export type RoomsContent = {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** Fine print under the cards (tasse, tassa di soggiorno, ...). */
+  footnote?: string;
+  items: Array<{
+    name: string;
+    description: string;
+    /** Free-form, author-owned: "da € 95", "€ 120 / notte". */
+    price?: string;
+    /** Short facts shown as chips: "22 m²", "2 ospiti", "Balcone". */
+    facts: string[];
+    image: { src: string; alt: string };
+  }>;
 };
 
 /** Fields every anchored section shares. `id` doubles as the anchor target. */
@@ -200,6 +274,11 @@ export type EnabledSection = { enabled: true } & (
   | ({ type: 'highlight' } & Anchored & { data: HighlightContent })
   | ({ type: 'menu' } & Anchored & { data: MenuContent })
   | ({ type: 'gallery' } & Anchored & { data: GalleryContent })
+  | ({ type: 'faq' } & Anchored & { data: FaqContent })
+  | ({ type: 'testimonials' } & Anchored & { data: TestimonialsContent })
+  | ({ type: 'location' } & Anchored & { data: LocationContent })
+  | ({ type: 'story' } & Anchored & { data: StoryContent })
+  | ({ type: 'rooms' } & Anchored & { data: RoomsContent })
 );
 
 /**
@@ -250,6 +329,22 @@ export function primaryNav(sections: readonly Section[], basePath = '/'): NavEnt
     .filter((section): section is Extract<EnabledSection, { id: string }> => 'id' in section)
     .filter((section) => Boolean(section.navLabel))
     .map((section) => ({ href: `${basePath}#${section.id}`, label: section.navLabel! }));
+}
+
+/**
+ * Group a menu's courses under their tabs, in first-seen order. Courses that
+ * declare no tab fall into the first group, so a partially tagged menu still
+ * renders whole; with no tabs at all the result is one untabbed group.
+ */
+export function menuGroups(
+  courses: MenuContent['courses'],
+): Array<{ tab: string | null; courses: MenuContent['courses'] }> {
+  const tabs = [...new Set(courses.map((course) => course.tab).filter(Boolean))] as string[];
+  if (tabs.length === 0) return [{ tab: null, courses }];
+  return tabs.map((tab) => ({
+    tab,
+    courses: courses.filter((course) => (course.tab ?? tabs[0]) === tab),
+  }));
 }
 
 /**

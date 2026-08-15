@@ -1,5 +1,7 @@
 ---
+import Icon from '@/components/Icon.astro';
 import type { MenuContent } from '@/lib/sections';
+import { menuGroups } from '@/lib/sections';
 
 interface Props {
   id: string;
@@ -7,7 +9,11 @@ interface Props {
 }
 
 const { id, content } = Astro.props;
-const { eyebrow, title, lead, footnote, courses } = content;
+const { eyebrow, title, lead, footnote, externalCta, courses } = content;
+
+// Tabs appear only when the author asked for them.
+const groups = menuGroups(courses);
+const tabs = groups.map((group) => group.tab).filter(Boolean) as string[];
 ---
 
 <section id={id} class="bg-white">
@@ -20,38 +26,90 @@ const { eyebrow, title, lead, footnote, courses } = content;
       {lead && <p class="mx-auto mt-4 max-w-2xl text-slate-600">{lead}</p>}
     </div>
 
-    <div class="mx-auto mt-14 grid max-w-4xl gap-8">
+    <div class="mx-auto mt-12 max-w-4xl" data-menu>
       {
-        courses.map((course) => (
-          <div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
-            <div class="text-xs font-semibold uppercase tracking-widest text-brand-700">
-              {course.label}
-            </div>
-            <ul class="mt-5 space-y-5">
-              {course.dishes.map((dish) => (
-                <li class="flex items-baseline gap-3">
-                  <div class="min-w-0">
-                    <div class="font-extrabold text-slate-900">{dish.name}</div>
-                    {dish.description && (
-                      <p class="mt-1 text-sm text-slate-600">{dish.description}</p>
-                    )}
-                  </div>
-                  {dish.price && (
-                    <>
-                      <span
-                        class="mx-1 grow border-b border-dotted border-slate-300"
-                        aria-hidden="true"
-                      />
-                      <span class="shrink-0 font-extrabold text-slate-900">{dish.price}</span>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
+        tabs.length > 1 && (
+          <div
+            class="flex flex-wrap justify-center gap-2 rounded-full bg-brand-50 p-2"
+            role="tablist"
+            data-menu-tablist
+            hidden
+          >
+            {tabs.map((tab, index) => (
+              <button
+                type="button"
+                role="tab"
+                data-menu-tab={tab}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                class="rounded-full px-5 py-2 text-sm font-semibold text-brand-800 transition aria-selected:bg-brand-700 aria-selected:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        groups.map((group, groupIndex) => (
+          <div
+            class="mt-8 grid gap-4"
+            data-menu-panel={group.tab}
+            role={group.tab ? 'tabpanel' : undefined}
+          >
+            {group.courses.map((course, index) => (
+              <details
+                class="group rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 open:ring-brand-200"
+                open={groupIndex === 0 && index === 0}
+              >
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-3xl p-6 text-xs font-semibold uppercase tracking-widest text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 [&::-webkit-details-marker]:hidden">
+                  {course.label}
+                  <Icon
+                    name="fa6-solid:chevron-down"
+                    class="shrink-0 text-brand-700 transition group-open:rotate-180"
+                  />
+                </summary>
+                <ul class="space-y-5 px-6 pb-6">
+                  {course.dishes.map((dish) => (
+                    <li class="flex items-baseline gap-3">
+                      <div class="min-w-0">
+                        <div class="font-extrabold text-slate-900">{dish.name}</div>
+                        {dish.description && (
+                          <p class="mt-1 text-sm text-slate-600">{dish.description}</p>
+                        )}
+                      </div>
+                      {dish.price && (
+                        <>
+                          <span
+                            class="mx-1 grow border-b border-dotted border-slate-300"
+                            aria-hidden="true"
+                          />
+                          <span class="shrink-0 font-extrabold text-slate-900">{dish.price}</span>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
           </div>
         ))
       }
     </div>
+
+    {
+      externalCta && (
+        <div class="mt-10 text-center">
+          <a
+            href={externalCta.href}
+            class="inline-flex items-center gap-2 rounded-2xl bg-cta-700 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-cta-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500"
+          >
+            {externalCta.label}
+            <Icon name="fa6-solid:arrow-up-right-from-square" class="size-4" />
+          </a>
+        </div>
+      )
+    }
 
     {
       footnote && (
@@ -60,3 +118,31 @@ const { eyebrow, title, lead, footnote, courses } = content;
     }
   </div>
 </section>
+
+{
+  /* Tabs are progressive enhancement: the tablist ships hidden and every panel
+    visible, so with JS off the whole menu is still readable. */
+}
+<script>
+  for (const menu of document.querySelectorAll<HTMLElement>('[data-menu]')) {
+    const tablist = menu.querySelector<HTMLElement>('[data-menu-tablist]');
+    if (!tablist) continue;
+    const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[data-menu-tab]')];
+    const panels = [...menu.querySelectorAll<HTMLElement>('[data-menu-panel]')];
+
+    const select = (name: string) => {
+      for (const tab of tabs) {
+        tab.setAttribute('aria-selected', String(tab.dataset.menuTab === name));
+      }
+      for (const panel of panels) {
+        panel.hidden = panel.dataset.menuPanel !== name;
+      }
+    };
+
+    tablist.hidden = false;
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => select(tab.dataset.menuTab!));
+    }
+    if (tabs[0]?.dataset.menuTab) select(tabs[0].dataset.menuTab);
+  }
+</script>

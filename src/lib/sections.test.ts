@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { enabledSections, primaryNav, resolveFallbackCta } from './sections';
+import { enabledSections, menuGroups, primaryNav, resolveFallbackCta } from './sections';
 import type { Section } from './sections';
 
 const hero = { type: 'hero', enabled: true, data: {} } as unknown as Section;
@@ -88,5 +88,30 @@ describe('index.astro source wiring (file guard)', () => {
     const src = readFileSync('src/pages/index.astro', 'utf8');
     expect(src).toContain('api.openingHours(hoursSection.data.source)');
     expect(src).toContain('api.pricing(pricingSection.data.source)');
+  });
+});
+
+describe('menuGroups', () => {
+  const course = (label: string, tab?: string) => ({ label, tab, dishes: [] });
+
+  it('returns one untabbed group when no course declares a tab', () => {
+    const courses = [course('Antipasti'), course('Primi')];
+    expect(menuGroups(courses)).toEqual([{ tab: null, courses }]);
+  });
+
+  it('groups by tab in first-seen order', () => {
+    const groups = menuGroups([
+      course('Signature', 'Cocktail'),
+      course('Analcolici', 'Soft'),
+      course('Classici', 'Cocktail'),
+    ]);
+    expect(groups.map((g) => g.tab)).toEqual(['Cocktail', 'Soft']);
+    expect(groups[0]!.courses.map((c) => c.label)).toEqual(['Signature', 'Classici']);
+  });
+
+  it('drops an untabbed course into the first group instead of losing it', () => {
+    const groups = menuGroups([course('Cocktail', 'Bar'), course('Sfusi')]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]!.courses.map((c) => c.label)).toEqual(['Cocktail', 'Sfusi']);
   });
 });

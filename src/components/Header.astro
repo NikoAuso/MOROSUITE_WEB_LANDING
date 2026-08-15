@@ -18,7 +18,13 @@ interface Props {
 
 const { site, showNav = true, nav = PRIMARY_NAV } = Astro.props;
 const hotel = site.links?.hotel ?? null;
-const login = site.links?.login ?? null;
+// Per-deploy switch + label override for the login button (site.config.ts);
+// the URL still comes from the backend.
+const loginConfig = config.headerLinks.login;
+const login =
+  loginConfig.enabled && site.links?.login
+    ? { ...site.links.login, label: loginConfig.label || site.links.login.label }
+    : null;
 const hotelHref = hotel ? safeHref(hotel.url) : null;
 ---
 
@@ -82,6 +88,7 @@ const hotelHref = hotel ? safeHref(hotel.url) : null;
         <CtaButton
           link={login}
           fallbackLabel={FALLBACK_COPY.cta.login}
+          hideWhenMissing={!loginConfig.enabled}
           class="inline-flex items-center justify-center rounded-xl bg-cta-700 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-cta-800 transition"
         />
       </div>

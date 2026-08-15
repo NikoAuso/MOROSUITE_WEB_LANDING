@@ -88,17 +88,22 @@ il colore al build, quindi la palette non è sostituibile a runtime.
 l'array riordina la pagina; `{ type, enabled: false }` spegne una sezione (menu e ancore compresi)
 senza richiedere altro. Il catalogo:
 
-| `type`      | Componente     | Dati backend                                |
-| ----------- | -------------- | ------------------------------------------- |
-| `hero`      | Hero           | —                                           |
-| `features`  | FeatureGrid    | —                                           |
-| `hours`     | OpeningHours   | `/site/opening-hours` (o statici)           |
-| `pricing`   | PricingTables  | `/site/pricing` (o statici)                 |
-| `services`  | ServiceList    | —                                           |
-| `rules`     | RuleGroups     | —                                           |
-| `highlight` | HighlightPanel | —                                           |
-| `menu`      | MenuCourses    | — (prezzi come stringhe libere dell'autore) |
-| `gallery`   | GalleryGrid    | — (testo tutto opzionale)                   |
+| `type`         | Componente     | Dati backend                                |
+| -------------- | -------------- | ------------------------------------------- |
+| `hero`         | Hero           | —                                           |
+| `features`     | FeatureGrid    | —                                           |
+| `hours`        | OpeningHours   | `/site/opening-hours` (o statici)           |
+| `pricing`      | PricingTables  | `/site/pricing` (o statici)                 |
+| `services`     | ServiceList    | —                                           |
+| `rules`        | RuleGroups     | —                                           |
+| `highlight`    | HighlightPanel | —                                           |
+| `menu`         | MenuCourses    | — (prezzi come stringhe libere dell'autore) |
+| `gallery`      | GalleryGrid    | — (testo tutto opzionale)                   |
+| `faq`          | Faq            | — (`<details>` nativi, niente script)       |
+| `testimonials` | Testimonials   | — (citazioni redazionali)                   |
+| `location`     | Location       | `site.address` (indirizzo + link Maps)      |
+| `story`        | Story          | —                                           |
+| `rooms`        | RoomsGrid      | — (CTA prenota da `links.booking`)          |
 
 ### Fonte dati: backend, statica, o mista
 

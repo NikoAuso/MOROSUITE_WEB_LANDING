@@ -86,6 +86,22 @@ export const content: SiteContent = {
       },
     },
     {
+      type: 'story',
+      id: 'storia',
+      navLabel: 'Chi siamo',
+      enabled: true,
+      data: {
+        eyebrow: 'IL PROGETTO',
+        title: 'Un banco, dal 1998',
+        image: { src: '/presets/bar/image.svg', alt: 'Il banco del bar negli anni Novanta' },
+        imageSide: 'right',
+        paragraphs: [
+          'Siamo nati come torrefazione di quartiere: due miscele, un banco di legno e la radio accesa. Il caffè lo tostiamo ancora noi, ogni settimana.',
+          'Con gli anni il banco si è allungato fino a sera: prima l’aperitivo con la cucina, poi la drink list e le serate in dehors. Il quartiere è cambiato, il banco è rimasto lo stesso.',
+        ],
+      },
+    },
+    {
       type: 'hours',
       id: 'orari',
       navLabel: 'Orari',
@@ -108,9 +124,11 @@ export const content: SiteContent = {
         title: 'Drink & aperitivi',
         lead: 'I signature cambiano ogni stagione; i classici non si toccano.',
         footnote: "All'aperitivo, ogni drink arriva con un assaggio della cucina.",
+        externalCta: { href: '/presets/bar/image.svg', label: 'La lista completa (PDF)' },
         courses: [
           {
             label: 'Signature',
+            tab: 'Cocktail',
             dishes: [
               {
                 name: 'Vermutino della casa',
@@ -126,6 +144,7 @@ export const content: SiteContent = {
           },
           {
             label: 'Classici',
+            tab: 'Cocktail',
             dishes: [
               { name: 'Spritz', price: '€ 5' },
               { name: 'Negroni', price: '€ 8' },
@@ -134,6 +153,7 @@ export const content: SiteContent = {
           },
           {
             label: 'Analcolici',
+            tab: 'Analcolici',
             dishes: [
               { name: 'Spremuta del giorno', price: '€ 4' },
               { name: 'Cold brew tonic', price: '€ 5' },
@@ -179,6 +199,98 @@ export const content: SiteContent = {
             caption: 'I signature di stagione',
           },
           { src: '/presets/bar/image.svg', alt: 'Il dehors', wide: true },
+          { src: '/presets/bar/image.svg', alt: 'Il dehors al tramonto' },
+          { src: '/presets/bar/image.svg', alt: 'La torrefazione, ogni settimana' },
+        ],
+      },
+    },
+    {
+      type: 'testimonials',
+      id: 'recensioni',
+      enabled: true,
+      data: {
+        eyebrow: 'DICONO DI NOI',
+        title: 'Dal banco',
+        lead: 'Tre voci fra i clienti abituali.',
+        items: [
+          {
+            quote:
+              'Il miglior espresso della zona, e lo dico da romano trapiantato. Il cornetto alle 7 è un rito.',
+            author: 'Giulia S.',
+            meta: 'Cliente del mattino',
+            rating: 5,
+          },
+          {
+            quote: 'Aperitivo con cucina vera, non le patatine. Vermut della casa da provare.',
+            author: 'Davide L.',
+            meta: 'Aperitivo del giovedì',
+            rating: 5,
+          },
+          {
+            quote:
+              'Il dj set del giovedì vinile è la cosa più bella che sia capitata al quartiere.',
+            author: 'Nadia F.',
+            meta: 'Serata vinile',
+            rating: 4,
+          },
+        ],
+      },
+    },
+    {
+      type: 'faq',
+      id: 'faq',
+      navLabel: 'FAQ',
+      enabled: true,
+      data: {
+        eyebrow: 'DOMANDE FREQUENTI',
+        title: 'Domande frequenti',
+        lead: 'Le risposte veloci, come al banco.',
+        items: [
+          {
+            question: 'Si può prenotare un tavolo per l’aperitivo?',
+            answer:
+              'Per gruppi da 6 in su sì, dal pulsante «Ordina al tavolo» o al telefono; sotto i 6 si viene e ci si siede.',
+          },
+          {
+            question: 'Organizzate feste private?',
+            answer:
+              'Sì: la sala interna ospita fino a 40 persone, con drink list dedicata e dj a richiesta.',
+          },
+          {
+            question: 'Avete latte vegetale e opzioni senza glutine?',
+            answer:
+              'Avena e soia sempre; per il senza glutine chiedete al banco, i lievitati cambiano ogni giorno.',
+          },
+        ],
+      },
+    },
+    {
+      type: 'location',
+      id: 'dove-siamo',
+      navLabel: 'Dove siamo',
+      enabled: true,
+      data: {
+        eyebrow: 'DOVE SIAMO',
+        title: 'Come raggiungerci',
+        lead: 'Nel cuore del quartiere, dove passano tutti almeno una volta al giorno.',
+        mapsLabel: 'Apri in Google Maps',
+        image: { src: '/presets/bar/image.svg', alt: 'Mappa della zona' },
+        items: [
+          {
+            icon: 'fa6-solid:train-subway',
+            title: 'Metro',
+            text: 'Fermata «Porta Nuova» a 3 minuti a piedi, uscita lato giardini.',
+          },
+          {
+            icon: 'fa6-solid:person-biking',
+            title: 'In bici',
+            text: 'Rastrelliere davanti al dehors; stazione bike sharing all’angolo.',
+          },
+          {
+            icon: 'fa6-solid:moon',
+            title: 'Di sera',
+            text: 'Zona a traffico limitato dalle 20: parcheggio nel garage di via Roma, 200 metri.',
+          },
         ],
       },
     },

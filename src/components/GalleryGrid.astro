@@ -27,7 +27,17 @@ const hasHeading = Boolean(eyebrow || title || lead);
       )
     }
 
-    <div class:list={['grid gap-6 sm:grid-cols-2 lg:grid-cols-3', hasHeading && 'mt-14']}>
+    {
+      /* grid-flow-dense: a `wide` cell would otherwise leave a hole on the right
+        of the row it did not fit into. Photos have no reading order, so letting
+        later images backfill the gap costs nothing and fills the grid. */
+    }
+    <div
+      class:list={[
+        'grid grid-flow-dense gap-6 sm:grid-cols-2 lg:grid-cols-3',
+        hasHeading && 'mt-14',
+      ]}
+    >
       {
         images.map((image) => (
           <figure

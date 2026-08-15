@@ -86,6 +86,23 @@ export const content: SiteContent = {
       },
     },
     {
+      type: 'story',
+      id: 'storia',
+      navLabel: 'La storia',
+      enabled: true,
+      data: {
+        eyebrow: 'LA NOSTRA STORIA',
+        title: 'Tre generazioni ai fornelli',
+        image: { src: '/presets/ristorazione/image.svg', alt: 'La sala negli anni Sessanta' },
+        imageSide: 'left',
+        paragraphs: [
+          'Nel 1962 nonna Ida apriva la trattoria con quattro tavoli e un forno a legna. La pasta la tirava a mano ogni mattina: lo facciamo ancora, allo stesso banco di marmo.',
+          'Oggi in cucina c’è la terza generazione, con lo stesso patto di allora: fornitori a chilometro zero, menu che segue le stagioni e nessun piatto che non sapremmo raccontare per ingredienti.',
+          'La sala è cresciuta, la veranda anche; il rito è rimasto quello: si mangia bene, si sta a lungo, si torna.',
+        ],
+      },
+    },
+    {
       type: 'hours',
       id: 'orari',
       navLabel: 'Orari',
@@ -109,9 +126,14 @@ export const content: SiteContent = {
         lead: 'Una selezione della carta: cambia con le stagioni e con il mercato del giorno.',
         footnote:
           'Coperto € 2,50. Per allergeni e intolleranze chiedete in sala: ogni piatto può essere raccontato per ingredienti.',
+        externalCta: {
+          href: '/presets/ristorazione/image.svg',
+          label: 'Scarica la carta completa (PDF)',
+        },
         courses: [
           {
             label: 'Antipasti',
+            tab: 'Cucina',
             dishes: [
               {
                 name: 'Tagliere del contadino',
@@ -127,6 +149,7 @@ export const content: SiteContent = {
           },
           {
             label: 'Primi',
+            tab: 'Cucina',
             dishes: [
               {
                 name: 'Tagliatelle al ragù',
@@ -143,6 +166,7 @@ export const content: SiteContent = {
           },
           {
             label: 'Secondi',
+            tab: 'Cucina',
             dishes: [
               {
                 name: 'Tagliata alla griglia',
@@ -158,6 +182,7 @@ export const content: SiteContent = {
           },
           {
             label: 'Dolci',
+            tab: 'Dolci e vini',
             dishes: [
               { name: 'Tiramisù della casa', price: '€ 6' },
               { name: 'Crostata di stagione', price: '€ 6' },
@@ -182,6 +207,41 @@ export const content: SiteContent = {
             alt: 'La veranda estiva',
             caption: 'La veranda, aperta da maggio a settembre',
             wide: true,
+          },
+          { src: '/presets/ristorazione/image.svg', alt: 'La cantina, oltre 120 etichette' },
+          { src: '/presets/ristorazione/image.svg', alt: 'Il forno a legna, acceso dal 1962' },
+        ],
+      },
+    },
+    {
+      type: 'testimonials',
+      id: 'recensioni',
+      enabled: true,
+      data: {
+        eyebrow: 'DICONO DI NOI',
+        title: 'Dicono di noi',
+        lead: 'Qualche voce dal libro degli ospiti e dalle recensioni online.',
+        items: [
+          {
+            quote:
+              'Le tagliatelle al ragù sono quelle di casa mia, ma migliori. Ci portiamo gli amici da fuori città apposta.',
+            author: 'Chiara T.',
+            meta: 'Cena del sabato',
+            rating: 5,
+          },
+          {
+            quote:
+              'Prenotato online alle 11, tavolo in veranda alle 13. Servizio veloce e carta dei vini che vale il viaggio.',
+            author: 'Marco R.',
+            meta: 'Pranzo di lavoro',
+            rating: 5,
+          },
+          {
+            quote:
+              'Hanno gestito una cena da 30 persone con menu senza glutine per due ospiti senza un intoppo.',
+            author: 'Elena B.',
+            meta: 'Compleanno in sala privata',
+            rating: 4,
           },
         ],
       },
@@ -229,6 +289,68 @@ export const content: SiteContent = {
             subtitle: 'Visite e degustazioni su prenotazione',
             image: '/presets/ristorazione/image.svg',
             alt: 'La cantina',
+          },
+        ],
+      },
+    },
+    {
+      type: 'faq',
+      id: 'faq',
+      navLabel: 'FAQ',
+      enabled: true,
+      data: {
+        eyebrow: 'DOMANDE FREQUENTI',
+        title: 'Domande frequenti',
+        lead: 'Quello che ci chiedono più spesso al telefono.',
+        items: [
+          {
+            question: 'Serve prenotare?',
+            answer:
+              'Nei giorni feriali di solito no; venerdì sera e nel weekend è consigliato, la veranda si riempie presto.',
+          },
+          {
+            question: 'Avete opzioni vegetariane o senza glutine?',
+            answer:
+              'Sempre almeno un primo e un secondo vegetariani; pasta senza glutine su richiesta al momento della prenotazione.',
+          },
+          {
+            question: 'I cani sono ammessi?',
+            answer: 'Sì, in veranda e nel dehors, con la ciotola che portiamo noi.',
+          },
+          {
+            question: 'Fate menu per gruppi e cerimonie?',
+            answer:
+              'Sì, da 12 a 45 coperti in sala privata: chiamaci e costruiamo il menu insieme.',
+          },
+        ],
+      },
+    },
+    {
+      type: 'location',
+      id: 'dove-siamo',
+      navLabel: 'Dove siamo',
+      enabled: true,
+      data: {
+        eyebrow: 'DOVE SIAMO',
+        title: 'Come raggiungerci',
+        lead: 'In centro storico, a due passi dalla piazza: arrivare è facile anche senza auto.',
+        mapsLabel: 'Apri in Google Maps',
+        image: { src: '/presets/ristorazione/image.svg', alt: 'Mappa della zona' },
+        items: [
+          {
+            icon: 'fa6-solid:train',
+            title: 'Dalla stazione',
+            text: 'Dieci minuti a piedi lungo il corso, o due fermate di tram (linea 3).',
+          },
+          {
+            icon: 'fa6-solid:square-parking',
+            title: 'Parcheggio convenzionato',
+            text: 'Garage Centro a 50 metri: tariffa ridotta mostrando lo scontrino.',
+          },
+          {
+            icon: 'fa6-solid:wheelchair',
+            title: 'Accessibilità',
+            text: 'Ingresso a raso dalla veranda, bagno attrezzato al piano terra.',
           },
         ],
       },

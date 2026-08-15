@@ -139,25 +139,32 @@ The structure is a `SiteContent`: `meta` plus an ordered array of sections (`Ena
 build. `index.astro` walks the enabled sections and switches on `type`.
 The component catalog:
 
-| `type`      | Component              | Backend data                                   |
-| ----------- | ---------------------- | ---------------------------------------------- |
-| `hero`      | `Hero.astro`           | — (no anchor, no nav entry)                    |
-| `features`  | `FeatureGrid.astro`    | —                                              |
-| `hours`     | `OpeningHours.astro`   | `/site/opening-hours`                          |
-| `pricing`   | `PricingTables.astro`  | `/site/pricing`                                |
-| `services`  | `ServiceList.astro`    | —                                              |
-| `rules`     | `RuleGroups.astro`     | —                                              |
-| `highlight` | `HighlightPanel.astro` | —                                              |
-| `menu`      | `MenuCourses.astro`    | — (prices are free-form strings, author-owned) |
-| `gallery`   | `GalleryGrid.astro`    | — (text optional: photo-driven by design)      |
+| `type`         | Component              | Backend data                                   |
+| -------------- | ---------------------- | ---------------------------------------------- |
+| `hero`         | `Hero.astro`           | — (no anchor, no nav entry)                    |
+| `features`     | `FeatureGrid.astro`    | —                                              |
+| `hours`        | `OpeningHours.astro`   | `/site/opening-hours`                          |
+| `pricing`      | `PricingTables.astro`  | `/site/pricing`                                |
+| `services`     | `ServiceList.astro`    | —                                              |
+| `rules`        | `RuleGroups.astro`     | —                                              |
+| `highlight`    | `HighlightPanel.astro` | —                                              |
+| `menu`         | `MenuCourses.astro`    | — (prices are free-form strings, author-owned) |
+| `gallery`      | `GalleryGrid.astro`    | — (text optional: photo-driven by design)      |
+| `faq`          | `Faq.astro`            | — (native `<details>`, no script)              |
+| `testimonials` | `Testimonials.astro`   | — (copy-only quotes, never schema.org Review)  |
+| `location`     | `Location.astro`       | `site.address` (Maps link + postal address)    |
+| `story`        | `Story.astro`          | —                                              |
+| `rooms`        | `RoomsGrid.astro`      | — (`links.booking` for the per-room CTA)       |
 
-Three helpers in `src/lib/sections.ts`, all unit-tested:
+Four helpers in `src/lib/sections.ts`, all unit-tested:
 
 - `enabledSections()` — filters, preserving declaration order.
 - `primaryNav()` — **derives** the header/mobile menu; `src/lib/navigation.ts` exports the module-scope
   `PRIMARY_NAV` built from it, so a disabled section cannot leave a menu entry pointing at a missing anchor.
 - `resolveFallbackCta()` — drops a cross-section link (the "vai ai prezzi" on the hours error state, and vice versa)
   when its target section is disabled. Always route such links through it; do not trust the config.
+- `menuGroups()` — groups a menu's courses under their `tab` (first-seen order); an untabbed course falls into the
+  first group rather than disappearing, and a menu with no tabs yields one untabbed group.
 
 **Adding a section type** means: a `*Content` type + an `EnabledSection` union member in `sections.ts`, a component
 taking `{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. The switch's `default`
@@ -171,6 +178,15 @@ content.
 - **CTAs to external apps** come from `SitePayload.links` (`booking` / `login` / `manager` / `hotel`). Customer `login`
   renders in the header, back-office `manager` in the footer. Always `<CtaButton />` — never a raw `<a>` or a
   hardcoded URL. `tests/e2e/cta.spec.ts` fails if a login/prenota href resolves to `http://localhost:4321/...`.
+  Those two buttons are per-deploy switchable via `site.config.ts headerLinks.{login,manager}`: `enabled: false`
+  hides the button outright (not the disabled state), and a non-empty `label` overrides the backend's. The URL is
+  always the backend's.
+- **`menu` sections carry optional tabs and an external link**: courses declaring a `tab` group into a tablist
+  (`menuGroups()`), each course renders as a `<details>` accordion, and `externalCta` adds a link to the full
+  menu/PDF. The tablist ships `hidden` and a small inline script unhides it, so with JS off every panel stays
+  visible — never gate content behind the tabs alone.
+- **`gallery` uses `grid-flow-dense`** so a `wide` cell cannot leave a hole on the right of its row; photos have no
+  reading order, so backfilling is free.
 - **Theming goes through semantic tokens, never raw hues.** The scales (`brand-*`, `cta-*`, `accent-*`, plus
   `--hero-glow-a/b`) are VALUED by the active preset's `theme.css`, `@import`ed by `src/styles/tokens.css` inside
   the Tailwind graph — that placement is load-bearing: opacity-modified utilities inline the resolved colour at

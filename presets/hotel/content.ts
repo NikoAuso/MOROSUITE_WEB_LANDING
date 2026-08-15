@@ -48,7 +48,7 @@ export const content: SiteContent = {
       },
     },
     {
-      type: 'menu',
+      type: 'rooms',
       id: 'camere',
       navLabel: 'Camere',
       enabled: true,
@@ -58,47 +58,36 @@ export const content: SiteContent = {
         lead: 'Quattro tagli, tutti con colazione inclusa. Il prezzo definitivo dipende da stagione e disponibilità: lo vedi nel motore di prenotazione.',
         footnote:
           'Tariffe indicative per camera a notte, tasse incluse; tassa di soggiorno esclusa. Culla gratuita su richiesta.',
-        courses: [
+        items: [
           {
-            label: 'Camere',
-            dishes: [
-              {
-                name: 'Singola',
-                description: '16 m², letto alla francese, vista cortile.',
-                price: 'da € 70',
-              },
-              {
-                name: 'Doppia Comfort',
-                description: '22 m², matrimoniale o twin, scrivania.',
-                price: 'da € 95',
-              },
-              {
-                name: 'Doppia Superior',
-                description: '28 m², balcone, macchina espresso.',
-                price: 'da € 125',
-              },
-              {
-                name: 'Junior Suite',
-                description: '40 m², zona living, vasca, vista terrazza.',
-                price: 'da € 180',
-              },
-            ],
+            name: 'Singola',
+            description: 'Letto alla francese e scrivania: la base giusta per una notte di lavoro.',
+            price: 'da € 70',
+            facts: ['16 m²', '1 ospite', 'Vista cortile'],
+            image: { src: '/presets/hotel/image.svg', alt: 'Camera singola' },
           },
           {
-            label: 'Extra',
-            dishes: [
-              { name: 'Letto aggiunto', price: '€ 25 / notte' },
-              {
-                name: 'Garage convenzionato',
-                description: 'A 200 metri, con riconsegna auto.',
-                price: '€ 15 / notte',
-              },
-              {
-                name: 'Late check-out',
-                description: 'Fino alle 14, su disponibilità.',
-                price: '€ 25',
-              },
-            ],
+            name: 'Doppia Comfort',
+            description:
+              'Matrimoniale o twin, con poltrona e angolo lettura. La camera che scelgono quasi tutti.',
+            price: 'da € 95',
+            facts: ['22 m²', '2 ospiti', 'Insonorizzata'],
+            image: { src: '/presets/hotel/image.svg', alt: 'Camera doppia comfort' },
+          },
+          {
+            name: 'Doppia Superior',
+            description: 'Balcone privato, macchina espresso e doccia walk-in. Ai piani alti.',
+            price: 'da € 125',
+            facts: ['28 m²', '2 ospiti', 'Balcone'],
+            image: { src: '/presets/hotel/image.svg', alt: 'Camera doppia superior con balcone' },
+          },
+          {
+            name: 'Junior Suite',
+            description:
+              'Zona living separata, vasca e vista sulla terrazza. Per chi resta più di una notte.',
+            price: 'da € 180',
+            facts: ['40 m²', '3 ospiti', 'Vasca', 'Vista terrazza'],
+            image: { src: '/presets/hotel/image.svg', alt: 'Junior suite' },
           },
         ],
       },
@@ -139,6 +128,22 @@ export const content: SiteContent = {
           { target: '9.2', decimals: 1, suffix: '/10', label: 'PUNTEGGIO RECENSIONI' },
           { target: '24', decimals: 0, suffix: 'h', label: 'RECEPTION' },
           { target: '10', decimals: 0, suffix: ':30', label: 'COLAZIONE FINO ALLE' },
+        ],
+      },
+    },
+    {
+      type: 'story',
+      id: 'storia',
+      navLabel: 'La casa',
+      enabled: true,
+      data: {
+        eyebrow: 'LA CASA',
+        title: 'Una casa di famiglia, aperta a tutti',
+        image: { src: '/presets/hotel/image.svg', alt: 'La facciata del palazzo' },
+        imageSide: 'right',
+        paragraphs: [
+          'Il palazzo è del 1911 e per settant’anni è stato la casa dei nonni. Nel 2004 lo abbiamo aperto agli ospiti, una stanza alla volta, tenendo i pavimenti in graniglia e le porte originali.',
+          'Sedici camere, una terrazza e una sala colazioni che era il salotto buono. Il resto è quello che ci piace trovare quando viaggiamo noi: silenzio, luce, un buon caffè, nessuna sorpresa in fattura.',
         ],
       },
     },
@@ -212,6 +217,106 @@ export const content: SiteContent = {
             subtitle: 'Aperitivo per gli ospiti al tramonto',
             image: '/presets/hotel/image.svg',
             alt: 'La terrazza al tramonto',
+          },
+        ],
+      },
+    },
+    {
+      type: 'testimonials',
+      id: 'recensioni',
+      enabled: true,
+      data: {
+        eyebrow: 'RECENSIONI',
+        title: 'Gli ospiti raccontano',
+        lead: 'Recensioni verificate degli ultimi mesi.',
+        items: [
+          {
+            quote:
+              'Camera silenziosa in pieno centro, colazione fino a tardi e la terrazza al tramonto: torneremo.',
+            author: 'Anna e Paolo',
+            meta: 'Doppia Superior, 3 notti',
+            rating: 5,
+          },
+          {
+            quote:
+              'Check-in online, chiave sul telefono e reception sempre disponibile: viaggio per lavoro e ho apprezzato ogni dettaglio.',
+            author: 'Roberto G.',
+            meta: 'Singola, 1 notte',
+            rating: 5,
+          },
+          {
+            quote:
+              'Prenotato diretto e ho avuto la tariffa migliore: rispetto ai portali colazione inclusa e cancellazione gratuita.',
+            author: 'Sophie L.',
+            meta: 'Junior Suite, 4 notti',
+            rating: 5,
+          },
+        ],
+      },
+    },
+    {
+      type: 'faq',
+      id: 'faq',
+      navLabel: 'FAQ',
+      enabled: true,
+      data: {
+        eyebrow: 'DOMANDE FREQUENTI',
+        title: 'Domande frequenti',
+        lead: 'Tutto quello che serve sapere prima di arrivare.',
+        items: [
+          {
+            question: 'A che ora sono check-in e check-out?',
+            answer:
+              'Check-in dalle 14:00, check-out entro le 11:00. Deposito bagagli gratuito prima e dopo.',
+          },
+          {
+            question: 'La colazione è inclusa?',
+            answer:
+              'Sì, in tutte le tariffe: buffet dolce e salato dalle 7:00 alle 10:30, in sala o in terrazza.',
+          },
+          {
+            question: 'Posso cancellare la prenotazione?',
+            answer:
+              'Gratuitamente fino a 48 ore prima dell’arrivo con la tariffa flessibile; le tariffe non rimborsabili sono indicate come tali.',
+          },
+          {
+            question: 'Avete parcheggio?',
+            answer:
+              'Garage convenzionato a 200 metri, con riconsegna auto: prenotalo insieme alla camera.',
+          },
+          {
+            question: 'Gli animali sono ammessi?',
+            answer: 'Sì, nelle camere dedicate al piano terra, senza supplemento fino a 10 kg.',
+          },
+        ],
+      },
+    },
+    {
+      type: 'location',
+      id: 'dove-siamo',
+      navLabel: 'Dove siamo',
+      enabled: true,
+      data: {
+        eyebrow: 'DOVE SIAMO',
+        title: 'Come raggiungerci',
+        lead: 'In centro storico, a due passi dal Duomo e a sette minuti a piedi dalla stazione.',
+        mapsLabel: 'Apri in Google Maps',
+        image: { src: '/presets/hotel/image.svg', alt: 'Mappa della zona' },
+        items: [
+          {
+            icon: 'fa6-solid:train',
+            title: 'Dalla stazione centrale',
+            text: 'Sette minuti a piedi, o una fermata di metro (linea M2, uscita Duomo).',
+          },
+          {
+            icon: 'fa6-solid:plane',
+            title: 'Dall’aeroporto',
+            text: 'Navetta ogni 20 minuti fino alla stazione, poi come sopra: 50 minuti in tutto.',
+          },
+          {
+            icon: 'fa6-solid:square-parking',
+            title: 'In auto',
+            text: 'Zona a traffico limitato: comunicaci la targa e ti registriamo; garage convenzionato a 200 metri.',
           },
         ],
       },

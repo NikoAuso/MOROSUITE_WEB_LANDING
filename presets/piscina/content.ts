@@ -253,5 +253,101 @@ export const content: SiteContent = {
         ],
       },
     },
+    {
+      type: 'testimonials',
+      id: 'recensioni',
+      enabled: true,
+      data: {
+        eyebrow: 'DICONO DI NOI',
+        title: 'Chi viene, torna',
+        lead: 'Tre voci fra le centinaia di recensioni raccolte nelle ultime stagioni.',
+        items: [
+          {
+            quote:
+              'Prenotazione dal telefono in due minuti, ombrellone scelto sulla mappa e QR all’ingresso: zero code alle 9 del mattino.',
+            author: 'Federica M.',
+            meta: 'Abbonata stagionale',
+            rating: 5,
+          },
+          {
+            quote:
+              'Acqua pulitissima e bagnini attenti: con due bambini piccoli è quello che conta. Il bar sotto la pergola chiude la giornata.',
+            author: 'Andrea e Sara',
+            meta: 'Famiglia, ingresso giornaliero',
+            rating: 5,
+          },
+          {
+            quote:
+              'Corsie riservate al mattino presto: mi alleno prima del lavoro senza dover litigare per lo spazio.',
+            author: 'Luca P.',
+            meta: 'Nuotatore master',
+            rating: 4,
+          },
+        ],
+      },
+    },
+    {
+      type: 'faq',
+      id: 'faq',
+      navLabel: 'FAQ',
+      enabled: true,
+      data: {
+        eyebrow: 'DOMANDE FREQUENTI',
+        title: 'Prima di prenotare',
+        lead: 'Le risposte alle domande che riceviamo più spesso in reception.',
+        items: [
+          {
+            question: 'Posso cambiare data dopo aver prenotato?',
+            answer:
+              'Sì, fino alle 20:00 del giorno prima dall’area personale; oltre quell’ora la prenotazione non è rimborsabile.',
+          },
+          {
+            question: 'Cosa succede se piove?',
+            answer:
+              'Con allerta meteo la struttura resta chiusa e la giornata viene ricreditata automaticamente sul tuo account.',
+          },
+          {
+            question: 'Gli ombrelloni sono numerati?',
+            answer:
+              'Sì: scegli la postazione dalla mappa in fase di prenotazione e la ritrovi indicata sul QR di ingresso.',
+          },
+          {
+            question: 'Posso portare cibo da casa?',
+            answer:
+              'Nell’area picnic sì; a bordo vasca e nel solarium sono ammesse solo bevande in contenitori non di vetro.',
+          },
+        ],
+      },
+    },
+    {
+      type: 'location',
+      id: 'dove-siamo',
+      navLabel: 'Dove siamo',
+      enabled: true,
+      data: {
+        eyebrow: 'DOVE SIAMO',
+        title: 'Come raggiungerci',
+        lead: 'A dieci minuti dal centro, con parcheggio e fermata del bus davanti all’ingresso.',
+        mapsLabel: 'Apri in Google Maps',
+        image: { src: '/presets/piscina/image.svg', alt: 'Mappa della zona' },
+        items: [
+          {
+            icon: 'fa6-solid:car',
+            title: 'Parcheggio gratuito',
+            text: '180 posti davanti all’ingresso, con area camper e rastrelliere.',
+          },
+          {
+            icon: 'fa6-solid:bus',
+            title: 'Bus linea 12',
+            text: 'Fermata «Piscina» a 50 metri, ogni 15 minuti dal centro.',
+          },
+          {
+            icon: 'fa6-solid:person-biking',
+            title: 'In bici',
+            text: 'Pista ciclabile lungo il fiume fino al cancello nord.',
+          },
+        ],
+      },
+    },
   ],
 };

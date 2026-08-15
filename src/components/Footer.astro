@@ -7,7 +7,7 @@ import BrandLogo from '@/components/BrandLogo.astro';
 import CtaButton from '@/components/CtaButton.astro';
 import Icon from '@/components/Icon.astro';
 import { FALLBACK_COPY } from '@/lib/copy';
-import { safeHref } from '@/lib/format';
+import { mapsUrl, safeHref } from '@/lib/format';
 
 interface Props {
   site: SitePayload;
@@ -16,16 +16,15 @@ interface Props {
 }
 
 const { site, nav = PRIMARY_NAV } = Astro.props;
-const manager = site.links?.manager ?? null;
+// Per-deploy switch + label override for the manager button (site.config.ts);
+// the URL still comes from the backend.
+const managerConfig = config.headerLinks.manager;
+const manager =
+  managerConfig.enabled && site.links?.manager
+    ? { ...site.links.manager, label: managerConfig.label || site.links.manager.label }
+    : null;
 
-// The backend-curated pin is canonical; only synthesize a locality+region
-// search when google_maps_url is absent (per the dto contract).
-const mapsQuery = [site.address.locality, site.address.region].filter(Boolean).join(' ');
-const mapsUrl =
-  safeHref(site.address.google_maps_url) ??
-  (mapsQuery
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
-    : null);
+const mapsHref = mapsUrl(site.address);
 
 const phone = site.contacts?.phone;
 const phoneTel = phone ? `tel:${phone.replace(/\s+/g, '')}` : null;
@@ -148,10 +147,10 @@ const tiktok = safeHref(site.social?.tiktok);
         <div class="text-sm font-extrabold text-white">Contatti</div>
         <ul class="mt-4 space-y-2 text-sm text-white/70">
           {
-            mapsUrl && site.address.street && (
+            mapsHref && site.address.street && (
               <li>
                 <a
-                  href={mapsUrl}
+                  href={mapsHref}
                   class="hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 focus-visible:ring-offset-brand-950"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -216,12 +215,12 @@ const tiktok = safeHref(site.social?.tiktok);
       class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/60 lg:flex-row lg:items-center lg:justify-between"
     >
       <div class="text-center lg:text-left">
-        © {new Date().getFullYear()}
-        {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
+        © {new Date().getFullYear()} · {site.gdpr.titolare ?? site.name} · Tutti i diritti riservati.
       </div>
       <CtaButton
         link={manager}
         fallbackLabel={FALLBACK_COPY.cta.manager}
+        hideWhenMissing={!managerConfig.enabled}
         class="inline-flex w-full items-center justify-center rounded-full border border-brand-300/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-brand-200/60 hover:bg-brand-500/20 sm:w-auto lg:justify-self-end"
       />
     </div>
