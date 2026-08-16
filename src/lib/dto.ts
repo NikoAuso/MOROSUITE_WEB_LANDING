@@ -18,9 +18,9 @@
  * affected section renders an explicit "non disponibile" fallback (the home
  * responds 503 only when `/site` itself is null).
  *
- * Any drift between a backend response and the shapes below is a build-break
- * here, by design: a type mismatch is caught at the template repo's CI level
- * before a broken site ships.
+ * Live responses are cast to these types without runtime validation: the
+ * type-check guards the committed fixtures (presets/<tema>/demo-data.ts), a
+ * drifting backend surfaces as a wrong or "non disponibile" section.
  *
  * Convention: empty/unknown values SHOULD be returned as `null` rather than
  * omitted, so the template can safely render fallback UI without optional-chain
@@ -145,7 +145,7 @@ export type SitePayload = {
 export type OpeningHoursPayload = {
   /**
    * Array of 7 entries (one per weekday). MAY be `null` when no schedule is
-   * configured yet — in that case the opening-hours block is hidden.
+   * configured yet — in that case the section renders its "non disponibile" state.
    */
   daily_hours: Array<{
     /** Weekday key (lowercase English). Used to match against `Date#toLocaleDateString(weekday: 'long')`. */

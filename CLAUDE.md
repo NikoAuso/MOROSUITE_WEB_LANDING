@@ -10,7 +10,7 @@ change belongs on before making it:
 | Owner                          | Holds                                                                                                                     |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | **Backend** (external service) | Live data only: identity, contacts, GDPR entities, opening hours, pricing, CTA links                                      |
-| **`site.config.ts`**           | Per-deploy identity: brand colours and asset URLs, analytics, fetch, locale fallback                                      |
+| **`site.config.ts`**           | Per-deploy identity: asset URLs, analytics, fetch, data source, formatting, locale fallback (no colours)                  |
 | **`presets/<tema>/`**          | The vertical: `content.ts` (structure+copy), `theme.css` (palette), `demo-data.ts`, assets under `public/presets/<tema>/` |
 | **`site.content.ts`**          | The DEPLOY file: imports the chosen preset's content and applies per-section overrides                                    |
 
@@ -30,25 +30,25 @@ page (a missing season only hides the season cards), `allows_umbrella_booking` i
 only on an explicit `false`), and `entrance_sections`/`pass_sections` remain admission-shaped — non-pool verticals
 use the `menu` section instead of pricing.
 
-Stack: Astro 7 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 5.
+Stack: Astro 7 (SSR, Node standalone) + Tailwind 4 (CSS-first `@theme` in `src/styles/tokens.css`) + TypeScript 6.
 Vitest for unit tests, Playwright for E2E, Lighthouse config (`lighthouserc.json`) for manual audits. Node **22+**.
 
 ## Commands
 
-| Command                     | Purpose                                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`               | Dev server on `:4321` (HMR). Calls backend on every request; shows inline "non disponibile" if down.         |
-| `npm run build`             | SSR build into `dist/`. Entry point: `dist/server/entry.mjs`.                                                |
-| `npm run preview`           | `node --env-file-if-exists=.env ./dist/server/entry.mjs` — runs the built server locally, loading `.env`.    |
-| `npm run check`             | `astro check` + `tsc --noEmit`. Run before claiming success.                                                 |
-| `npm run lint`              | ESLint (flat config in `eslint.config.js`).                                                                  |
-| `npm run format`            | Prettier write. `format:check` for read-only — **CI gates on it**, so run it before pushing.                 |
-| `npm test`                  | Vitest unit tests (api cache/auth, sections, pricing, format, structured data).                              |
-| `npm run test:e2e`          | Playwright against mock backend (ok mode). Auto-starts mock + SSR server via `webServer`.                    |
-| `npm run test:e2e:degraded` | Playwright with backend unreachable — asserts 503 for home and the legal pages, degraded `/health`.          |
-| `npm run test:e2e:empty`    | Playwright with mock backend in empty-payload mode — asserts `<ErrorState>` for hours/pricing, disabled CTA. |
-| `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9). Manual, not a CI gate.                                 |
-| `npm run screenshots`       | Rebuilds `.github/screenshots/` (README images) from the `/demo/<preset>` routes. Manual.                    |
+| Command                     | Purpose                                                                                                                |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`               | Dev server on `:4321` (HMR). Same in-process cache as prod; shows inline "non disponibile" if backend down.            |
+| `npm run build`             | SSR build into `dist/`. Entry point: `dist/server/entry.mjs`.                                                          |
+| `npm run preview`           | `node --env-file-if-exists=.env ./dist/server/entry.mjs` — runs the built server locally, loading `.env`.              |
+| `npm run check`             | `astro check` + `tsc --noEmit`. Run before claiming success.                                                           |
+| `npm run lint`              | ESLint (flat config in `eslint.config.js`).                                                                            |
+| `npm run format`            | Prettier write. `format:check` for read-only — **CI gates on it**, so run it before pushing.                           |
+| `npm test`                  | Vitest unit tests (api cache/auth, sections, pricing, format, structured data).                                        |
+| `npm run test:e2e`          | Playwright against mock backend (ok mode). Auto-starts mock + SSR server via `webServer`.                              |
+| `npm run test:e2e:degraded` | Playwright with backend unreachable — asserts 503 for home and the legal pages, degraded `/health`.                    |
+| `npm run test:e2e:empty`    | Playwright with mock backend in empty-payload mode — asserts `<ErrorState>` for hours/pricing, `<html lang>` fallback. |
+| `npm run test:lh`           | Lighthouse CI (perf ≥0.9, SEO ≥0.95, a11y warn ≥0.9). Manual, not a CI gate.                                           |
+| `npm run screenshots`       | Rebuilds `.github/screenshots/` (README images) from the `/demo/<preset>` routes. Manual.                              |
 
 Run a single E2E spec: `npx playwright test --config tests/e2e/playwright.config.ts tests/e2e/homepage.spec.ts`. Add
 `--ui` for UI mode. Specs: `cookie`, `cta`, `degraded`, `empty`, `homepage`, `legal`, `public`. **The homepage and
@@ -67,7 +67,7 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
    hold per-environment URLs (`API_BASE_URL`, `PUBLIC_SITE_URL`) — those live in env, with demo fallbacks inlined in
    `src/lib/config.ts`.
 2. **`src/lib/sections.ts` + `presets/` + `site.content.ts`** — the homepage itself. `sections.ts` has the types
-   and three helpers; a preset (`presets/<tema>/content.ts`) is the structure; `site.content.ts` is the deploy file
+   and four helpers; a preset (`presets/<tema>/content.ts`) is the structure; `site.content.ts` is the deploy file
    that imports it and applies overrides (explicit per-section replacement, no deep-merge). Committed files only —
    no runtime content source, no runtime validation: a malformed structure is a compile error. **Preset selection is
    TWO imports that must agree**: the content import in `site.content.ts` and the theme `@import` in
@@ -76,15 +76,16 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
 3. **`src/lib/config.ts`** — merges `site.config.ts` with runtime env overrides (env wins). Reads `API_BASE_URL`,
    `FACILITY_SLUG`, `API_AUTH_TOKEN`, `PUBLIC_SITE_URL`, `PUBLIC_GA4_MEASUREMENT_ID`, `CACHE_TTL_SECONDS`, `DEMO_MODE`.
    Composes `apiBaseUrl = ${API_BASE_URL}/${FACILITY_SLUG}` so the wrappers in `api.ts` just append `/site` etc.
-   Prefers `process.env.*` over `import.meta.env.*` for server-only vars so the Node process can override build-time
-   inlined values. **Always import `@/lib/config` from runtime code, not `@config` directly.**
-4. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?)` implements:
+   Prefers `process.env.*` over `import.meta.env.*` for every var (PUBLIC_ ones included) so the Node process can
+   override build-time inlined values. **Always import `@/lib/config` from runtime code, not `@config` directly.**
+4. **`src/lib/api.ts`** — the only network layer. `fetchJson(path, normalize?, source?)` implements:
 
 - **Static serving**: when the resolved source is `'static'` (deploy default, per-section override, or DEMO_MODE
   which force-overrides everything), returns `normalize(STATIC_DATA[path])`, skipping network + cache.
 - **In-process cache** keyed by absolute URL. Returns the cached value (even if `null`) until the TTL expires.
 - **Single-flight**: concurrent requests for an expired key attach to the same in-flight `Promise`.
-- **Bearer auth** on every call except `/up` (called without auth by the health endpoint).
+- **Bearer auth** on every call when `API_AUTH_TOKEN` is non-empty, except `/up` (called without auth by the
+  health endpoint).
 - **`T | null`, never throws**: network errors, non-2xx, timeouts and "empty in a meaningful way" payloads all cache
   and return `null`. Callers never see exceptions.
 - Wrappers: `api.site()` (always deploy-level source — identity has no owning section), `api.openingHours(source?)`
@@ -92,8 +93,8 @@ CI (`.github/workflows/ci.yml`) runs `quality` (check → lint → **format:chec
   warning fires only when the deploy-level source is `'backend'`.
 
 5. **`src/lib/dto.ts`** — the API contract: types with JSDoc per field, plus the canonical endpoint map (`/site`,
-   `/site/opening-hours`, `/site/pricing`). **Intentional contract**: any drift between backend responses and these
-   types is a type error here. Change this file first, then propagate. [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md)
+   `/site/opening-hours`, `/site/pricing`). **Intentional contract**: live responses are cast to these types (no runtime
+   validation), the committed fixtures are type-checked against them. Change this file first, then propagate. [`BACKEND_CONTRACT.md`](BACKEND_CONTRACT.md)
    is the human-readable mirror — keep the two in sync.
 6. **`src/lib/copy.ts`** — degraded-state strings only (`FALLBACK_COPY.service`, `.hours`, `.pricing`, `.cta.*`). Page
    copy lives in `site.content.ts`.
@@ -127,7 +128,8 @@ data_source, timestamp }` and `Cache-Control: no-store`. `data_source` is `'back
     (`'mixed'`) — probes `${API_BASE_URL host root}/up` (2 s, no auth, no cache) and checks `api.site()`, reporting
     `degraded` when either fails. Unit-covered in `src/pages/health.test.ts`; the backend branch also by
     `degraded.spec.ts`.
-14. **`src/pages/404.astro`** — uses `<ErrorState>`, does not depend on `SitePayload`. It never sets a status itself;
+14. **`src/pages/404.astro`** — awaits `/site` (needed by `PublicLayout`) and renders `<ErrorState>`, or
+    `<ServiceUnavailable />` when `/site` is null. It never sets a status itself;
     the Node adapter maps it to 404, pinned by `tests/e2e/public.spec.ts`.
 15. **`src/middleware.ts`** — security headers on every HTML response: CSP (GA4 inline bootstrap +
     `googletagmanager.com`, Bunny Fonts, `img-src 'self' data:`), `X-Content-Type-Options`, `Referrer-Policy`,
@@ -137,25 +139,25 @@ data_source, timestamp }` and `Cache-Control: no-store`. `data_source` is `'back
 
 The structure is a `SiteContent`: `meta` plus an ordered array of sections (`EnabledSection` requires `data`;
 `DisabledSection` is just `{ type, enabled: false }`), defined by the preset + deploy overrides and type-checked at
-build. `index.astro` walks the enabled sections and switches on `type`.
+build. `LandingPage.astro` walks the enabled sections and switches on `type`.
 The component catalog:
 
 | `type`         | Component              | Backend data                                   |
 | -------------- | ---------------------- | ---------------------------------------------- |
-| `hero`         | `Hero.astro`           | — (no anchor, no nav entry)                    |
+| `hero`         | `Hero.astro`           | `links.booking` (CTA); no anchor, no nav entry |
 | `features`     | `FeatureGrid.astro`    | —                                              |
 | `hours`        | `OpeningHours.astro`   | `/site/opening-hours`                          |
 | `pricing`      | `PricingTables.astro`  | `/site/pricing`                                |
 | `services`     | `ServiceList.astro`    | —                                              |
-| `rules`        | `RuleGroups.astro`     | —                                              |
-| `highlight`    | `HighlightPanel.astro` | —                                              |
+| `rules`        | `RuleGroups.astro`     | `links.booking`, `contacts.whatsapp` (CTAs)    |
+| `highlight`    | `HighlightPanel.astro` | `links.booking` (CTA)                          |
 | `menu`         | `MenuCourses.astro`    | — (prices are free-form strings, author-owned) |
 | `gallery`      | `GalleryGrid.astro`    | — (text optional: photo-driven by design)      |
 | `faq`          | `Faq.astro`            | — (native `<details>`, no script)              |
 | `testimonials` | `Testimonials.astro`   | — (copy-only quotes, never schema.org Review)  |
 | `location`     | `Location.astro`       | `site.address` (Maps link + postal address)    |
 | `story`        | `Story.astro`          | —                                              |
-| `rooms`        | `RoomsGrid.astro`      | — (`links.booking` for the per-room CTA)       |
+| `rooms`        | `RoomsGrid.astro`      | `links.booking` (per-room CTA)                 |
 
 Four helpers in `src/lib/sections.ts`, all unit-tested:
 
@@ -168,7 +170,7 @@ Four helpers in `src/lib/sections.ts`, all unit-tested:
   first group rather than disappearing, and a menu with no tabs yields one untabbed group.
 
 **Adding a section type** means: a `*Content` type + an `EnabledSection` union member in `sections.ts`, a component
-taking `{ id, content }` (plus backend payloads if any), and a `case` in `index.astro`. The switch's `default`
+taking `{ id, content }` (plus `site`/backend payloads if any), and a `case` in `LandingPage.astro`. The switch's `default`
 returns `section satisfies never`, so a union member without a `case` is a hard build error naming the forgotten
 type (mutation-checked). Disabling a section never needs a dummy `data`: `DisabledSection` only requires
 `{ type, enabled: false }`. `enabledSections()` narrows to `EnabledSection`, so components always receive their
@@ -217,7 +219,7 @@ content.
   with JS off. Any new trigger just needs that data attribute.
 - **Trailing slashes**: `trailingSlash: 'never'`. Keep internal hrefs bare.
 - **Sitemap**: `@astrojs/sitemap` filters routes containing `/_`; `robots.txt` comes from `astro-robots-txt`.
-  `/health` is excluded via its own response headers, not the filter.
+  `/health` is an endpoint (`health.ts`), so it never enters the sitemap.
 - **Legal pages** match on `article h1` + `article .prose` in E2E. `.prose` styling is hand-written in
   `LegalDocument.astro` because `@tailwindcss/typography` is not a dependency — no `prose-*` utility resolves.
 - **Caching `null`**: `null` results cache with the same TTL as successes, so an outage doesn't make every pageview
@@ -245,16 +247,16 @@ preset (the two imports — content in `site.content.ts`, theme in `src/styles/t
 `site.content.ts`, edit `site.config.ts` (identity/branding), replace `public/brand/` assets (the
 `public/presets/<tema>/` ones are the preset's demo assets), rewrite `src/content/legal/`, and set the env vars:
 
-| Var                         | Required in prod? | Default                               | Use                                                                       |
-| --------------------------- | ----------------- | ------------------------------------- | ------------------------------------------------------------------------- |
-| `DEMO_MODE`                 | no                | `false`                               | `true` serves bundled data from `src/lib/demo-data.ts`; no backend needed |
-| `API_BASE_URL`              | yes               | `http://127.0.0.1:8000/api/public/v1` | Backend root. Full URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>`    |
-| `FACILITY_SLUG`             | yes               | `demo`                                | Slug of the facility this deploy serves. Inserted right after `/v1/`.     |
-| `API_AUTH_TOKEN`            | yes               | —                                     | Bearer token on every backend call (not `/up`)                            |
-| `PUBLIC_SITE_URL`           | yes               | `http://localhost:4321`               | Canonical URL, sitemap, OG tags                                           |
-| `CACHE_TTL_SECONDS`         | no                | `300`                                 | In-process cache TTL in seconds                                           |
-| `PUBLIC_GA4_MEASUREMENT_ID` | no                | —                                     | GA4 measurement ID (omit to disable GA4)                                  |
-| `PORT` / `HOST`             | no                | Astro Node defaults                   | Server bind address and port                                              |
+| Var                         | Required in prod? | Default                               | Use                                                                    |
+| --------------------------- | ----------------- | ------------------------------------- | ---------------------------------------------------------------------- |
+| `DEMO_MODE`                 | no                | `false`                               | `true` serves `STATIC_DATA` (the preset's `demo-data.ts`); no backend  |
+| `API_BASE_URL`              | backend/mixed     | `http://127.0.0.1:8000/api/public/v1` | Backend root. Full URL = `${API_BASE_URL}/${FACILITY_SLUG}/<endpoint>` |
+| `FACILITY_SLUG`             | backend/mixed     | `demo`                                | Slug of the facility this deploy serves. Inserted right after `/v1/`.  |
+| `API_AUTH_TOKEN`            | backend/mixed     | —                                     | Bearer token on every backend call (not `/up`); empty = no header      |
+| `PUBLIC_SITE_URL`           | yes               | `http://localhost:4321`               | Canonical URL, sitemap, OG tags                                        |
+| `CACHE_TTL_SECONDS`         | no                | `300`                                 | In-process cache TTL in seconds                                        |
+| `PUBLIC_GA4_MEASUREMENT_ID` | no                | —                                     | GA4 measurement ID (omit to disable GA4)                               |
+| `PORT` / `HOST`             | no                | Astro Node defaults                   | Server bind address and port                                           |
 
 Then:
 

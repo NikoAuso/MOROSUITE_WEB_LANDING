@@ -16,9 +16,8 @@ export const siteConfig = {
 
   // Colours are NOT configured here: the theming surface is the semantic
   // token block in src/styles/tokens.css (brand-*/cta-*/accent-* + hero
-  // glows); per-vertical presets will override those custom properties
-  // (docs/VISIONE.md, fase C). The removed primaryColor/accentColor fields
-  // were dead knobs nothing read.
+  // glows), re-valued per preset by presets/<tema>/theme.css. The removed
+  // primaryColor/accentColor fields were dead knobs nothing read.
   //
   // Each *Url below accepts either an absolute URL to an externally hosted
   // asset or a root-relative path served out of public/. The defaults are

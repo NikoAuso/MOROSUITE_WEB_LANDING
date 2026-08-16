@@ -38,7 +38,7 @@ npm run test:e2e && npm run test:e2e:degraded && npm run test:e2e:empty
 - **Niente tinte grezze d'identità**: solo utility `brand-*`/`cta-*`/`accent-*`; la palette vive in
   `presets/<tema>/theme.css`. `src/lib/theme-tokens.test.ts` fallisce altrimenti.
 - **Aggiungere una sezione** = `*Content` type + membro `EnabledSection` in `sections.ts` +
-  componente `{ id, content }` + `case` in `index.astro`. Lo switch è esaustivo (`satisfies never`):
+  componente `{ id, content }` + `case` in `LandingPage.astro`. Lo switch è esaustivo (`satisfies never`):
   il case mancante è un errore di build.
 - **Contract-first**: i tipi in `dto.ts`/`sections.ts` cambiano PRIMA dei consumatori; poi si
   allinea `BACKEND_CONTRACT.md`.

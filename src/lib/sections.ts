@@ -2,12 +2,12 @@
  * Shape of the homepage: which sections exist, in what order, and the copy
  * each one renders.
  *
- * `SiteContent` is provided by committed files only — today `site.content.ts`,
- * with per-vertical presets planned under `presets/` (see docs/VISIONE.md).
+ * `SiteContent` is provided by committed files only — a preset under
+ * `presets/<tema>/content.ts`, imported and overridden by `site.content.ts`.
  * Everything is type-checked at build time, so there is no runtime validation
  * layer: a malformed structure is a compile error, not a fallback.
  *
- * `src/pages/index.astro` walks the enabled `sections` in order and mounts one
+ * `src/components/LandingPage.astro` walks the enabled `sections` in order and mounts one
  * component per entry, so disabling a section removes it from the page, from
  * the navigation and from the anchor targets in one edit.
  */

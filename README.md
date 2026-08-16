@@ -37,7 +37,7 @@ npm run dev            # http://localhost:4321
 ```
 
 Vedrai il preset attivo (piscina) popolato dai suoi dati demo. `curl localhost:4321/health` →
-`{"status":"ok","demo":true,"data_source":"demo",...}`.
+`{"status":"ok",...,"demo":true,"data_source":"demo",...}`.
 
 ### Vetrina dei preset (`/demo/<preset>`)
 
@@ -106,25 +106,25 @@ senza richiedere altro. Il catalogo:
 
 | `type`         | Componente     | Dati backend                                |
 | -------------- | -------------- | ------------------------------------------- |
-| `hero`         | Hero           | —                                           |
+| `hero`         | Hero           | `links.booking` (CTA)                       |
 | `features`     | FeatureGrid    | —                                           |
 | `hours`        | OpeningHours   | `/site/opening-hours` (o statici)           |
 | `pricing`      | PricingTables  | `/site/pricing` (o statici)                 |
 | `services`     | ServiceList    | —                                           |
-| `rules`        | RuleGroups     | —                                           |
-| `highlight`    | HighlightPanel | —                                           |
+| `rules`        | RuleGroups     | `links.booking`, `contacts.whatsapp` (CTA)  |
+| `highlight`    | HighlightPanel | `links.booking` (CTA)                       |
 | `menu`         | MenuCourses    | — (prezzi come stringhe libere dell'autore) |
 | `gallery`      | GalleryGrid    | — (testo tutto opzionale)                   |
 | `faq`          | Faq            | — (`<details>` nativi, niente script)       |
 | `testimonials` | Testimonials   | — (citazioni redazionali)                   |
 | `location`     | Location       | `site.address` (indirizzo + link Maps)      |
 | `story`        | Story          | —                                           |
-| `rooms`        | RoomsGrid      | — (CTA prenota da `links.booking`)          |
+| `rooms`        | RoomsGrid      | `links.booking` (CTA prenota per camera)    |
 
 ### I componenti, uno per uno
 
-Screenshot dai preset demo. Ogni sezione prende solo `{ id, content }` (più i payload backend dove
-indicato sopra): l'aspetto è il tema attivo, il testo è il contenuto del preset.
+Screenshot dai preset demo. Ogni sezione prende solo `{ id, content }` (più `site` o i payload backend
+dove indicato sopra): l'aspetto è il tema attivo, il testo è il contenuto del preset.
 
 <table>
 <tr>
